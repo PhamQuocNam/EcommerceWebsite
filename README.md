@@ -1,7 +1,6 @@
 # NHẬP MÔN CÔNG NGHỆ PHẦN MỀM
     <a href="https://github.com/PhamQuocNam/EcommerceWebsite">
-    <img src="assets/img1.png" alt="Logo" width="80" height="80">
-  </a>
+    <img src="assets/img1.png" alt="Logo" width="80" height="80"></a>
 
 ## Thành viên nhóm
 
