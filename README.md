@@ -1,5 +1,6 @@
 # NHẬP MÔN CÔNG NGHỆ PHẦN MỀM
-
+    ![Project Overview](intro/img1.png)
+    
 ## Thành viên nhóm
 
 | STT | MSSV     | Họ và Tên          | Chức vụ      | Github                | Email                         |
