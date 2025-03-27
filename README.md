@@ -1,5 +1,5 @@
 # NHẬP MÔN CÔNG NGHỆ PHẦN MỀM
-    <a href="https://github.com/PhamQuocNam/EcommerceWebsite"> <img src="https://i.kym-cdn.com/entries/icons/original/000/047/264/josh_hutcherson_whistle.jpg" alt="Logo" width="80" height="80"></a>
+    <img src="https://i.kym-cdn.com/entries/icons/original/000/047/264/josh_hutcherson_whistle.jpg" alt="Logo" width="80" height="80">
 
 ## Thành viên nhóm
 
