@@ -1,5 +1,5 @@
 # NHẬP MÔN CÔNG NGHỆ PHẦN MỀM
-    ![Project Overview](./intro/img1.png)
+    ![Project Overview](./assets/img1.png)
 
 ## Thành viên nhóm
 
