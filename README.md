@@ -1,7 +1,7 @@
    
  <p align="center">
   <a href="https://www.uit.edu.vn/" title="Trường Đại học Công nghệ Thông tin" style="border: none;">
-    <img src="https://i.imgur.com/WmMnSRt.png" alt="Trường Đại học Công nghệ Thông tin | University of Information Technology">
+    <img src="./assets/img1.png" alt="Trường Đại học Công nghệ Thông tin | University of Information Technology">
   </a>
 </p>
 
@@ -12,7 +12,7 @@
 
 | STT | MSSV     | Họ và Tên          | Chức vụ      | Github                | Email                         |
 |-----|----------|-------------------|--------------|----------------------|------------------------------|
-| 1   | 23520984 | Phạm Quốc Nam     | Nhóm trưởng  |  | 23520984@gm.uit.edu.vn |
+| 1   | 23520984 | Phạm Quốc Nam     | Nhóm trưởng  | [Nem](https://github.com/PhamQuocNam) | 23520984@gm.uit.edu.vn |
 | 2   | 23520958 | Trần Quang Minh   | Thành viên   |  | 23520958@gm.uit.edu.vn |
 | 3   | 23520701 | Nguyễn Vũ Khang    | Thành viên   |  | 23520701@gm.uit.edu.vn |
 
