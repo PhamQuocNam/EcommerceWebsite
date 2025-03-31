@@ -13,7 +13,7 @@
 | STT | MSSV     | Họ và Tên          | Chức vụ      | Github                | Email                         |
 |-----|----------|-------------------|--------------|----------------------|------------------------------|
 | 1   | 23520984 | Phạm Quốc Nam     | Nhóm trưởng  | [Nem](https://github.com/PhamQuocNam) | 23520984@gm.uit.edu.vn |
-| 2   | 23520958 | Trần Quang Minh   | Thành viên   |  | 23520958@gm.uit.edu.vn |
+| 2   | 23520958 | Trần Quang Minh   | Thành viên   |  [MingNhayMua](https://github.com/MingNhayMua)| 23520958@gm.uit.edu.vn |
 | 3   | 23520701 | Nguyễn Vũ Khang    | Thành viên   |  | 23520701@gm.uit.edu.vn |
 
 ---
