@@ -1,181 +1,214 @@
-import sqlite3
+from django.db import models
+from shortuuid.django_fields import ShortUUIDField
+from django.utils.html import mark_safe
 
-# Kết nối đến cơ sở dữ liệu
-conn = sqlite3.connect('ecommerce.db')
-cursor = conn.cursor()
+# ============================
+# 1. USER & PROFILE RELATED
+# ============================
 
-# Kích hoạt hỗ trợ khóa ngoại
-cursor.execute('PRAGMA foreign_keys = ON;')
+class User(models.Model):
+    user_id = ShortUUIDField(primary_key=True)
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birth_date = models.DateField()
 
-# Tạo bảng User
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS User (
-    USER_ID INTEGER PRIMARY KEY,
-    User_Name VARCHAR(50) NOT NULL,
-    Password VARCHAR(50) NOT NULL,
-    First_Name VARCHAR(50),
-    Last_Name VARCHAR(50),
-    Birthday DATETIME
-)
-''')
+    class Meta:
+        verbose_name_plural = 'Users'
 
-# Tạo bảng Staff
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Staff (
-    STAFF_ID INTEGER PRIMARY KEY,
-    USER_ID INTEGER,
-    Datetime DATETIME,
-    First_Name VARCHAR(50),
-    Last_Name VARCHAR(50),
-    Card VARCHAR(50),
-    Started_Datetime DATETIME,
-    Birthday DATETIME,
-    Position VARCHAR(50),
-    FOREIGN KEY (USER_ID) REFERENCES User(USER_ID)
-)
-''')
+    def __str__(self):
+        return self.username
 
-# Tạo bảng Wishlist
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Wishlist (
-    ID INTEGER PRIMARY KEY,
-    ID_User INTEGER,
-    Card INTEGER,
-    FOREIGN KEY (ID_User) REFERENCES User(USER_ID)
-)
-''')
 
-# Tạo bảng Review
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Review (
-    RV_ID INTEGER PRIMARY KEY,
-    Product_ID INTEGER,
-    ID_User INTEGER,
-    Card INTEGER,
-    Rating INTEGER,
-    Comment TEXT,
-    FOREIGN KEY (ID_User) REFERENCES User(USER_ID),
-    FOREIGN KEY (Product_ID) REFERENCES Product(PRODUCT_ID)
-)
-''')
+class Address(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    address_line_1 = models.CharField(max_length=255)
+    address_line_2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20)
 
-# Tạo bảng Discount
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Discount (
-    DISCOUNT_ID INTEGER PRIMARY KEY,
-    Name VARCHAR(50),
-    Desc VARCHAR(255),
-    Discount_Percent REAL,
-    Active INTEGER
-)
-''')
+    class Meta:
+        verbose_name_plural = 'Addresses'
 
-# Tạo bảng Product_Category
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Product_Category (
-    CATEGORY_ID INTEGER PRIMARY KEY,
-    Name VARCHAR(50),
-    Desc VARCHAR(255),
-    Image VARCHAR(255),
-    Discount_ID INTEGER,
-    FOREIGN KEY (Discount_ID) REFERENCES Discount(DISCOUNT_ID)
-)
-''')
+    def __str__(self):
+        return f"{self.user.username} - {self.city}"
 
-# Tạo bảng Product
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Product (
-    PRODUCT_ID INTEGER PRIMARY KEY,
-    Name VARCHAR(100),
-    Desc VARCHAR(255),
-    Price REAL,
-    Image TEXT,
-    Category_ID INTEGER,
-    Discount_ID INTEGER,
-    INVENTORY_ID INTEGER,
-    FOREIGN KEY (Category_ID) REFERENCES Product_Category(CATEGORY_ID),
-    FOREIGN KEY (Discount_ID) REFERENCES Discount(DISCOUNT_ID),
-    FOREIGN KEY (INVENTORY_ID) REFERENCES Product_Inventory(INVENTORY_ID)
-)
-''')
 
-# Tạo bảng Address
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Address (
-    ADDRESS_ID INTEGER PRIMARY KEY,
-    User_ID INTEGER,
-    Address1 VARCHAR(100),
-    Address2 VARCHAR(100),
-    City VARCHAR(50),
-    Country VARCHAR(50),
-    Phone VARCHAR(20),
-    FOREIGN KEY (User_ID) REFERENCES User(USER_ID)
-)
-''')
+class Staff(models.Model):
+    staff_id = ShortUUIDField(primary_key=True)
+    staff_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    birth_date = models.DateField()
+    started_date = models.DateField()
+    id_card = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-# Tạo bảng Payment
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Payment (
-    PAYMENT_ID INTEGER PRIMARY KEY,
-    Desc TEXT,
-    Date DATETIME,
-    Method TEXT,
-    Money REAL
-)
-''')
+    class Meta:
+        verbose_name_plural = 'Staffs'
 
-# Tạo bảng Order_Detail
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Order_Detail (
-    ORDETAIL_ID INTEGER PRIMARY KEY,
-    CLIENT_ID INTEGER,
-    PAYMENT_ID INTEGER,
-    Total_Money REAL,
-    Date DATETIME,
-    Payment_Status INTEGER,
-    Delivery_Status INTEGER,
-    FOREIGN KEY (CLIENT_ID) REFERENCES User(USER_ID),
-    FOREIGN KEY (PAYMENT_ID) REFERENCES Payment(PAYMENT_ID)
-)
-''')
+    def __str__(self):
+        return self.staff_name
 
-# Tạo bảng Order_Item
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Order_Item (
-    Product_ID INTEGER,
-    Order_Detail_ID INTEGER,
-    Quantity INTEGER,
-    Note TEXT,
-    PRIMARY KEY (Product_ID, Order_Detail_ID),
-    FOREIGN KEY (Product_ID) REFERENCES Product(PRODUCT_ID),
-    FOREIGN KEY (Order_Detail_ID) REFERENCES Order_Detail(ORDETAIL_ID)
-)
-''')
 
-# Tạo bảng Salary
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Salary (
-    STAFF_ID INTEGER PRIMARY KEY,
-    Staff_Varchar TEXT,
-    Date DATETIME,
-    Salary REAL,
-    Bonus REAL,
-    FOREIGN KEY (STAFF_ID) REFERENCES Staff(STAFF_ID)
-)
-''')
+# ============================
+# 2. PAYMENT & SALARY
+# ============================
 
-# Tạo bảng Product_Inventory
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Product_Inventory (
-    INVENTORY_ID INTEGER PRIMARY KEY,
-    Quantity INTEGER,
-    Created_at DATETIME,
-    Modified_at DATETIME
-)
-''')
+class Payment(models.Model):
+    payment_id = ShortUUIDField(primary_key=True)
+    description = models.TextField()
+    payment_date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=100)
 
-# Lưu các thay đổi và đóng kết nối
-conn.commit()
-conn.close()
+    class Meta:
+        verbose_name_plural = 'Payments'
 
-print("Cơ sở dữ liệu đã được tạo thành công!")
+    def __str__(self):
+        return str(self.payment_id)
+
+
+class Salary(models.Model):
+    salary_id = ShortUUIDField(primary_key=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateField()
+    salary_desc = models.TextField()
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    bonus = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name_plural = 'Salaries'
+
+    def __str__(self):
+        return str(self.salary_id)
+
+
+# ============================
+# 3. PRODUCT & CATEGORY & INVENTORY
+# ============================
+
+class Discount(models.Model):
+    discount_id = ShortUUIDField(primary_key=True)
+    discount_name = models.CharField(max_length=255)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    active = models.BooleanField(default=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    class Meta:
+        verbose_name_plural = 'Discounts'
+
+    def __str__(self):
+        return self.discount_name
+
+
+class ProductCategory(models.Model):
+    category_id = ShortUUIDField(primary_key=True)
+    category_name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='categories')
+    description = models.TextField()
+
+    class Meta:
+        verbose_name_plural = 'Product Categories'
+
+    def image_tag(self):
+        return mark_safe(f'<img src="{self.image.url}" width="150" height="150" />')
+
+    def __str__(self):
+        return self.category_name
+
+
+class Product(models.Model):
+    product_id = ShortUUIDField(primary_key=True)
+    product_name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='products')
+    discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    # Note: Inventory is managed in ProductInventory below
+
+    class Meta:
+        verbose_name_plural = 'Products'
+
+    def image_tag(self):
+        return mark_safe(f'<img src="{self.image.url}" width="150" height="150" />')
+
+    def __str__(self):
+        return self.product_name
+
+
+class ProductInventory(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, primary_key=True)
+    quantity = models.IntegerField()
+    modified_date = models.DateField()
+
+    class Meta:
+        verbose_name_plural = 'Product Inventories'
+
+    def __str__(self):
+        return str(self.product)
+
+
+# ============================
+# 4. ORDERING & WISHLIST & REVIEW
+# ============================
+
+class Wishlist(models.Model):
+    wishlist_id = ShortUUIDField(primary_key=True)
+    id_card = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Wishlists'
+
+    def __str__(self):
+        return str(self.wishlist_id)
+
+
+class OrderDetail(models.Model):
+    order_detail_id = ShortUUIDField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    order_date = models.DateField()
+    total_money = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.BooleanField(default=False)
+    delivery_status = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = 'Order Details'
+
+    def __str__(self):
+        return str(self.order_detail_id)
+
+
+class OrderItem(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, primary_key=True)
+    order_detail = models.OneToOneField(OrderDetail, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    note = models.TextField()
+
+    class Meta:
+        verbose_name_plural = 'Order Items'
+
+    def __str__(self):
+        return f"{self.order_detail} - {self.product}"
+
+
+class Review(models.Model):
+    review_id = ShortUUIDField(primary_key=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField()
+    review_date = models.DateField()
+
+    class Meta:
+        verbose_name_plural = 'Reviews'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.product_name}"
