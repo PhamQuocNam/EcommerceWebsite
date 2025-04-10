@@ -340,7 +340,10 @@
                                         <p>Subtotal</p>
                                     </th>
                                     <th class="row-title">
-                                        <p></p>
+                                        <p>Update</p>
+                                    </th>
+                                    <th class="row-title">
+                                        <p>Delete</p>
                                     </th>
                                 </tr>
                             </thead>
@@ -355,7 +358,7 @@
                                     <td class="product-quantity" data-title="Quantity">
                                         <div class="quantity_filter">
                                             <input type="button" value="-" class="minus">
-                                            <input class="quantity-number qty" type="text" value="2" min="1" max="10">
+                                            <input class="quantity-number qty product-qty-{{pid}}" type="text" value="{{item.Quantity}}" min="1" max="10" id="">
                                             <input type="button" value="+" class="plus">
                                         </div>
                                     </td>
@@ -404,8 +407,8 @@
                                     <td class="product-total" data-title="Subprice">
                                         <p>${{item.Money}}</p>
                                     </td>
-                                    <td class="row-close close-2" data-title="product-remove"><a href="#" class="delete-product" data-product="{{pid}}"><i class="ion-close-circled"></i></a></td>
-
+                                    <td class="row-close close-2" data-title="update-remove"><button class="update-product"  data-product="{{pid}}" type="button"><i class="ion-refresh"></i></button></td>
+                                    <td class="row-close close-2" data-title="product-remove"><button class="delete-product"  data-product="{{pid}}" type="button"><i class="ion-close-circled"></i></button></td>
                                 </tr>
                                 {% endfor%}
 
