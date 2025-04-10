@@ -7,6 +7,10 @@ from taggit.models import Tag
 from core.forms import ProductReviewForm
 from django.db.models import Count, Avg
 from django.http import JsonResponse
+from django.template.loader import render_to_string
+import json
+from .RAG import Answer_Question
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
@@ -195,4 +199,47 @@ def checkout_view(request):
     }
     
     return render(request,'core/checkout.html',context)
+
+
+def delete_item_from_cart(request):
+    product_id = str(request.GET.get('id'))
+    
+    if 'cart_data_obj' in request.session:
+        if product_id in request.session['cart_data_obj']:
+            cart_data = request.session['cart_data_obj']
+            del cart_data[product_id]
+            request.session['cart_data_obj'] = cart_data
+
+    # Recalculate the total cart amount
+    
+    cart_total_amount = 0
+    if 'cart_data_obj' in request.session:
+        for item in request.session['cart_data_obj'].values():
+            qty = int(item.get('qty', 0))
+            price = float(item.get('price', 0))
+            cart_total_amount += qty * price
+       
+    context= render_to_string("core/cart-list.html",
+            {"cart_data_obj": request.session['cart_data_obj'],
+             "totalcartitems": len(request.session['cart_data_obj']),
+            'cart_total_amount': cart_total_amount})
+
+    return JsonResponse({
+        "data":context,
+        "cart_data_obj": request.session['cart_data_obj'],
+        "totalcartitems": len(request.session['cart_data_obj']),
+    })
+    
+@csrf_exempt
+def response(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        message = data.get('message', '')
+        answer = Answer_Question(message)
+        # new_chat = Chat(message=message, response=answer)
+        # new_chat.save()
+        return JsonResponse({'response': answer})
+    
+    return JsonResponse({'response': 'Invalid request'}, status=400)
+    
             

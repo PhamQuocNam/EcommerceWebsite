@@ -406,13 +406,13 @@ label {
 .scrollup {
     background-color: #363f4d;
     border-radius: 100%;
-    bottom: 20px;
+    bottom: 80px;
     color: #ffffff;
     font-size: 30px;
     height: 50px;
     line-height: 50px;
     position: fixed;
-    right: 20px;
+    right: 35px;
     text-align: center;
     width: 50px;
     z-index: 99;

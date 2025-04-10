@@ -1,6 +1,7 @@
-<!doctype html>
-<html lang="en">
-{% load static%}
+
+
+<main id="cart-list">
+    {% load static%}
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -33,34 +34,10 @@
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-106310707-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-106310707-1', {
-            'anonymize_ip': true
-        });
-    </script>
-
-    <!-- Start of StatCounter Code -->
-    <script>
-        <!--
-        var sc_project = 11921154;
-        var sc_security = "6c07f98b";
-        var scJsHost = (("https:" == document.location.protocol) ?
-            "https://secure." : "http://www.");
-        //-->
-
-        document.write("<sc" + "ript src='" + scJsHost + "statcounter.com/counter/counter.js'></" + "script>");
-    </script>
-    <!-- End of StatCounter Code -->
-
+    
 </head>
 
-<body>
+<body >
     <!-- LOADER -->
     <div id="preloader">
         <div class="loading_wrap">
@@ -433,7 +410,7 @@
                                     <td class="product-total" data-title="Subprice">
                                         <p>${{item.Money}}</p>
                                     </td>
-                                    <td class="row-close close-2" data-title="product-remove"><a href="#"><i class="ion-close-circled"></i></a></td>
+                                    <td class="row-close close-2" data-title="product-remove"><button class="delete-product"  data-product="{{pid}}" type="button"><i class="ion-close-circled"></i></button></td>
 
                                 </tr>
                                 {% endfor%}
@@ -627,5 +604,4 @@
 
     <script src="{% static 'js/function.js' %}"></script>
 </body>
-
-</html>
+</main>
