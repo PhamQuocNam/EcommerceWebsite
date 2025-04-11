@@ -613,31 +613,27 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                <tr class="row-2">
-                                                                    <td class="product-name">Variable product 001</td>
-                                                                    <td class="product-price">$ 78.00</td>
-                                                                    <td class="product-quantity">2</td>
-                                                                    <td class="product-subtotal">$ 156.00</td>
+                                                                {% for item in cart_data.values %}
+                                                                <tr class="row-{{ forloop.counter }}">
+                                                                    <td class="product-name">{{ item.Name }}</td>
+                                                                    <td class="product-price">$ {{ item.Price }}</td>
+                                                                    <td class="product-quantity">{{ item.Quantity }}</td>
+                                                                    <td class="product-subtotal">$ {{ item.Price|floatformat:2|floatformat:"2"|floatformat:"2" }}</td>
                                                                 </tr>
-                                                                <tr class="row-3">
-                                                                    <td class="product-name">Ornare sed consequat</td>
-                                                                    <td class="product-price">$ 81.00</td>
-                                                                    <td class="product-quantity">1</td>
-                                                                    <td class="product-subtotal">$ 81.00</td>
-                                                                </tr>
+                                                                {% endfor %}
                                                             </tbody>
                                                             <tfoot>
                                                                 <tr class="row-4">
                                                                     <td class="text-left" colspan="3">Cart Subtotal</td>
-                                                                    <td class="pr_subtotal">$237.00</td>
+                                                                    <td class="pr_subtotal">${{ cart_total_amount|floatformat:2 }}</td>
                                                                 </tr>
                                                                 <tr class="row-5">
                                                                     <td class="text-left" colspan="3">Promotional Code</td>
-                                                                    <td class="pr_subtotal">-$5.00</td>
+                                                                    <td class="pr_subtotal">-${{ coupon_discount|floatformat:2 }}</td>
                                                                 </tr>
                                                                 <tr class="row-6">
-                                                                    <td class="text-left" colspan="3">ORder Total</td>
-                                                                    <td class="product-subtotal">$232.00</td>
+                                                                    <td class="text-left" colspan="3">Order Total</td>
+                                                                    <td class="product-subtotal">${{ total_after_discount|floatformat:2 }}</td>
                                                                 </tr>
                                                             </tfoot>
                                                         </table>

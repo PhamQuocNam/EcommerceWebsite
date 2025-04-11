@@ -347,7 +347,7 @@
                                         <p>Subtotal</p>
                                     </th>
                                     <th class="row-title">
-                                        <p></p>
+                                        <p>Remove</p>
                                     </th>
                                 </tr>
                             </thead>
@@ -394,7 +394,7 @@
                                 <tr class="row-2">
                                     <td class="row-close close-1" data-title="product-remove"><a href="#"><i class="ion-close-circled"></i></a></td>
                                     <td class="row-img"><img src="{{item.Image}}" alt="cart-img"></td>
-                                    <td class="product-name" data-title="Product"><a href="#">{{item.Name}}</a></td>
+                                    <td class="product-name product" data-id="{{pid}}" data-title="Product"><a href="#">{{item.Name}}</a></td>
                                     <td class="product-price" data-title="Price">
                                         <p>${{item.Price}}</p>
                                     </td>
@@ -403,15 +403,16 @@
                                     <td class="product-quantity" data-title="Quantity">
                                         <div class="quantity_filter">
                                             <input type="button" value="-" class="minus">
-                                            <input class="quantity-number qty" type="text" value="{{item.Quantity}}" min="1" max="10">
+                                            <input class="quantity-number qty product-quantity-{{pid}}" type="text" value="{{item.Quantity}}" min="1" max="10">
                                             <input type="button" value="+" class="plus">
                                         </div>
                                     </td>
                                     <td class="product-total" data-title="Subprice">
                                         <p>${{item.Money}}</p>
                                     </td>
+                                                                        
                                     <td class="row-close close-2" data-title="product-remove"><button class="delete-product"  data-product="{{pid}}" type="button"><i class="ion-close-circled"></i></button></td>
-
+                                    
                                 </tr>
                                 {% endfor%}
 
@@ -421,8 +422,8 @@
                                 <tr>
                                     <td colspan="12">
                                         <ul class="table-btn">
-                                            <li><a href="shop.html" class="btn btn-secondary"><i class="fa fa-chevron-left"></i>Continue Shopping</a></li>
-                                            <li><a href="#" class="btn btn-primary"><i class="fa fa-refresh"></i>Update cart</a></li>
+                                            <li><a href="shop.html" class="btn btn-secondary "><i class="fa fa-chevron-left"></i>Continue Shopping</a></li>
+                                            <li><button class="btn btn-primary update-prod" type="button"><i class="fa fa-refresh"></i> Update cart</button></li>
                                         </ul>
                                     </td>
                                 </tr>

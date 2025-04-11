@@ -9,7 +9,7 @@ from django.db.models import Count, Avg
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 import json
-from .RAG import Answer_Question
+from .AI_model import Answer_Question, Recommendation_System_Type_1, Recommendation_System_Type_2
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
@@ -17,9 +17,9 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request):
     categories = Product_Category.objects.all()
     products= Product.objects.all()
-    
-    
+    recommended_products= Recommendation_System_Type_1()
     context ={
+    "recommended_products": recommended_products,
      "products": products,
      "categories": categories
     }
@@ -190,17 +190,6 @@ def cart_view(request):
     
     
     
-    
-
-
-def checkout_view(request):
-    context={
-        
-    }
-    
-    return render(request,'core/checkout.html',context)
-
-
 def delete_item_from_cart(request):
     product_id = str(request.GET.get('id'))
     
@@ -224,11 +213,67 @@ def delete_item_from_cart(request):
              "totalcartitems": len(request.session['cart_data_obj']),
             'cart_total_amount': cart_total_amount})
 
+    print(context)
     return JsonResponse({
         "data":context,
         "cart_data_obj": request.session['cart_data_obj'],
         "totalcartitems": len(request.session['cart_data_obj']),
     })
+
+    
+    
+def update_items_cart(request):
+    
+    ids = request.GET.get('ids').split(',')
+    quantities = [int(float(num)) for num in request.GET.get('quantities').split(',')]
+
+    cart_total_amount=0
+    for i in range(len(ids)):
+        if 'cart_data_obj' in request.session:
+            product_id = ids[i]
+            product_qty= quantities[i]           
+            if product_id in request.session['cart_data_obj']:
+                cart_data = request.session['cart_data_obj']
+                if product_qty != cart_data[product_id]['Quantity']:
+                    cart_data[product_id]['Quantity'] = product_qty
+                    cart_data[product_id]['Money'] = product_qty * float(cart_data[product_id]['Price'])
+                    request.session['cart_data_obj'] = cart_data
+            
+            cart_total_amount += product_qty * float(cart_data[product_id]['Price'])
+    
+    
+    context = render_to_string("core/cart-list.html", {
+        "cart_data_obj": request.session['cart_data_obj'],
+        "totalcartitems": len(request.session['cart_data_obj']),
+        'cart_total_amount': cart_total_amount
+    })
+    print(context)
+    
+    return JsonResponse({
+        "data": context,
+        "cart_data_obj": request.session['cart_data_obj'],
+        "totalcartitems": len(request.session['cart_data_obj']),
+        "totalmoney": cart_total_amount,
+    })
+    
+
+def checkout_view(request):
+    cart_total_amount = 0
+    cart_data={}
+    if 'cart_data_obj' in request.session:
+        cart_data = request.session['cart_data_obj']
+        for p_id, item in cart_data.items():
+            cart_total_amount += int(float(item['Price'])) * int(item['Quantity'])
+
+        return render(request,"core/checkout.html",{
+                "cart_data": cart_data,
+                "totalcartitem": len(cart_data),
+                "cart_total_amount": cart_total_amount
+            }
+        )
+
+
+    
     
 @csrf_exempt
 def response(request):
