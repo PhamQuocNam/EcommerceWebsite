@@ -38,14 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'corsheaders',
     # Third party 
     'taggit',
     'ckeditor',
-<<<<<<< HEAD
-=======
-    #paypal
->>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
     'paypal.standard.ipn',
     # Custom apps
     'core',
@@ -60,7 +56,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
+
+
 
 ROOT_URLCONF = 'ecommerce.urls'
 
@@ -147,11 +146,9 @@ AUTH_USER_MODEL = 'userauths.User'
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
-<<<<<<< HEAD
-CKEDITOR_UPLOAD_PATH = 'uploads/'
-
-=======
->>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
 # PayPal config
 PAYPAL_RECEIVER_EMAIL = 'minhtran2005123@gmail.com'
 PAYPAL_TEST = True  
+
+
+CORS_ALLOW_ALL_ORIGINS = True

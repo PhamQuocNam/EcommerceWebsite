@@ -13,17 +13,17 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from paypal.standard.forms import PayPalPaymentsForm
 import uuid
-<<<<<<< HEAD
-from django.urls import reverse
-from django.conf import settings
-=======
->>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
+from taggit.models import Tag
+from .AI_model import Answer_Question, Recommendation_System_Type_1
+
+
 # Create your views here.
 
 
 def index(request):
     categories = Product_Category.objects.all()
     products= Product.objects.all()
+    recommended= Recommendation_System_Type_1()
     context ={
      "products": products,
      "categories": categories
@@ -252,7 +252,6 @@ def update_items_cart(request):
         "totalcartitems": len(request.session['cart_data_obj']),
         'cart_total_amount': cart_total_amount
     })
-    print(context)
     
     return JsonResponse({
         "data": context,
@@ -261,7 +260,7 @@ def update_items_cart(request):
         "totalmoney": cart_total_amount,
     })
     
-
+ 
 def checkout_view(request):
     cart_total_amount = 0
     cart_data={}
@@ -277,10 +276,6 @@ def checkout_view(request):
         'cancel_return': f'http://{host}{reverse("core:payment-failed")}',
         'custom': "Order",
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
     paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
 
     if 'cart_data_obj' in request.session:
@@ -308,12 +303,12 @@ def payment_completed_view(request):
         "cart_data_obj": cart_data,
         "cart_total_amount": cart_total_amount
     })
-<<<<<<< HEAD
     
 def payment_failed_view(request):
     return render(request, "core/payment-failed.html")
-    
-    
+
+
+
 @csrf_exempt
 def response(request):
     if request.method == 'POST':
@@ -325,10 +320,4 @@ def response(request):
         return JsonResponse({'response': answer})
     
     return JsonResponse({'response': 'Invalid request'}, status=400)
-    
-=======
-    
-def payment_failed_view(request):
-    return render(request, "core/payment-failed.html")
->>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
 

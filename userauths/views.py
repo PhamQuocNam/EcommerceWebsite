@@ -10,6 +10,8 @@ def register_view(request):
     if request.method =='POST':
         form = UserRegisterForm(request.POST or None)
         if form.is_valid():
+            new_user.is_staff = False
+            new_user.is_superuser = False
             new_user = form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Hey {username}, You account was created successfully')
