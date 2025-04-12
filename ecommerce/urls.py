@@ -22,7 +22,11 @@ urlpatterns = [
     path("", include('core.urls')),
     path('user/', include('userauths.urls')),
     path('ckeditor/',include("ckeditor_uploader.urls")),
+<<<<<<< HEAD
     path("paypal/", include("paypal.standard.ipn.urls"))
+=======
+    path("paypal/", include("paypal.standard.ipn.urls")),
+>>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
 ]
 
 if settings.DEBUG:

@@ -579,6 +579,10 @@
                                                             <p data-method="option5" class="payment-text">
                                                                 Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.
                                                             </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
                                                         </div>
                                                     </div>
                                                     <div class="form-wizard-buttons text-md-right">
@@ -661,7 +665,19 @@
                         </div>
                        
                             <div class="text-center" id="order-button-wrapper">
+<<<<<<< HEAD
                                 <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Place Order</a>
+=======
+                               
+                                <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Place Order</a>
+
+                             
+                                <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                    <div style="transform: scale(1.25); display: inline-block;">
+                                        {{ paypal_payment_button.render }}
+                                    </div>
+                                </div>
+>>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
                             </div>
                         
                     </div>
@@ -819,17 +835,29 @@
         document.addEventListener("DOMContentLoaded", function () {
             const radios = document.querySelectorAll('input[name="payment_option"]');
             const paypalContainer = document.getElementById("paypal-button-container");
+<<<<<<< HEAD
             const PaymentBtn = document.getElementById("payment-btn");
+=======
+            const placeOrderBtn = document.getElementById("place-order-btn");
+>>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
         
             radios.forEach(radio => {
                 radio.addEventListener("change", function () {
                     if (this.value === "option5") {
                         // Nếu chọn PayPal → ẩn nút đặt hàng, hiện PayPal
+<<<<<<< HEAD
                         PaymentBtn.style.display = "none";
                         paypalContainer.style.display = "block";
                     } else {
                         // Nếu chọn phương thức khác → hiện lại nút đặt hàng
                         PaymentBtn.style.display = "inline-block";
+=======
+                        placeOrderBtn.style.display = "none";
+                        paypalContainer.style.display = "block";
+                    } else {
+                        // Nếu chọn phương thức khác → hiện lại nút đặt hàng
+                        placeOrderBtn.style.display = "inline-block";
+>>>>>>> eebb5687423975542b6d2d7cec5012b3dc69d6e1
                         paypalContainer.style.display = "none";
                     }
                 });
