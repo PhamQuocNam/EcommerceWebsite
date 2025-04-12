@@ -3,23 +3,23 @@ from django.http import HttpResponse
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, Order_Detail, \
 ProductReview, Wishlist, Address, ProductImages, Staff, Salary
 from .context_processor import default
-from taggit.models import Tag
 from core.forms import ProductReviewForm
 from django.db.models import Count, Avg
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 import json
-from .AI_model import Answer_Question, Recommendation_System_Type_1, Recommendation_System_Type_2
+from django.urls import reverse
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from paypal.standard.forms import PayPalPaymentsForm
+import uuid
 # Create your views here.
 
 
 def index(request):
     categories = Product_Category.objects.all()
     products= Product.objects.all()
-    recommended_products= Recommendation_System_Type_1()
     context ={
-    "recommended_products": recommended_products,
      "products": products,
      "categories": categories
     }
@@ -260,6 +260,20 @@ def update_items_cart(request):
 def checkout_view(request):
     cart_total_amount = 0
     cart_data={}
+    host = request.get_host()
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': request.session['totalmoney'],
+        'item_name': "Order",
+        "invoice": str(uuid.uuid4()),
+        'currency_code': 'USD',
+        'notify_url': f'http://{host}{reverse("paypal-ipn")}',
+        'return': f'http://{host}{reverse("core:payment-completed")}',
+        'cancel_return': f'http://{host}{reverse("core:payment-failed")}',
+        'custom': "Order",
+    }
+    paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
+
     if 'cart_data_obj' in request.session:
         cart_data = request.session['cart_data_obj']
         for p_id, item in cart_data.items():
@@ -268,23 +282,25 @@ def checkout_view(request):
         return render(request,"core/checkout.html",{
                 "cart_data": cart_data,
                 "totalcartitem": len(cart_data),
-                "cart_total_amount": cart_total_amount
+                "cart_total_amount": cart_total_amount,
+                "paypal_payment_button": paypal_payment_button,
             }
         )
 
+def payment_completed_view(request):
+    cart_total_amount = 0
+    cart_data = {}
 
+    if 'cart_data_obj' in request.session:
+        cart_data = request.session['cart_data_obj']
+        for pid, item in cart_data.items():
+            cart_total_amount += float(item['Price']) * int(item['Quantity'])
+
+    return render(request, "core/payment-completed.html", {
+        "cart_data_obj": cart_data,
+        "cart_total_amount": cart_total_amount
+    })
     
-    
-@csrf_exempt
-def response(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        message = data.get('message', '')
-        answer = Answer_Question(message)
-        # new_chat = Chat(message=message, response=answer)
-        # new_chat.save()
-        return JsonResponse({'response': answer})
-    
-    return JsonResponse({'response': 'Invalid request'}, status=400)
-    
-            
+def payment_failed_view(request):
+    return render(request, "core/payment-failed.html")
+

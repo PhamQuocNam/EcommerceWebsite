@@ -252,7 +252,7 @@
                                                     <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Extra<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                                     <ul class="all-menu dropdown-menu">
                                                         <li><a href="cart.html">Cart</a></li>
-                                                        <li class="active"><a href="checkout.html">Checkout</a></li>
+                                                        <li class="active"><a href="{% url 'core:checkout' %}" >Checkout</a></li>
                                                         <li><a href="compare.html">Compare</a></li>
                                                         <li><a href="my-account.html">My Account</a></li>
                                                     </ul>
@@ -581,7 +581,10 @@
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios5" value="option5">
                                                             <label class="form-check-label" for="exampleRadios5">Paypal</label>
-                                                            <p data-method="option5" class="payment-text">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                                            <p data-method="option5" class="payment-text">
+                                                                Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.
+                                                            </p>
+
                                                         </div>
                                                     </div>
                                                     <div class="form-wizard-buttons text-md-right">
@@ -645,9 +648,19 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="place-oreder-btn">
-                            <a href="#" class="btn btn-secondary">Place Oreder</a>
-                        </div>
+                       
+                            <div class="text-center" id="order-button-wrapper">
+                               
+                                <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Place Order</a>
+
+                             
+                                <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                    <div style="transform: scale(1.25); display: inline-block;">
+                                        {{ paypal_payment_button.render }}
+                                    </div>
+                                </div>
+                            </div>
+                        
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-12">
@@ -836,6 +849,28 @@
     <script src="{% static 'js/custom.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'js/function.js' %}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radios = document.querySelectorAll('input[name="payment_option"]');
+            const paypalContainer = document.getElementById("paypal-button-container");
+            const placeOrderBtn = document.getElementById("place-order-btn");
+        
+            radios.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    if (this.value === "option5") {
+                        // Nếu chọn PayPal → ẩn nút đặt hàng, hiện PayPal
+                        placeOrderBtn.style.display = "none";
+                        paypalContainer.style.display = "block";
+                    } else {
+                        // Nếu chọn phương thức khác → hiện lại nút đặt hàng
+                        placeOrderBtn.style.display = "inline-block";
+                        paypalContainer.style.display = "none";
+                    }
+                });
+            });
+        });
+        </script>
 </body>
 
 </html>

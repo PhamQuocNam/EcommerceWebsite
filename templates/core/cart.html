@@ -229,7 +229,7 @@
                                                     <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Extra<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                                     <ul class="all-menu dropdown-menu">
                                                         <li class="active"><a href="cart.html">Cart</a></li>
-                                                        <li><a href="checkout.html">Checkout</a></li>
+                                                        <li><a href="{% url 'core:cart' %}">Checkout</a></li>
                                                         <li><a href="compare.html">Compare</a></li>
                                                         <li><a href="my-account.html">My Account</a></li>
                                                     </ul>
@@ -468,7 +468,7 @@
                             </ul>
                         </div>
                         <div class="ci-btn">
-                            <a href="checkout.html" class="btn btn-primary btn-block rounded-0">Proceed to Checkout</a>
+                            <a href="{% url 'core:checkout' %}" class="btn btn-primary btn-block rounded-0">Proceed to Checkout</a>
                         </div>
                     </div>
                 </div>
