@@ -19,7 +19,7 @@ const createChatLi = (message, className) => {
 const generateResponse = (chatElement, userMessage) => {
     const messageElement = chatElement.querySelector("p");
     
-    fetch("response", {
+    fetch("/response", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

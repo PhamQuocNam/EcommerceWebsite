@@ -252,7 +252,7 @@
                                                     <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Extra<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                                     <ul class="all-menu dropdown-menu">
                                                         <li><a href="cart.html">Cart</a></li>
-                                                        <li class="active"><a href="checkout.html">Checkout</a></li>
+                                                        <li class="active"><a href="{% url 'core:checkout' %}" >Checkout</a></li>
                                                         <li><a href="compare.html">Compare</a></li>
                                                         <li><a href="my-account.html">My Account</a></li>
                                                     </ul>
@@ -574,18 +574,32 @@
                                                                 believable. </p>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios4" value="option4">
-                                                            <label class="form-check-label" for="exampleRadios4">Check Payment</label>
-                                                            <p data-method="option4" class="payment-text">Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                                        </div>
-                                                        <div class="form-check">
                                                             <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios5" value="option5">
                                                             <label class="form-check-label" for="exampleRadios5">Paypal</label>
-                                                            <p data-method="option5" class="payment-text">Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                                            <p data-method="option5" class="payment-text">
+                                                                Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.
+                                                            </p>
                                                         </div>
                                                     </div>
                                                     <div class="form-wizard-buttons text-md-right">
-                                                        <button class="btn btn-primary btn-next" type="button">Continue</button>
+                                                        <button class="btn btn-primary btn-next" id="payment-btn" type="button">Bank Transfer</button>
+                                                        
+                                                        <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                                            <div style="transform: scale(1.25); display: inline-block;">
+                                                                {{ paypal_payment_button.render }}
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                                            <div style="transform: scale(1.25); display: inline-block;">
+                                                                {{ paypal_payment_button.render }}
+                                                            </div>
+                                                        </div>
+                                                        <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                                            <div style="transform: scale(1.25); display: inline-block;">
+                                                                {{ paypal_payment_button.render }}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -645,9 +659,11 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="place-oreder-btn">
-                            <a href="#" class="btn btn-secondary">Place Oreder</a>
-                        </div>
+                       
+                            <div class="text-center" id="order-button-wrapper">
+                                <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Place Order</a>
+                            </div>
+                        
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-12">
@@ -761,44 +777,6 @@
     </footer>
     <!-- End Footer Section -->
 
-    <!-- Home Popup Section -->
-    <div class="modal fade bd-example-modal-lg main-popup" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body p-0">
-                    <div class="newsletter-pop-up d-flex">
-                        <div class="popup-img">
-                            <img src="static/image/1_popup-img.jpg" alt="popup-img">
-                        </div>
-                        <div class="popup-form text-center">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true"><i class="ion-close-round"></i></span>
-                        </button>
-                            <div class="popup-logo">
-                                <img src="static/image/logo.png" alt="logo">
-                            </div>
-                            <div class="popup-text">
-                                <p>Join us Now</p>
-                                <h6>And get hot news about the theme</h6>
-                            </div>
-                            <form class="subscribe-popup-form" method="post" action="#">
-                                <input name="email" required type="email" placeholder="Enter Your Email">
-                                <button class="btn btn-primary" title="Subscribe" type="submit">Subscribe</button>
-                            </form>
-                            <div class="form-check">
-                                <label>Don't show this popup again!
-                                <input class="defult-check" type="checkbox" checked="checked">
-                                <span class="checkmark"></span>
-                            </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Screen Load Popup Section -->
-
     
     <!-- Jquery js -->
     <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
@@ -836,6 +814,28 @@
     <script src="{% static 'js/custom.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'js/function.js' %}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radios = document.querySelectorAll('input[name="payment_option"]');
+            const paypalContainer = document.getElementById("paypal-button-container");
+            const PaymentBtn = document.getElementById("payment-btn");
+        
+            radios.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    if (this.value === "option5") {
+                        // Nếu chọn PayPal → ẩn nút đặt hàng, hiện PayPal
+                        PaymentBtn.style.display = "none";
+                        paypalContainer.style.display = "block";
+                    } else {
+                        // Nếu chọn phương thức khác → hiện lại nút đặt hàng
+                        PaymentBtn.style.display = "inline-block";
+                        paypalContainer.style.display = "none";
+                    }
+                });
+            });
+        });
+        </script>
 </body>
 
 </html>

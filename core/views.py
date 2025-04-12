@@ -11,6 +11,10 @@ from django.template.loader import render_to_string
 import json
 from .AI_model import Answer_Question, Recommendation_System_Type_1, Recommendation_System_Type_2
 from django.views.decorators.csrf import csrf_exempt
+from paypal.standard.forms import PayPalPaymentsForm
+import uuid
+from django.urls import reverse
+from django.conf import settings
 # Create your views here.
 
 
@@ -260,19 +264,49 @@ def update_items_cart(request):
 def checkout_view(request):
     cart_total_amount = 0
     cart_data={}
+    host = request.get_host()
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': request.session['totalmoney'],
+        'item_name': "Order",
+        "invoice": str(uuid.uuid4()),
+        'currency_code': 'USD',
+        'notify_url': f'http://{host}{reverse("paypal-ipn")}',
+        'return': f'http://{host}{reverse("core:payment-completed")}',
+        'cancel_return': f'http://{host}{reverse("core:payment-failed")}',
+        'custom': "Order",
+    }
+
+    paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
+
     if 'cart_data_obj' in request.session:
         cart_data = request.session['cart_data_obj']
         for p_id, item in cart_data.items():
             cart_total_amount += int(float(item['Price'])) * int(item['Quantity'])
-
         return render(request,"core/checkout.html",{
                 "cart_data": cart_data,
                 "totalcartitem": len(cart_data),
-                "cart_total_amount": cart_total_amount
+                "cart_total_amount": cart_total_amount,
+                "paypal_payment_button": paypal_payment_button,
             }
         )
 
+def payment_completed_view(request):
+    cart_total_amount = 0
+    cart_data = {}
 
+    if 'cart_data_obj' in request.session:
+        cart_data = request.session['cart_data_obj']
+        for pid, item in cart_data.items():
+            cart_total_amount += float(item['Price']) * int(item['Quantity'])
+
+    return render(request, "core/payment-completed.html", {
+        "cart_data_obj": cart_data,
+        "cart_total_amount": cart_total_amount
+    })
+    
+def payment_failed_view(request):
+    return render(request, "core/payment-failed.html")
     
     
 @csrf_exempt
@@ -287,4 +321,4 @@ def response(request):
     
     return JsonResponse({'response': 'Invalid request'}, status=400)
     
-            
+

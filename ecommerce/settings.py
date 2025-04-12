@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Third party 
     'taggit',
     'ckeditor',
+    'paypal.standard.ipn',
     # Custom apps
     'core',
     'userauths'
@@ -142,3 +143,7 @@ AUTH_USER_MODEL = 'userauths.User'
 
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+# PayPal config
+PAYPAL_RECEIVER_EMAIL = 'minhtran2005123@gmail.com'
+PAYPAL_TEST = True  
