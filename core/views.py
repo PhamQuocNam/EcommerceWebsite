@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, Order_Detail, \
+from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
 ProductReview, Wishlist, Address, ProductImages, Staff, Salary
 from .context_processor import default
 from core.forms import ProductReviewForm
@@ -15,6 +15,7 @@ from paypal.standard.forms import PayPalPaymentsForm
 import uuid
 from taggit.models import Tag
 from .AI_model import Answer_Question, Recommendation_System_Type_1
+from userauths.models import Profile
 
 
 # Create your views here.
@@ -320,4 +321,49 @@ def response(request):
         return JsonResponse({'response': answer})
     
     return JsonResponse({'response': 'Invalid request'}, status=400)
+
+
+
+
+def profile_view(request):
+       
+    profile = Profile.objects.get(user = request.user)
+    context= {
+        'profile': profile
+    }
+    
+    
+    return render(request, 'core/profile.html', context)
+
+
+def address_view(request):
+    address = Address.objects.filter(user=request.user)
+    context = {
+        'Address': address
+    }
+    
+    return render(request,"core/address.html", context)
+
+
+def order_history_view(request):
+    order_list = Order_Detail.objects.filter(user = request.user).order_by("-ID_Order_Detail")
+    context={
+        'Order_list': order_list
+    }
+    return render(request,'core/order-history.html', context)
+
+
+def track_order_view(request):
+    order_list = Order_Detail.objects.filter(user=request.user, Delivery_Status='process').order_by("-Date")
+    item_lists = []
+
+    for order in order_list:
+        item_list = Order_Item.objects.filter(order=order)
+        item_lists.append(item_list)
+    print(item_lists)
+    context = {
+        'item_lists': item_lists
+    }
+
+    return render(request, "core/track-order.html", context)
 

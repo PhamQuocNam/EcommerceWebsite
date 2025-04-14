@@ -40,7 +40,7 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display= ['user','product','Date']
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display= ['user','Address1','Address2','City','Country','Phone']
+    list_display= ['user','Address','City','Country']
 
 class StaffAdmin(admin.ModelAdmin):
     list_display = ['ID_Staff','ID_card','Started','Birthday','Position']

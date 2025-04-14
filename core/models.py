@@ -216,15 +216,11 @@ class Wishlist(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    Address1= models.CharField(max_length=100, null=True)
-    Address2= models.CharField(max_length=100,null=True)
+    Address= models.CharField(max_length=100, null=True)
     City= models.CharField(max_length=100, null=True)
     Country= models.CharField(max_length=100, null=True)
-    Phone= models.CharField(max_length=20, null=True)
     
-
-
-
+    
 
 class ProductImages(models.Model):
     

@@ -109,6 +109,76 @@
                 </div>
             </div>
         </div>
+        <div class="header-mdl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hm-inner d-sm-flex align-items-center justify-content-between">
+                            <div class="header-logo">
+                                <a href="index.html"><img src="static/image/logo.png" alt="logo"></a>
+                            </div>
+                            <form class="header-form" action="{% url 'core:search' %}" method="GET">
+                                <input class="search-box" placeholder="Search Product..." name="q" type="search">
+                                <button type="submit">Search</button>
+                            </form>
+                            <div class="header-right">
+                                <div class="header-cart ">
+                                    <a href="#">
+                                        <div class="cart-icon">
+                                            <img src="static/image/cart-icon.png" alt="cart-icon">
+                                            
+                                            <span class='cart-items-count'>{{request.session.cart_data_obj|length}}</span>
+                                        </div>
+                                        
+                                        <i class="fa fa-angle-down"></i><span>
+                                       
+                                    </a>
+                                    <div class="cart-box">
+                                    
+                                        
+                                        <div class="cart-info">
+
+                                            {% for pid, item in request.session.cart_data_obj.items %}
+                                            <div class="cart-prodect d-flex">
+                                                <div class="cart-img">
+                                                    <img src="{{item.Image}}" alt="cart-img">
+                                                </div>
+                                                <div class="cart-product">
+                                                    <a href="#">{{item.Name}}</a>
+                                                    <p>${{item.Price}}</p>
+                                                </div>
+                                                <a href="#" class="close-icon d-flex align-items-center"><i class="ion-close"></i></a>
+                                            </div>
+                                            {% endfor%}
+                            
+                                        </div>
+
+
+                                        <div class="price-prodect d-flex align-items-center justify-content-between">
+                                            <p class="total">total</p>
+                                            {% if request.session.totalmoney%}
+                                            <p class="total-price">{{request.session.totalmoney}}</p>
+                                            {% else%}
+                                            <p class="total-price">$0</p>
+                                            {% endif%}
+                                        </div>
+                                        <div class="cart-btn">
+                                            <a href="{% url 'core:cart' %}" class="btn btn-primary">View Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-lg-none mm_icon">
+                                    <div class="form-captions" id="search">
+                                        <button type="submit" class="submit-btn-2"><i class="fa fa-search"></i></button>
+                                    </div>
+                                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="header-btm">
             <div class="container">
