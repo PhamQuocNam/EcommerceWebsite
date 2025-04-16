@@ -14,8 +14,10 @@ from django.views.decorators.csrf import csrf_exempt
 from paypal.standard.forms import PayPalPaymentsForm
 import uuid
 from taggit.models import Tag
-from .AI_model import Answer_Question, Recommendation_System_Type_1
 from userauths.models import Profile
+from django.contrib import messages
+from django.contrib.auth.hashers import check_password
+
 
 
 # Create your views here.
@@ -23,10 +25,7 @@ from userauths.models import Profile
 
 def index(request):
     categories = Product_Category.objects.all()
-    products= Product.objects.all()
-    recommended_ids= Recommendation_System_Type_1()
-    recommended_products = list(Product.objects.filter(id__in=recommended_ids))
-    
+    products= Product.objects.all()    
     saleoff_products = Product.objects.filter(discount__Active=True)
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
     fruit_products = Product.objects.filter(category__ID_Product_Category="CAT001")
@@ -35,7 +34,6 @@ def index(request):
     context ={
      "products": products,
      "categories": categories,
-     "recommended_products": recommended_products,
      "dessert_products": dessert_products,
      "fruit_products":fruit_products,
      'saleoff_products': saleoff_products,
@@ -322,31 +320,11 @@ def payment_completed_view(request):
 def payment_failed_view(request):
     return render(request, "core/payment-failed.html")
 
-
-
-@csrf_exempt
-def response(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        message = data.get('message', '')
-        answer = Answer_Question(message)
-        # new_chat = Chat(message=message, response=answer)
-        # new_chat.save()
-        return JsonResponse({'response': answer})
-    
-    return JsonResponse({'response': 'Invalid request'}, status=400)
-
-
-
-
 def profile_view(request):
-       
-    profile = Profile.objects.get(user = request.user)
-    context= {
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    context = {
         'profile': profile
     }
-    
-    
     return render(request, 'core/profile.html', context)
 
 
@@ -386,3 +364,22 @@ def track_order_view(request):
 def contact_view(request):
     return render(request, "core/contact.html")
 
+def change_password_view(request):
+    user = request.user
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if confirm_password != new_password:
+            messages.error(request, 'Confirm password does not match')
+            return redirect('core:change_password')
+        
+        if check_password(old_password,user.password):
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, 'Password changed successfully')
+            return redirect('core:profile')
+        else:
+            messages.error(request, 'Old password is incorrect')
+            return redirect('core:change_password')
+    return render(request, "core/change-password.html")
