@@ -2,7 +2,7 @@ from django.urls import path, include
 from core.views import index, product_list_view, category_list_view, \
     category_product_list_view, product_detail_view, tag_list, ajax_add_review,\
     search_view, add_to_cart, cart_view, checkout_view, delete_item_from_cart, update_items_cart, payment_completed_view, payment_failed_view, \
-    response, profile_view, address_view,  order_history_view, track_order_view, contact_view
+    response, profile_view, address_view,  order_history_view, track_order_view, contact_view, change_password_view
 app_name= 'core'
 
 urlpatterns=[
@@ -27,5 +27,6 @@ urlpatterns=[
     path("address/",address_view,name='address'),
     path("order_history/", order_history_view, name='order_history'),
     path("track_order/", track_order_view, name='track_order'),
-    path("contact/",contact_view, name='contact')
+    path("contact/",contact_view, name='contact'),
+    path("change_password/", change_password_view, name='change_password' ),
 ]

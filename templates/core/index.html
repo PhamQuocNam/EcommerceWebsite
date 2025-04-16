@@ -165,9 +165,9 @@
                                         <div class="price-prodect d-flex align-items-center justify-content-between">
                                             <p class="total">total</p>
                                             {% if request.session.totalmoney%}
-                                            <p class="total-price">{{request.session.totalmoney}}</p>
+                                            <span class="total-price">$<span class="total-price">{{request.session.totalmoney}}</span></span>
                                             {% else%}
-                                            <p class="total-price">$0</p>
+                                            <span class="total-price">$0</span>
                                             {% endif%}
                                         </div>
                                         <div class="cart-btn">

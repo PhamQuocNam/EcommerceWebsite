@@ -31,6 +31,7 @@
     <link href="{% static 'css/responsive.css' %}" type="text/css" rel="stylesheet">
     <title>ATZ Shop - Online Shopping Store HTML Template</title>
 
+    
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-106310707-1"></script>
     <script>
@@ -359,131 +360,47 @@
                     <div class="checkout-process">
                         <div id="accordion" class="checkout-parts accordion">
                             <form role="form" action="" method="post">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5>
-                                            <a class="btn btn-link" data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><span>01</span>Checkout Method</a>
-                                        </h5>
-                                    </div>
-                                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                                        <div class="card-body">
-                                            <div class="check-tab">
-                                                <div class="row">
-                                                    <div class="new-cous col-md-6">
-                                                        <div class="form-title">
-                                                            {% if user.is_authenticated %}
-                                                            <p>As your account is logged in, You can pass this step<p>
-                                                            {% else%}
-                                                            <p>New Customer</p>
-                                                        </div>
-                                                        <div class="chek-form">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" required type="radio" name="ddd" id="12" value="option1" checked>
-                                                                <label class="form-check-label" for="12">Register Account</label>
-                                                            </div>
-
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="ddd" id="13" value="option2">
-                                                                <label class="form-check-label" for="13">Stay as Guest</label>
-                                                            </div>
-                                                            
-                                                        </div>
-                                                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in</p>
-                                                        <button class="btn btn-primary btn-next" type="button">Continue</button>
-                                                    </div>
-                                                    <div class="checkout-form col-md-6">
-                                                        <div class="form-title">
-                                                            <p>login</p>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Email</label>
-                                                            <input class="form-control" placeholder="Enter Your Name" value="" type="email">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Password</label>
-                                                            <input class="form-control" placeholder="Enter Your Password" value="" type="password">
-                                                        </div>
-                                                        <div class="form-group forgot-password">
-                                                            <a href="#">Forgot Password!</a>
-                                                        </div>
-                                                        <div class="form-group form-wizard-buttons">
-                                                            <button class="btn btn-primary btn-submit" type="submit">Login Now</button>
-                                                        </div>
-                                                        {% endif%}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% if request.user.is_authenticated%}
                                 <div class="card">
                                     <div class="card-header form-wizard-step">
                                         <h5>
-                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><span>02</span>Billing information</a>
+                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span>01</span>Shipping information</a>
                                         </h5>
                                     </div>
-                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                                         <div class="card-body">
                                             <div class="check-tab">
                                                 <div class="checkout-form">
                                                     <div class="row">
                                                         <div class="form-group col-md-6">
                                                             <label>First name <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Name" value="" type="text">
+                                                            <input class="form-control required" placeholder="Enter Your Name" value="{{request.user.first_name}}" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label>Last name <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Last Name" value="" type="text">
+                                                            <input class="form-control required" placeholder="Enter Your Last Name" value="{{request.user.last_name}}" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label>Email <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your email" value="" type="email">
+                                                            <input class="form-control required" placeholder="Enter Your email" value="{{request.user.email}}" type="email">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label>Phone Number <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Phone Number" value="" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Company name <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Company Name" value="" type="text">
+                                                            <input class="form-control required" placeholder="Enter Your Phone Number" value="{{request.user.Phone}}" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label>Address <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Address" value="" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Select Your Country <span class="required_sign">*</span></label>
-                                                            <select class="js-example-placeholder-single js-states form-control" data-placeholder="Select Your Country">
-                                                        <option></option>
-                                                        <option value="1">india</option>
-                                                        <option value="2">china</option>
-                                                        <option value="3">United States (US)</option>
-                                                        <option value="4">United Kingdome (UK)</option>
-                                                        <option value="5">Canada</option>
-                                                        <option value="6">U.A.E</option>
-                                                    </select>
+                                                            <input class="form-control required" placeholder="Enter Your Address" value="{{user_address.Address}}" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
                                                             <label>City <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your City" value="" type="text">
+                                                            <input class="form-control required" placeholder="Enter Your City" value="{{user_address.City}}" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label>State <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your State" value="" type="text">
+                                                            <label>Country <span class="required_sign">*</span></label>
+                                                            <input class="form-control required" placeholder="Enter Your Country" value="{{user_address.Country}}" type="text">
                                                         </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Zipcode <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Zipcode" value="" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-6">
-                                                            <div class="form-check mt-md-3">
-                                                                <label>Ship to same address as billing
-                                                            <input class="defult-check" type="checkbox" checked="checked">
-                                                            <span class="checkmark"></span>
-                                                        </label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group col-md-6">
+                                                        <div class="form-group col-md-12">
                                                             <div class="form-wizard-buttons text-md-right">
                                                                 <button class="btn btn-primary btn-submit btn-next" type="button">Continue</button>
                                                             </div>
@@ -494,10 +411,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% else%}
                                 <div class="card">
                                     <div class="card-header form-wizard-step">
                                         <h5>
-                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span>03</span>Shipping information</a>
+                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span>01</span>Shipping information</a>
                                         </h5>
                                     </div>
                                     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
@@ -522,41 +440,19 @@
                                                             <input class="form-control required" placeholder="Enter Your Phone Number" value="" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label>Company name <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Company Name" value="" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-6">
                                                             <label>Address <span class="required_sign">*</span></label>
                                                             <input class="form-control required" placeholder="Enter Your Address" value="" type="text">
                                                         </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Select Your Country <span class="required_sign">*</span></label>
-                                                            <select class="js-example-placeholder-single js-states form-control" data-placeholder="Select Your Country">
-                                                            <option></option>
-                                                            <option value="1">india</option>
-                                                            <option value="2">china</option>
-                                                            <option value="3">United States (US)</option>
-                                                            <option value="4">United Kingdome (UK)</option>
-                                                            <option value="5">Canada</option>
-                                                            <option value="6">U.A.E</option>
-                                                        </select>
-                                                        </div>
+                                                        
                                                         <div class="form-group col-md-6">
                                                             <label>City <span class="required_sign">*</span></label>
                                                             <input class="form-control required" placeholder="Enter Your City" value="" type="text">
                                                         </div>
                                                         <div class="form-group col-md-6">
-                                                            <label>State <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your State" value="" type="text">
+                                                            <label>Country <span class="required_sign">*</span></label>
+                                                            <input class="form-control required" placeholder="Enter Your Country" value="" type="text">
                                                         </div>
-                                                        <div class="form-group col-md-6">
-                                                            <label>Zipcode <span class="required_sign">*</span></label>
-                                                            <input class="form-control required" placeholder="Enter Your Zipcode" value="" type="text">
-                                                        </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Spacial requests</label>
-                                                            <textarea rows="3" class="form-control" placeholder="Write Your Spacial Requests"></textarea>
-                                                        </div>
+                                                        
                                                         <div class="form-group col-md-12">
                                                             <div class="form-wizard-buttons text-md-right">
                                                                 <button class="btn btn-primary btn-submit btn-next" type="button">Continue</button>
@@ -568,10 +464,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif%}
                                 <div class="card ord_tab">
                                     <div class="card-header form-wizard-step">
                                         <h5>
-                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"><span>04</span>Order review</a>
+                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"><span>02</span>Order review</a>
                                         </h5>
                                     </div>
 
@@ -619,8 +516,12 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span></span>
+                                            <div class="form-group col-md-12">
+                                                <label>Note</label>
+                                                <textarea rows="3" class="form-control" placeholder="Write Your Spacial Requests"></textarea>
+                                            </div>
                                             <div class="form-wizard-buttons text-md-right">
+                                                
                                                 <button class="btn btn-primary btn-next" type="button">Continue</button>
                                             </div>
                                         </div>
@@ -630,7 +531,7 @@
                                 <div class="card">
                                     <div class="card-header form-wizard-step">
                                         <h5>
-                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour"><span>05</span>Payment Method</a>
+                                            <a class="btn btn-link collapsed" data-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour"><span>03</span>Payment Method</a>
                                         </h5>
                                     </div>
                                     <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
@@ -638,39 +539,61 @@
                                             <div class="check-tab">
                                                 <div class="checkout-form">
                                                     <div class="chek-form">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" required type="radio" name="payment_option" id="exampleRadios3" value="option3" checked>
-                                                            <label class="form-check-label" for="exampleRadios3">Direct Bank Transfer</label>
-                                                            <p data-method="option3" class="payment-text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly
-                                                                believable. </p>
+                                                        <!-- Pay On Delivery Option -->
+                                                        <div class="form-check payment-option">
+                                                            <input class="form-check-input" required type="radio" name="payment_option" id="payOnDelivery" value="pay_on_delivery">
+                                                            <label class="form-check-label" for="payOnDelivery">Pay On Delivery</label>
+                                                            <div class="payment-details" id="payOnDeliveryDetails">
+                                                                <p>Pay with cash when your order is delivered. Please have exact amount ready.</p>
+                                                                <div class="alert alert-info">
+                                                                    <strong>Note:</strong> An additional $2.00 cash handling fee may apply.
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios5" value="option5">
-                                                            <label class="form-check-label" for="exampleRadios5">Paypal</label>
-                                                            <p data-method="option5" class="payment-text">
-                                                                Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.
-                                                            </p>
+                                                        
+                                                        <!-- Bank Transfer Option -->
+                                                        <div class="form-check payment-option">
+                                                            <input class="form-check-input" required type="radio" name="payment_option" id="bankTransfer" value="bank_transfer">
+                                                            <label class="form-check-label" for="bankTransfer">Direct Bank Transfer</label>
+                                                            <div class="payment-details" id="bankTransferDetails">
+                                                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference.</p>
+                                                                <div class="bank-info">
+                                                                    <h6>Our Bank Details:</h6>
+                                                                    <ul>
+                                                                        <li><strong>Bank Name:</strong> Example Bank</li>
+                                                                        <li><strong>Account Name:</strong> ATZ Shop Inc.</li>
+                                                                        <li><strong>Account Number:</strong> 1234567890</li>
+                                                                        <li><strong>SWIFT Code:</strong> EXMPUS33</li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- PayPal Option -->
+                                                        <div class="form-check payment-option">
+                                                            <input class="form-check-input" type="radio" name="payment_option" id="paypalOption" value="paypal">
+                                                            <label class="form-check-label" for="paypalOption">PayPal</label>
+                                                            <div class="payment-details" id="paypalDetails">
+                                                                <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>                                
                             </form>
                         
                            
                         </div>
-
                             <div class="text-center" id="order-button-wrapper">
-                               
-                                <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Complete all steps to order</a>
-                                <div id="paypal-button-container" style="display: none; margin-top: 10px;">
+                                <div id="paypal-button-container" style="display: none; margin-top: 15px;">
                                     <div style="transform: scale(1.25); display: inline-block;">
                                         {{ paypal_payment_button.render }}
                                     </div>
                                 </div>
+                                <a href="#" class="btn btn-secondary btn-lg" id="place-order-btn">Complete all steps to order</a>  
                             </div>
                             
                     </div>
@@ -807,27 +730,55 @@
     <script src="{% static 'js/function.js' %}"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const radios = document.querySelectorAll('input[name="payment_option"]');
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hide all payment details initially
+            document.querySelectorAll('.payment-details').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            
+            // Show PayPal button container if PayPal is selected
             const paypalContainer = document.getElementById("paypal-button-container");
-            const placeOrderBtn = document.getElementById("place-order-btn");
-        
-            radios.forEach(radio => {
-                radio.addEventListener("change", function () {
-                    if (this.value === "option5") {
-                        // Nếu chọn PayPal → ẩn nút đặt hàng, hiện PayPal
-                        placeOrderBtn.style.display = "none";
-                        paypalContainer.style.display = "block";
+            
+            // Handle radio button changes
+            document.querySelectorAll('input[name="payment_option"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    // Hide all payment details
+                    document.querySelectorAll('.payment-details').forEach(function(el) {
+                        el.style.display = 'none';
+                    });
+                    
+                    // Show the selected payment details
+                    const detailsId = this.id + 'Details';
+                    const detailsElement = document.getElementById(detailsId);
+                    if (detailsElement) {
+                        detailsElement.style.display = 'block';
+                    }
+                    
+                    // Special handling for PayPal
+                    if (this.id === 'paypalOption') {
+                        paypalContainer.style.display = 'inline-block';
+                        document.getElementById('place-order-btn').style.display = 'none';
+                        document.getElementById('place-order-btn').textContent = 'Place Order';
                     } else {
-                        // Nếu chọn phương thức khác → hiện lại nút đặt hàng
-                        placeOrderBtn.style.display = "inline-block";
-                        placeOrderBtn.textContent = "Transfer Money";
-                        paypalContainer.style.display = "none";
+                        paypalContainer.style.display = 'none';
+                        document.getElementById('place-order-btn').style.display = 'inline-block';
+                        
+                        if (this.id === 'bankTransfer') {
+                            document.getElementById('place-order-btn').textContent = 'Confirm Bank Transfer';
+                        } else {
+                            document.getElementById('place-order-btn').textContent = 'Place Order';
+                        }
                     }
                 });
             });
+            
+            // Trigger change event if a payment method is already selected
+            const selectedPayment = document.querySelector('input[name="payment_option"]:checked');
+            if (selectedPayment) {
+                selectedPayment.dispatchEvent(new Event('change'));
+            }
         });
-        </script>
+    </script>
 </body>
 
 </html>

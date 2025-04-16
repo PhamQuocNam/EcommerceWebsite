@@ -16,6 +16,8 @@ import uuid
 from taggit.models import Tag
 from .AI_model import Answer_Question, Recommendation_System_Type_1
 from userauths.models import Profile
+from django.contrib.auth.hashers import check_password
+from django.contrib import messages
 
 
 # Create your views here.
@@ -291,6 +293,8 @@ def checkout_view(request):
         'cancel_return': f'http://{host}{reverse("core:payment-failed")}',
         'custom': "Order",
     }
+    user_address= Address.objects.filter(user=request.user).first()
+    
     paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
 
     if 'cart_data_obj' in request.session:
@@ -302,6 +306,7 @@ def checkout_view(request):
                 "totalcartitem": len(cart_data),
                 "cart_total_amount": cart_total_amount,
                 "paypal_payment_button": paypal_payment_button,
+                "user_address": user_address
             }
         )
 
@@ -341,14 +346,12 @@ def response(request):
 
 def profile_view(request):
        
-    profile = Profile.objects.get(user = request.user)
-    context= {
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    context = {
         'profile': profile
     }
-    
-    
     return render(request, 'core/profile.html', context)
-
+    
 
 def address_view(request):
     address = Address.objects.filter(user=request.user)
@@ -385,4 +388,24 @@ def track_order_view(request):
 
 def contact_view(request):
     return render(request, "core/contact.html")
+
+def change_password_view(request):
+    user = request.user
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if confirm_password != new_password:
+            messages.error(request, 'Confirm password does not match')
+            return redirect('core:change_password')
+        
+        if check_password(old_password,user.password):
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, 'Password changed successfully')
+            return redirect('core:profile')
+        else:
+            messages.error(request, 'Old password is incorrect')
+            return redirect('core:change_password')
+    return render(request, "core/change-password.html")
 

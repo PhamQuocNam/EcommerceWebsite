@@ -13,6 +13,7 @@ class User(AbstractUser):
     Bio = models.CharField(max_length=100) 
     Birthday = models.DateField(null=True, blank=True)
     Gender = models.CharField(choices=GENDER_CHOICE, max_length=10, default='other')
+    Phone= models.CharField(max_length=15, default="911", null=True)
     USERNAME_FIELD= 'email'
     REQUIRED_FIELDS= ['username']
     
