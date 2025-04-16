@@ -18,7 +18,6 @@ urlpatterns=[
     path("cart/", cart_view, name="cart"),
     path("delete-from-cart/", delete_item_from_cart, name="delete-from-cart"),
     path("checkout/", checkout_view, name="checkout"),
-    path('response/', response, name='response'),
     path("update-items-cart/", update_items_cart , name="update-items-cart"),
     path("paypal/", include("paypal.standard.ipn.urls")),
     path("payment-completed/", payment_completed_view , name="payment-completed"),

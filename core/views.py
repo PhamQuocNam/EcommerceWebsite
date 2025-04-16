@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 from paypal.standard.forms import PayPalPaymentsForm
 import uuid
 from taggit.models import Tag
-from .AI_model import Answer_Question, Recommendation_System_Type_1
 from userauths.models import Profile
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
@@ -25,10 +24,7 @@ from django.contrib import messages
 
 def index(request):
     categories = Product_Category.objects.all()
-    products= Product.objects.all()
-    recommended_ids= Recommendation_System_Type_1()
-    recommended_products = list(Product.objects.filter(id__in=recommended_ids))
-    
+    products= Product.objects.all()    
     saleoff_products = Product.objects.filter(discount__Active=True)
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
     fruit_products = Product.objects.filter(category__ID_Product_Category="CAT001")
@@ -37,7 +33,6 @@ def index(request):
     context ={
      "products": products,
      "categories": categories,
-     "recommended_products": recommended_products,
      "dessert_products": dessert_products,
      "fruit_products":fruit_products,
      'saleoff_products': saleoff_products,
@@ -326,23 +321,6 @@ def payment_completed_view(request):
     
 def payment_failed_view(request):
     return render(request, "core/payment-failed.html")
-
-
-
-@csrf_exempt
-def response(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        message = data.get('message', '')
-        answer = Answer_Question(message)
-        # new_chat = Chat(message=message, response=answer)
-        # new_chat.save()
-        return JsonResponse({'response': answer})
-    
-    return JsonResponse({'response': 'Invalid request'}, status=400)
-
-
-
 
 def profile_view(request):
        
