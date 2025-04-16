@@ -44,7 +44,7 @@ class Discount(models.Model):
     Desc= models.TextField(null=True, blank=True, default ='This is the discount')
     Discount_Percent = models.DecimalField(max_digits=10, decimal_places=2, default="0.1")
     Active = models.BooleanField(default=False)
-    
+    Image = models.ImageField(upload_to='campaign-image', null=True)
     class Meta:
         verbose_name_plural= "Discounts"
     
@@ -69,6 +69,7 @@ class Discount(models.Model):
 class Product_Inventory(models.Model):
     ID_Product_Inventory= ShortUUIDField(unique=True, length=10, max_length=20, prefix='INVENTORY',alphabet='abcdefgh12345' )    
     Name = models.CharField(max_length=100)
+    Unit= models.CharField(max_length=100, default='Kilogram')
     Quantity = models.IntegerField()
     Updated =  models.DateTimeField(null=True, blank=True)
     
@@ -128,9 +129,11 @@ class Product(models.Model):
         return mark_safe('<img src="%s" width="50" heigh="50" />' % (self.Image))
     
     def get_price(self):
-        if self.discount.Active ==True:
-            return self.Price*(1-self.discount.get_discount())
+        if self.discount == None:
+            return self.Price
         else:
+            if self.discount.Active:
+                return (1-self.discount.Discount_Percent)*self.Price
             return self.Price
 
     
@@ -256,6 +259,10 @@ class Salary(models.Model):
     
     class Meta:
         verbose_name_plural= 'Salaries'
+        
+        
+
+
         
     
     

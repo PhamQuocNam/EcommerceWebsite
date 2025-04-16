@@ -24,10 +24,22 @@ from userauths.models import Profile
 def index(request):
     categories = Product_Category.objects.all()
     products= Product.objects.all()
-    recommended= Recommendation_System_Type_1()
+    recommended_ids= Recommendation_System_Type_1()
+    recommended_products = list(Product.objects.filter(id__in=recommended_ids))
+    
+    saleoff_products = Product.objects.filter(discount__Active=True)
+    dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
+    fruit_products = Product.objects.filter(category__ID_Product_Category="CAT001")
+    
+    campaigns = Discount.objects.filter(Active=True)
     context ={
      "products": products,
-     "categories": categories
+     "categories": categories,
+     "recommended_products": recommended_products,
+     "dessert_products": dessert_products,
+     "fruit_products":fruit_products,
+     'saleoff_products': saleoff_products,
+     'campaigns': campaigns
     }
     
     return render(request,'core/index.html',context)
@@ -51,11 +63,12 @@ def product_list_view(request):
 
 
 def category_product_list_view(request, cid):
-    category= Product_Category.objects.get(ID_Product_Category=cid)
-    products = Product.objects.filter(category=category)
+    categories = Product_Category.objects.all()
+    related_category= Product_Category.objects.get(ID_Product_Category=cid)
+    products = Product.objects.filter(category=related_category)
     
     context = {
-        'category': category,
+        'categories': categories,
         'products':products
     }
     return render(request, "core/category-product-list.html", context)
@@ -130,12 +143,13 @@ def ajax_add_review(request, pid):
     
 def search_view(request):
     query = request.GET.get("q")
-    
+    categories = Product_Category.objects.all()
     products = Product.objects.filter(Name__icontains=query)
     
     context = {
         "products": products,
-        "query": query
+        "query": query,
+        "categories": categories
     }
     
     return render(request,  "core/search.html", context)
@@ -246,19 +260,19 @@ def update_items_cart(request):
                     request.session['cart_data_obj'] = cart_data
             
             cart_total_amount += product_qty * float(cart_data[product_id]['Price'])
-    
+    request.session['totalmoney']= cart_total_amount
     
     context = render_to_string("core/cart-list.html", {
         "cart_data_obj": request.session['cart_data_obj'],
-        "totalcartitems": len(request.session['cart_data_obj']),
-        'cart_total_amount': cart_total_amount
+        "totalcartitems": len(request.session['cart_data_obj']),   
+        "totalmoney": cart_total_amount,
+         
     })
     
     return JsonResponse({
         "data": context,
         "cart_data_obj": request.session['cart_data_obj'],
         "totalcartitems": len(request.session['cart_data_obj']),
-        "totalmoney": cart_total_amount,
     })
     
  
@@ -366,4 +380,9 @@ def track_order_view(request):
     }
 
     return render(request, "core/track-order.html", context)
+
+
+
+def contact_view(request):
+    return render(request, "core/contact.html")
 

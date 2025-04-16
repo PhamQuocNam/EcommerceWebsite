@@ -43,7 +43,6 @@ def Recommendation_System_Type_1():
     
     # Calculate average rating per product
     rating = df[['product_id', 'Rating']].groupby('product_id').mean()
-    
     products= pd.DataFrame(df['product_id'].value_counts())
     
     # Merge rating with product dataframe
@@ -54,14 +53,15 @@ def Recommendation_System_Type_1():
     
     # Compute the minimum number of votes required to be considered (e.g., 70th percentile)
     m = df['product_id'].value_counts().quantile(0.7)
-
     
     qualified = products[products['count'] >= m].copy()
 
     # Compute weighted rating
     qualified['wr'] = qualified.apply(lambda x: weighted_rating(x, m, C), axis=1)
-   
     return qualified.sort_values('wr', ascending=False).index.values
+    
+    
+    
 
 def Recommendation_System_Type_2(product_ID):
     

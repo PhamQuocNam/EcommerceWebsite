@@ -62,16 +62,14 @@
 </head>
 
 <body>
-     <!-- LOADER -->
+    <!-- LOADER -->
     <div id="preloader">
         <div class="loading_wrap">
             <img src="{% static 'image/loader_logo.png' %}" alt="logo">
         </div>
-    </div>
-    <!-- LOADER --> 
+    </div> 
+    <!-- LOADER -->
 
-    <!-- Start Header Section -->
-   
     <!-- Start Header Section -->
     <header class="header-4">
         <div class="header-top">
@@ -87,7 +85,7 @@
                         <ul class="header_list text-md-right text-center">
                             {% if request.user.is_authenticated %}
                             <li><a href="#">Wishlist</a></li>
-                            <li><a href="#">My Account</a></li>
+                            <li><a href="{% url 'core:profile' %}">My Account</a></li>
                             <li><a href="{% url 'userauths:sign-out' %}" class="">Log out</a></li>
                             {% else%}
                             <li><a href="{% url 'userauths:sign-in' %}" class="">Log in</a></li>
@@ -112,55 +110,50 @@
     </script>     
 
         <div class="header-mdl">
-            <div class="header-mdl">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="hm-inner d-sm-flex align-items-center justify-content-between">
-                                <div class="header-logo">
-                                    <a href="index.html"><img src="static/image/logo.png" alt="logo"></a>
-                                </div>
-                                <form class="header-form" action="{% url 'core:search' %}" method="GET">
-                                    <input class="search-box" placeholder="Search Product..." name="q" type="search">
-                                    <button type="submit">Search</button>
-                                </form>
-                                <div class="header-right">
-                                    <div class="header-cart ">
-                                        <a href="#">
-                                            <div class="cart-icon">
-                                                <img src="{% static 'image/cart-icon.png' %}" alt="cart-icon">
-                                                
-                                                <span class='cart-items-count'>{{request.session.cart_data_obj|length}}</span>
-                                            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hm-inner d-sm-flex align-items-center justify-content-between">
+                            <div class="header-logo">
+                                <a href="index.html"><img src="static/image/logo.png" alt="logo"></a>
+                            </div>
+                            <form class="header-form" action="{% url 'core:search' %}" method="GET">
+                                <input class="search-box" placeholder="Search Product..." name="q" type="search">
+                                <button type="submit">Search</button>
+                            </form>
+                            <div class="header-right">
+                                <div class="header-cart ">
+                                    <a href="#">
+                                        <div class="cart-icon">
+                                            <img src="{% static 'image/cart-icon.png' %}" alt="cart-icon">
                                             
-                                            <i class="fa fa-angle-down"></i><span>
-                                           
-                                        </a>
+                                            <span class='cart-items-count'>{{request.session.cart_data_obj|length}}</span>
+                                        </div>
+                                        
+                                        <i class="fa fa-angle-down"></i><span>
+                                       
+                                    </a>
                                     <div class="cart-box">
+                                    
+                                        
                                         <div class="cart-info">
-                                            {% comment %} <div class="cart-prodect d-flex">
-                                                <div class="cart-img">
-                                                    <img src="static/image/cart-img-1.png" alt="cart-img">
-                                                </div>
-                                                <div class="cart-product">
-                                                    <a href="#">Ornare sed consequat</a>
-                                                    <p>$ 81.00</p>
-                                                </div>
-                                                <a href="#" class="close-icon d-flex align-items-center"><i class="ion-close"></i></a>
-                                            </div>
+
+                                            {% for pid, item in request.session.cart_data_obj.items %}
                                             <div class="cart-prodect d-flex">
                                                 <div class="cart-img">
-                                                    <img src="static/image/cart-img-2.png" alt="cart-img">
+                                                    <img src="{{item.Image}}" alt="cart-img" height="100px" width="100px">
                                                 </div>
                                                 <div class="cart-product">
-                                                    <a href="#">Pellentesque posuere</a>
-                                                    <p>$ 80.00</p>
+                                                    <a href="#">{{item.Name}}</a>
+                                                    <p>${{item.Price|floatformat:"2"}}</p>
                                                 </div>
                                                 <a href="#" class="close-icon d-flex align-items-center"><i class="ion-close"></i></a>
-                                            </div> {% endcomment %}
-                                            
-
+                                            </div>
+                                            {% endfor%}
+                            
                                         </div>
+
+
                                         <div class="price-prodect d-flex align-items-center justify-content-between">
                                             <p class="total">total</p>
                                             {% if request.session.totalmoney%}
@@ -170,7 +163,7 @@
                                             {% endif%}
                                         </div>
                                         <div class="cart-btn">
-                                        <a href="{% url 'core:cart' %}" class="btn btn-primary">View Cart</a>
+                                            <a href="{% url 'core:cart' %}" class="btn btn-primary">View Cart</a>
                                         </div>
                                     </div>
                                 </div>
@@ -226,7 +219,7 @@
                                             <ul class="d-lg-flex">
                                                 {% for c in categories%}
                                                 <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{c.Name}}<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
+                                                    <a class="menu-title dropdown-toggler"  href="{% url 'core:category-product-list' c.ID_Product_Category %}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{c.Name}}<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                                     <ul class="all-menu dropdown-menu">
                                                         {% for p in products%}
                                                         {% if p.category == c%}
@@ -237,62 +230,8 @@
                                                     </ul>
                                                 </li>
                                                 {% endfor%}
-                                                {% comment %} <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dresses<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Cocktail</a></li>
-                                                        <li><a href="shop-four-columns.html">Day</a></li>
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Sundresses</a></li>
-                                                        <li><a href="shop-three-columns.html">Sweater</a></li>
-                                                        <li><a href="shop-four-columns.html">Belts</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accessories<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Long Sleeved</a></li>
-                                                        <li><a href="shop-three-columns.html">Sort Sleeved</a></li>
-                                                        <li><a href="shop-four-columns.html">Sleeveless</a></li>
-                                                        <li><a href="shop-three-columns.html">Tanks  and Camis</a></li>
-                                                        <li><a href="shop-four-columns.html">T-shirts</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tops<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Cocktail</a></li>
-                                                        <li><a href="shop-four-columns.html">Day</a></li>
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Sundresses</a></li>
-                                                        <li><a href="shop-three-columns.html">Sweater</a></li>
-                                                        <li><a href="shop-four-columns.html">Belts</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accessories<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Long Sleeved</a></li>
-                                                        <li><a href="shop-three-columns.html">Sort Sleeved</a></li>
-                                                        <li><a href="shop-four-columns.html">Sleeveless</a></li>
-                                                        <li><a href="shop-three-columns.html">Tanks  and Camis</a></li>
-                                                        <li><a href="shop-four-columns.html">T-shirts</a></li>
-                                                    </ul>
-                                                </li> {% endcomment %}
+                                                
                                             </ul>
-                                            <div class="d-sm-flex">
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-2.jpg" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-3.jpg" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-2.jpg" alt="header-banner"></a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </li>
                                     <li>
@@ -382,7 +321,7 @@
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="contact.html">Contact</a>
+                                        <a class="nav-link" href="{% url 'core:contact' %}">Contact</a>
                                     </li>
                                 </ul>
                             </div>
@@ -438,8 +377,12 @@
                 <div class="col-md-7">
                     <div class="quickview-product-detail">
                         <h2 class="box-title">{{product.Name}}</h2>
-                        <h3 class="box-price"><del>${{product.Price}}</del><span class="cart-price">$<span class="cart-price current-product-price-{{product.ID_Product}}">{{product.get_price}}</span></span></h3>
-                        <p class="box-text">Fresh</p>
+                        {% if product.discount %}
+                        <h3 class="box-price"><del>${{product.Price}}</del><span class="cart-price">$<span class="cart-price current-product-price-{{product.ID_Product}}"><strong>{{product.get_price|floatformat:"2"}}</strong></span></span></h3>
+                        {% else%}
+                        <h3 class="box-price"><span class="cart-price">$<span class="cart-price current-product-price-{{product.ID_Product}}"><strong>{{product.get_price|floatformat:"2"}}</strong></span></span></h3>
+                        {% endif%}
+                        <p class="box-text">Unit: {{product.inventory.Unit}}</p>
                         <li>{% for tag in product.Tags.all%} <a href="#">#{{tag.name}}</a> {% endfor%} </li>
                         {% if product.get_quantity != 0 %}
                         <p class="stock">Availability: <span>In Stock</span></p>
@@ -504,7 +447,7 @@
                                     <h6>Discription</h6>
                                 </div>
                                 <div class="tab-caption">
-                                    <p>{{product.Desc}}</p>
+                                    <p>{{product.Desc|safe}}</p>
                                 </div>
                             </div>
                             <div class="tab-pane fade tab-2" id="ai" role="tabpanel" aria-labelledby="ai-tab">
@@ -542,26 +485,6 @@
                                         {% endfor%}
 
 
-                                        {% comment %} <div class="costomer-reviews-box">
-                                            <div class="reviews-img">
-                                                <img src="{% static 'image/costomer-img.jpg" alt="costomer-img' %}">
-                                            </div>
-                                            <div class="reviews-text">
-                                                <p class="reviewer-name">admin</p>
-                                                <span class="reviews-date">September 13, 2017</span>
-                                                <p class="reviewer-text">24/7 helpdesk is also available. I Love it!</p>
-                                            </div>
-                                        </div>
-                                        <div class="costomer-reviews-box">
-                                            <div class="reviews-img">
-                                                <img src="{% static 'image/costomer-img.jpg' %}" alt="costomer-img">
-                                            </div>
-                                            <div class="reviews-text">
-                                                <p class="reviewer-name">admin</p>
-                                                <span class="reviews-date">September 13, 2017</span>
-                                                <p class="reviewer-text">24/7 helpdesk is also available. I Love it!</p>
-                                            </div>
-                                        </div> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="tab-caption">
@@ -611,7 +534,12 @@
                                     <img src="{{p.Image.url}}" height=300px width=300px>
                                     <div class="hover-option">
                                         <div class="add-cart-btn">
-                                            <a href="#" class="btn btn-primary">Add To Cart</a>
+                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}">
+                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}" value={{p.ID_Product}}>
+                                            <input  type="hidden" class="product-image-{{p.ID_Product}}" value="{{p.Image.url}}">
+                                            <input  type="hidden" class="product-name-{{p.ID_Product}}" value ="{{p.Name}}">
+                                        
+                                            <button class="btn btn-primary add-to-cart-btn" id="add-to-cart-btn" data-index="{{p.ID_Product}}"> Add To Cart</button>
                                         </div>
                                         <ul class="hover-icon">
                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
@@ -622,7 +550,12 @@
                                 </div>
                                 <div class="product-info common-cart-info text-center">
                                     <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
-                                    <p class="cart-price"><del>{{p.Price}}</del>{{p.get_price}}</p>
+                                    
+                                    {% if p.discount %}
+                                    <div><del>${{p.Price}} </del><span class="cart-price ">$<span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
+                                    {% else%}
+                                    <div><span class="cart-price">$<span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
+                                    {% endif%}
                                 </div>
                             </div>
                         </div>
@@ -636,60 +569,72 @@
     <!-- End Related Product Section -->
 
     <!-- Start Footer Section -->
-    <footer>
-        <div class="footer-top">
+    <footer class="m-0 p-0 footer-style-2">
+        <div class="footer-top bg-white border-bottom">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="footer-box box-1">
-                            <h6 class="fb-title">ABOUT US</h6>
-                            <div class="fb-iner">
+                    <div class="col-lg-4 col-md-12">
+                        <div class="footer_widget">
+                            <div class="footer-logo fb-title">
+                                <a href="index-3.html"><img src="static/image/logo.png" alt="logo"></a>
+                            </div>
+                            <div class="fb-iner mb-4">
                                 <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 order-md-last">
-                        <div class="footer-box box-4">
-                            <h6 class="fb-title">CONTACT INFO</h6>
-                            <div class="fb-iner">
+                            <div class="footer-social social_dark">
+                                <h6 class="fb-title">Follow Us</h6>
                                 <ul>
-                                    <li><i class="ion-ios-location-outline"></i>
-                                        <p>c/o Giunti International Division Via G.B. Pirelli, 30 20124 Milan</p>
-                                    </li>
-                                    <li><i class="ion-ios-telephone-outline"></i>
-                                        <p>+025 2155 3255</p>
-                                    </li>
-                                    <li><i class="ion-ios-email-outline"></i><a href="#">info@gmail.com</a></li>
+                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
                                 </ul>
                             </div>
                         </div>
+
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6">
-                        <div class="footer-box box-2">
+                    <div class="col-lg-2 col-sm-3 col-6">
+                        <div class="footer_widget">
                             <h6 class="fb-title">CATEGORIES</h6>
                             <div class="fb-iner">
                                 <ul class="footer-links">
-                                    <li><a href="#">Fashion Sneakers</a></li>
-                                    <li><a href="#">Jackets</a></li>
-                                    <li><a href="#">Outdoor Shop</a></li>
-                                    <li><a href="#">Pants</a></li>
-                                    <li><a href="#">Shirts & Tops</a></li>
-                                    <li><a href="#">Swim Shop</a></li>
-                                    <li><a href="#">Swimwear</a></li>
+                                    {% for c in categories%}
+                                    <li>
+                                        <a href="#">{{c.Name}}</a>
+                                    </li>
+                                    {% endfor %}
+
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6">
-                        <div class="footer-box box-3">
-                            <h6 class="fb-title">MY ACCOUNT</h6>
+
+                    <div class="col-lg-2 col-sm-3 col-6">
+                        <div class="footer_widget">
+                            <h6 class="fb-title">POLICY</h6>
                             <div class="fb-iner">
                                 <ul class="footer-links">
-                                    <li><a href="#">Orders</a></li>
-                                    <li><a href="#">Compare</a></li>
-                                    <li><a href="#">Wishlist</a></li>
-                                    <li><a href="#">Log In</a></li>
-                                    <li><a href="#">Register</a></li>
+                                    <li><a href="#">Return Policy</a></li>
+                                    <li><a href="#">Terms Of Use</a></li>
+                                    <li><a href="#">Security</a></li>
+                                    <li><a href="#">Privacy</a></li>
+                                    <li><a href="#">Sitemap</a></li>
+                                    <li><a href="#">EPR Compliance</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3 col-6">
+                        <div class="footer_widget">
+                            <h6 class="fb-title">HELP</h6>
+                            <div class="fb-iner">
+                                <ul class="footer-links">
+                                    <li><a href="#">Payments</a></li>
+                                    <li><a href="#">Shipping</a></li>
+                                    <li><a href="#">Cancellation & Returns</a></li>
+                                    <li><a href="#">FAQ</a></li>
+                                    <li><a href="#">Report Infringement</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -697,23 +642,53 @@
                 </div>
             </div>
         </div>
-        <div class="footer-btm">
+        <div class="footer-btm bg-white">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="contact-box">
+                            <div class="contact-icon">
+                                <i class="fa fa-map-marker"></i>
+                            </div>
+                            <div class="contact-wrap">
+                                <p>c/o Giunti International Division Via G.B. Pirelli</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="contact-box">
+                            <div class="contact-icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="contact-wrap">
+                                <p>+025 2155 3255</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="contact-box">
+                            <div class="contact-icon">
+                                <i class="fa fa-envelope"></i>
+                            </div>
+                            <div class="contact-wrap">
+                                <a href="#">info@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-last navy-dark-bg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-7">
                         <div class="copyright">
                             <p>Copyright © 2018. All Rights Reserved.</p>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="footer-social text-md-right">
-                            <ul>
-                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                                <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
-                                <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                            </ul>
+                    <div class="col-sm-5 text-sm-right">
+                        <div class="payment-img">
+                            <img src="static/image/payment.png" alt="payment-img">
                         </div>
                     </div>
                 </div>
@@ -722,61 +697,7 @@
     </footer>
     <!-- End Footer Section -->
 
-    <!-- Start Quickview Popup Section -->
-    <div id="test-popup3" class="white-popup quickview-popup mfp-hide">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="product-image">
-                    <img class="product_img" src="{% static 'image/product1.png' %}" data-zoom-image="{% static 'image/product1.png' %}" />
-                </div>
-                <div id="product_gallery" class="product_gallery_item owl-thumbs-slider owl-carousel owl-theme">
-                    <div class="item">
-                        <a href="#" class="active" data-image="{% static 'image/product1.png' %}" data-zoom-image="{% static 'image/product1.png' %}">
-                        <img src="{% static 'image/product_small1.png' %}" />
-                    </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" data-image="{% static 'image/product2.png' %}" data-zoom-image="{% static 'image/product2.png' %}">
-                        <img src="{% static 'image/product_small2.png' %}" />
-                    </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="quickview-product-detail">
-                    <h2 class="box-title">Ornare sed consequat</h2>
-                    <h3 class="box-price"><del>$ 95.00</del>$ 81.00</h3>
-                    <p class="box-text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
-                    <p class="stock">Availability: <span>In Stock</span></p>
-                    <div class="quantity-box">
-                        <p>Quantity:</p>
-                        <div class="input-group">
-                            <input type="button" value="-" class="minus">
-                            <input class="quantity-number qty" type="text" value="1" min="1" max="10">
-                            <input type="button" value="+" class="plus">
-                        </div>
-                        <div class="quickview-cart-btn">
-                            <a href="#" class="btn btn-primary"><img src="{% static 'image/cart-icon-1.png" alt="cart-icon-1' %}"> Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="box-social-like d-sm-flex justify-content-between">
-                        <ul class="hover-icon box-like">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                        </ul>
-                        <ul class="hover-icon box-social">
-                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                            <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
-                            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Quickview Popup Section -->
+  
 
     <a href="#" class="scrollup" style="display: none;"><i class="ion-ios-arrow-up"></i></a>
 

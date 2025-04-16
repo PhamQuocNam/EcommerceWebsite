@@ -27,7 +27,7 @@ $("#commentForm").submit(function(e){
 $(".add-to-cart-btn").on("click", function(){
 
     let this_val =  $(this)
-    let index = this_val.attr("data-index")
+    let index = this_val.attr("data-index");
     
     let  quantity = $(".product-quantity-"+ index).val()
     let product_name = $(".product-name-" +index).val()

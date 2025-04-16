@@ -63,8 +63,8 @@
 
 <body class="theme-4">
 
-      <!-- LOADER -->
-      <div id="preloader">
+    <!-- LOADER -->
+    <div id="preloader">
         <div class="loading_wrap">
             <img src="{% static 'image/loader_logo.png' %}" alt="logo">
         </div>
@@ -84,27 +84,98 @@
                     </div>
                     <div class="col-md-6">
                         <ul class="header_list text-md-right text-center">
-                            <li><a href="#test-popup1" class="open-popup-link">Login</a>
-                                <div id="test-popup1" class="white-popup lr-popup mfp-hide text-center">
-                                    <h4>Login</h4>
-                                    <form class="subscribe-popup-form" method="post" method="POST" action="#">
-                                        {% csrf_token %}
-                                        <input name="email" required name="email" placeholder="Enter Your Email">
-                                        <input name="password" required name="password" placeholder="Enter Your Password">
-                                        <div class="form-check text-left">
-                                        <label>Remember me
-                                        <input class="defult-check" type="checkbox" checked="checked">
-                                        <span class="checkmark"></span>
-                                        </label>
-                                        <a href="#" class="forgot-password float-right">Forgot Password ?</a>
-                                        </div>
-                                        <button class="btn btn-primary" title="Login" type="submit">Login</button>
-                                    </form>
-                                    <h6>Don't have an account?</h6>
-                                    <a href="{% url 'userauths:sign-up' %}" >Click here to Sign up</a>
-                                </div>
-                            </li>
+                            {% if request.user.is_authenticated %}
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="{% url 'core:profile' %}">My Account</a></li>
+                            <li><a href="{% url 'userauths:sign-out' %}" class="">Log out</a></li>
+                            {% else%}
+                            <li><a href="{% url 'userauths:sign-in' %}" class="">Log in</a></li>
+                            {% endif %}
                         </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">
+            <strong>{{message}}</strong>
+            </div>
+        {% endfor %}
+    {% endif%}
+    <script>
+        setTimeout(() =>{
+            $(".alert").alert("close");
+        },1000)
+    </script>     
+
+        <div class="header-mdl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hm-inner d-sm-flex align-items-center justify-content-between">
+                            <div class="header-logo">
+                                <a href="index.html"><img src="static/image/logo.png" alt="logo"></a>
+                            </div>
+                            <form class="header-form" action="{% url 'core:search' %}" method="GET">
+                                <input class="search-box" placeholder="Search Product..." name="q" type="search">
+                                <button type="submit">Search</button>
+                            </form>
+                            <div class="header-right">
+                                <div class="header-cart ">
+                                    <a href="#">
+                                        <div class="cart-icon">
+                                            <img src="{% static 'image/cart-icon.png' %}" alt="cart-icon">
+                                            
+                                            <span class='cart-items-count'>{{request.session.cart_data_obj|length}}</span>
+                                        </div>
+                                        
+                                        <i class="fa fa-angle-down"></i><span>
+                                       
+                                    </a>
+                                    <div class="cart-box">
+                                    
+                                        
+                                        <div class="cart-info">
+
+                                            {% for pid, item in request.session.cart_data_obj.items %}
+                                            <div class="cart-prodect d-flex">
+                                                <div class="cart-img">
+                                                    <img src="{{item.Image}}" alt="cart-img" height="100px" width="100px">
+                                                </div>
+                                                <div class="cart-product">
+                                                    <a href="#">{{item.Name}}</a>
+                                                    <p>${{item.Price|floatformat:"2"}}</p>
+                                                </div>
+                                                <a href="#" class="close-icon d-flex align-items-center"><i class="ion-close"></i></a>
+                                            </div>
+                                            {% endfor%}
+                            
+                                        </div>
+
+
+                                        <div class="price-prodect d-flex align-items-center justify-content-between">
+                                            <p class="total">total</p>
+                                            {% if request.session.totalmoney%}
+                                            <p class="total-price">{{request.session.totalmoney}}</p>
+                                            {% else%}
+                                            <p class="total-price">$0</p>
+                                            {% endif%}
+                                        </div>
+                                        <div class="cart-btn">
+                                            <a href="{% url 'core:cart' %}" class="btn btn-primary">View Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-lg-none mm_icon">
+                                    <div class="form-captions" id="search">
+                                        <button type="submit" class="submit-btn-2"><i class="fa fa-search"></i></button>
+                                    </div>
+                                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,62 +218,21 @@
                                         <a class="nav-link dropdown-toggler" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                         <div class="sub-menu mega-menu dropdown-menu">
                                             <ul class="d-lg-flex">
+                                                {% for c in categories%}
                                                 <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dresses<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
+                                                    <a class="menu-title dropdown-toggler"  href="{% url 'core:category-product-list' c.ID_Product_Category %}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{c.Name}}<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
                                                     <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Cocktail</a></li>
-                                                        <li><a href="shop-four-columns.html">Day</a></li>
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Sundresses</a></li>
-                                                        <li><a href="shop-three-columns.html">Sweater</a></li>
-                                                        <li><a href="shop-four-columns.html">Belts</a></li>
+                                                        {% for p in products%}
+                                                        {% if p.category == c%}
+                                                        <li><a href="{% url 'core:product-detail' p.ID_Product %}">{{p.Name}}</a></li>
+                                                        {% else%}
+                                                        {% endif%}
+                                                        {% endfor %}
                                                     </ul>
                                                 </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accessories<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Long Sleeved</a></li>
-                                                        <li><a href="shop-three-columns.html">Sort Sleeved</a></li>
-                                                        <li><a href="shop-four-columns.html">Sleeveless</a></li>
-                                                        <li><a href="shop-three-columns.html">Tanks  and Camis</a></li>
-                                                        <li><a href="shop-four-columns.html">T-shirts</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tops<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Cocktail</a></li>
-                                                        <li><a href="shop-four-columns.html">Day</a></li>
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Sundresses</a></li>
-                                                        <li><a href="shop-three-columns.html">Sweater</a></li>
-                                                        <li><a href="shop-four-columns.html">Belts</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li class="submenu-links dropdown col-lg-3">
-                                                    <a href="#" class="menu-title dropdown-toggler" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accessories<i class="fa fa-angle-down"></i><i class="fa fa-angle-right"></i></a>
-                                                    <ul class="all-menu dropdown-menu">
-                                                        <li><a href="shop-three-columns.html">Evening</a></li>
-                                                        <li><a href="shop-four-columns.html">Long Sleeved</a></li>
-                                                        <li><a href="shop-three-columns.html">Sort Sleeved</a></li>
-                                                        <li><a href="shop-four-columns.html">Sleeveless</a></li>
-                                                        <li><a href="shop-three-columns.html">Tanks  and Camis</a></li>
-                                                        <li><a href="shop-four-columns.html">T-shirts</a></li>
-                                                    </ul>
-                                                </li>
+                                                {% endfor%}
+                                                
                                             </ul>
-                                            <div class="d-sm-flex">
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="{% static 'image/header-banner-2.jpg' %}" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="{% static 'image/header-banner-3.jpg' %}" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="{% static 'image/header-banner-2.jpg' %}" alt="header-banner"></a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </li>
                                     <li>
@@ -237,7 +267,7 @@
                                                         <li><a href="my-account.html">My Account</a></li>
                                                     </ul>
                                                 </li>
-                                                <li class="submenu-img col-lg-3"><a href="#"><img src="{% static 'image/header-banner.jpg' %}" alt="banner"></a></li>
+                                                <li class="submenu-img col-lg-3"><a href="#"><img src="static/image/header-banner.jpg" alt="banner"></a></li>
                                             </ul>
                                         </div>
                                     </li>
@@ -292,7 +322,7 @@
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="contact.html">Contact</a>
+                                        <a class="nav-link" href="{% url 'core:contact' %}">Contact</a>
                                     </li>
                                 </ul>
                             </div>
@@ -306,45 +336,40 @@
     
 
 
-<section>
+    <section class="pt_large pb_large">
         <div class="container">
             <div class="row">
-                <div class="col-lg-9">
-                    <div class="left-side-section">
-                        <!-- Start Deals Section -->
-                         <div class="products-section pt_small pb_small">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="title">
-                                        <h4>POPULAR PRODUCTS</h4>
+                <div class="col-12">
+                    <div class="title text-center">
+                        <h4>CATEGORIES</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
+                        {% for c in categories%}
+                        <div class="item">
+                            <div class="product-box common-cart-box">
+                                <div class="product-img common-cart-img same-hover">
+                                    <a href="{% url 'core:category-product-list' c.ID_Product_Category %}">
+                                        <img src="{{ c.Image.url}}" alt="product-img" height="300px" width="300px">
+                                    </a>
+                                    <div class="hover-option">
+                                        <div class="add-cart-btn">
+                                            <a href="{% url 'core:category-product-list' c.ID_Product_Category %}" class="btn btn-primary">View Products</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product-info common-cart-info text-center">
+                                    <a href="{% url 'core:category-product-list' c.ID_Product_Category %}" class="cart-name">{{c.Name}}</a>
+                                    <div class="product-rate">
+                                        <span>{{c.category.count}} Products</span>
                                     </div>
                                 </div>
                             </div>
-                        <div class="products-section pb_small">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
-
-                                        {% for c in categories%}
-                                        <div class="item" style='display:flex; gap:40px'>
-                                            <div class="product-box common-cart-box"  >
-                                                <div class="product-img common-cart-img" >
-                                                    <img href="{% url 'core:category-product-list' c.ID_Product_Category %}" src="{{ c.Image.url}}" alt="product-img" width="300px" height="250px">
-                                                </div>
-                                            
-                                                <div class="product-info common-cart-info">
-                                                    <a href="{% url 'core:category-product-list' c.ID_Product_Category %}" class="cart-name">{{c.Name}}</a>
-                                                    <div class="product-rate">
-                                                        <span>{{c.category.count}} Products</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                         {% endfor %}
-                                    </div>
-                                 </div>
-                            </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -359,7 +384,7 @@
                     <div class="col-lg-4 col-md-12">
                         <div class="footer_widget">
                             <div class="footer-logo fb-title">
-                                <a href="index-3.html"><img src="{% static 'image/logo.png' %}" alt="logo"></a>
+                                <a href="index-3.html"><img src="static/image/logo.png" alt="logo"></a>
                             </div>
                             <div class="fb-iner mb-4">
                                 <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
@@ -382,31 +407,17 @@
                             <h6 class="fb-title">CATEGORIES</h6>
                             <div class="fb-iner">
                                 <ul class="footer-links">
-                                    <li><a href="#">Fashion Sneakers</a></li>
-                                    <li><a href="#">Jackets</a></li>
-                                    <li><a href="#">Outdoor Shop</a></li>
-                                    <li><a href="#">Pants</a></li>
-                                    <li><a href="#">Shirts &amp; Tops</a></li>
-                                    <li><a href="#">Swim Shop</a></li>
-                                    <li><a href="#">Swimwear</a></li>
+                                    {% for c in categories%}
+                                    <li>
+                                        <a href="#">{{c.Name}}</a>
+                                    </li>
+                                    {% endfor %}
+
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-sm-3 col-6">
-                        <div class="footer_widget">
-                            <h6 class="fb-title">MY ACCOUNT</h6>
-                            <div class="fb-iner">
-                                <ul class="footer-links">
-                                    <li><a href="#">Orders</a></li>
-                                    <li><a href="#">Compare</a></li>
-                                    <li><a href="#">Wishlist</a></li>
-                                    <li><a href="#">Log In</a></li>
-                                    <li><a href="#">Register</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-lg-2 col-sm-3 col-6">
                         <div class="footer_widget">
                             <h6 class="fb-title">POLICY</h6>
@@ -485,7 +496,7 @@
                     </div>
                     <div class="col-sm-5 text-sm-right">
                         <div class="payment-img">
-                            <img src="{% static 'image/payment.png' %}" alt="payment-img">
+                            <img src="static/image/payment.png" alt="payment-img">
                         </div>
                     </div>
                 </div>

@@ -93,7 +93,7 @@
                         <ul class="header_list text-md-right text-center">
                             {% if request.user.is_authenticated %}
                             <li><a href="#">Wishlist</a></li>
-                            <li><a href="#">My Account</a></li>
+                            <li><a href="{% url 'core:profile' %}">My Account</a></li>
                             <li><a href="{% url 'userauths:sign-out' %}" class="">Log out</a></li>
                             {% else%}
                             <li><a href="{% url 'userauths:sign-in' %}" class="">Log in</a></li>
@@ -149,11 +149,11 @@
                                             {% for pid, item in request.session.cart_data_obj.items %}
                                             <div class="cart-prodect d-flex">
                                                 <div class="cart-img">
-                                                    <img src="{{item.Image}}" alt="cart-img">
+                                                    <img src="{{item.Image}}" alt="cart-img" height="100px" width="100px">
                                                 </div>
                                                 <div class="cart-product">
                                                     <a href="#">{{item.Name}}</a>
-                                                    <p>${{item.Price}}</p>
+                                                    <p>${{item.Price|floatformat:"2"}}</p>
                                                 </div>
                                                 <a href="#" class="close-icon d-flex align-items-center"><i class="ion-close"></i></a>
                                             </div>
@@ -240,17 +240,6 @@
                                                 {% endfor%}
                                                 
                                             </ul>
-                                            <div class="d-sm-flex">
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-2.jpg" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-3.jpg" alt="header-banner"></a>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <a href="#" class="header-banner"><img src="static/image/header-banner-2.jpg" alt="header-banner"></a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </li>
                                     <li>
@@ -340,7 +329,7 @@
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="contact.html">Contact</a>
+                                        <a class="nav-link" href="{% url 'core:contact' %}">Contact</a>
                                     </li>
                                 </ul>
                             </div>
@@ -359,41 +348,26 @@
                 <div class="col-md-9">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item active slider-area background_bg" data-img-src="static/image/slider-img-4.jpg">
-                                <div class="banner_slide_content text-white">
-                                    <div class="slider-caption">
-                                        <h1 class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">SUMMER SALE</h1>
-                                        <p class="animation" data-animation="fadeInUp" data-animation-delay="0.6s">Get up to 50% off your shopping items tomorrow!</p>
-                                        <a href="shop.html" class="btn btn-primary rounded-0 animation" data-animation="fadeInUp" data-animation-delay="1s">Shop Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item slider-area background_bg" data-img-src="static/image/slider-img-5.jpg">
+                            {% for campaign in campaigns %}
+                            <div class="carousel-item slider-area background_bg {% if forloop.first %}active{% endif %}" data-img-src="{{ campaign.Image.url }}">
                                 <div class="banner_slide_content">
                                     <div class="slider-caption text-right">
-                                        <h1 class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">CHRISTMAS SALE</h1>
-                                        <p class="animation" data-animation="fadeInUp" data-animation-delay="0.6s">Get up to 50% off your shopping items tomorrow!</p>
-                                        <a href="shop.html" class="btn btn-primary rounded-0 animation" data-animation="fadeInUp" data-animation-delay="1s">Shop Now</a>
+                                        <h1 class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">{{ campaign.Name }}</h1>
+                                        <p class="animation" data-animation="fadeInUp" data-animation-delay="0.6s">{{ campaign.Desc }}</p>
+                                        <a href="#" class="btn btn-primary rounded-0 animation" data-animation="fadeInUp" data-animation-delay="1s">Shop Now</a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="carousel-item slider-area background_bg" data-img-src="static/image/slider-img-6.jpg">
-                                <div class="banner_slide_content text-white">
-                                    <div class="slider-caption text-center">
-                                        <h1 class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">50% OFF IN ALL PRODUCTS</h1>
-                                        <p class="animation" data-animation="fadeInUp" data-animation-delay="0.6s">Get up to 50% off your shopping items tomorrow!</p>
-                                        <a href="shop.html" class="btn btn-primary rounded-0 animation" data-animation="fadeInUp" data-animation-delay="1s">Shop Now</a>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
+                
                         <ol class="carousel-indicators carousel-style-2">
-                            <li data-target="#carouselExampleControls" data-slide-to="0" class="active"></li>
-                            <li data-target="#carouselExampleControls" data-slide-to="1"></li>
-                            <li data-target="#carouselExampleControls" data-slide-to="2"></li>
+                            {% for campaign in campaigns %}
+                            <li data-target="#carouselExampleControls" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+                            {% endfor %}
                         </ol>
                     </div>
-                </div>
+                </div>                
                 <div class="col-md-3">
                     <div class="facility-style-2">
                         <div class="facility-box">
@@ -458,240 +432,28 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="title">
-                                        <h4>Deals of the Day</h4>
+                                        <h4>Top Trending</h4>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-2.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-3.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="orange-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Pellentesque posuere</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 80.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-4.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Consequat posuere</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 50.00</del>$ 45.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-2.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Deals Section -->
-
-                        <!-- Start Popular Products Section -->
-                        <div class="products-section pt_small pb_small">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="title">
-                                        <h4>POPULAR PRODUCTS</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
-        
-                                        {% for p in products%}
+                                        {% for p in recommended_products%}
                                         <div class="item">
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
-                                                    <img src="{{ p.Image.url}}" alt="product-img" width="300px" height="300px">
+                                                    <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
                                                     <div class="hover-option">
-                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
+                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-1" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
                                                             
-                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}">
-                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}" value={{p.ID_Product}}>
-                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}" value="{{p.Image.url}}">
-                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}" value ="{{p.Name}}">
+                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}-1">
+                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}-1" value={{p.ID_Product}}>
+                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}-1" value="{{p.Image.url}}">
+                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}-1" value ="{{p.Name}}">
                                                             
                                                             <li><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
@@ -715,90 +477,53 @@
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
                                                     {% if p.discount.Active %}
-                                                    <div><del>${{p.Price}}</del></div>
-                                                    <span class="cart-price">$<span class="cart-price current-product-price-{{p.ID_Product}}">{{p.get_price}}</span></span>
+                                                    <div><del>${{p.Price|floatformat:"2"}}</del></div>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-1"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}">{{p.get_price}}</p>
+                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-1"><strong>{{p.get_price|floatformat:"2"}}</strong></p>
                                                     {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                
                                         {% endfor %}
-                                        {% comment %} <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Deals Section -->
 
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-2.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
-                                                        </ul>
+                        <!-- Start Popular Products Section -->
+                        <div class="products-section pt_small pb_small">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="title">
+                                        <h4>TODAY'S DEALS</h4>
+                                    </div>
+                                </div>
+                            </div>
 
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
+        
+                                        {% for p in saleoff_products%}
                                         <div class="item">
+                                            
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-3.jpg" alt="product-img">
+                                                    <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
+
                                                     <div class="hover-option">
+                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-2" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                            
+                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}-2">
+                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}-2" value={{p.ID_Product}}>
+                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}-2" value="{{p.Image.url}}">
+                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}-2" value ="{{p.Name}}">
+                                                            
+                                                            <li><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-refresh"></i></a></li>
                                                         </ul>
                                                         <ul class="product-color">
@@ -810,7 +535,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Pellentesque posuere</a>
+                                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
                                                     <div class="product-rate">
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star"></i>
@@ -818,292 +543,50 @@
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 80.00</p>
+                                                    {% if p.discount.Active %}
+                                                    <div><del>${{p.Price|floatformat:"2"}}</del></div>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-2"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
+                                                    {% else %}
+                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-2"><strong>{{p.get_price|floatformat:"2"}}</strong></p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-4.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Consequat posuere</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 50.00</del>$ 45.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/saller-img-2.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
-                                                </div>
-                                            </div> 
-                                        </div> {% endcomment %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- End Popular Products Section -->
-
-                        <!-- Start Testimonial Section -->
-                        <div class="testimonial-section pt_small pb_small">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="carousel_slide1 nav-style-2 owl-carousel owl-theme" data-margin="30" data-dots="true" data-autoplay="false" data-nav="false" data-loop="true">
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-1.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-2.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-3.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-1.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-2.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="fancy-box">
-                                                <div class="fancy-img">
-                                                    <img src="static/image/testimonial-img-3.jpg" alt="testimonial-img">
-                                                </div>
-                                                <div class="fancy-wrap">
-                                                    <h5 class="testimonial-title"><a href="#">Williamson</a>
-                                                        <small class="post">Web Developer</small>
-                                                    </h5>
-                                                    <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio. Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet
-                                                        animi blanditiis consequatur debitis dicta distinctio.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Testimonial Section -->
-
-                        <!-- Start New Collection Section -->
                         <div class="products-section pt_small pb_small">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="title">
-                                        <h4>New Collection</h4>
+                                        <h4>Desserts</h4>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
+                                        {% for p in dessert_products%}
                                         <div class="item">
+                                            
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                        </ul>
+                                                    <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-2.jpg" alt="product-img">
                                                     <div class="hover-option">
+                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-3" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                            
+                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}-3">
+                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}-3" value={{p.ID_Product}}>
+                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}-3" value="{{p.Image.url}}">
+                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}-3" value ="{{p.Name}}">
+                                                            
+                                                            <li><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                            <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
-                                                        </ul>
-
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-3.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-refresh"></i></a></li>
                                                         </ul>
                                                         <ul class="product-color">
@@ -1115,7 +598,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Pellentesque posuere</a>
+                                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
                                                     <div class="product-rate">
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star"></i>
@@ -1123,61 +606,62 @@
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 80.00</p>
+                                                    {% if p.discount.Active %}
+                                                    <div><del>${{p.Price|floatformat:"2"}}</del></div>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-3"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
+                                                    {% else %}
+                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-3"><strong>{{p.Price|floatformat:"2"}}</strong></p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="products-section pt_small pb_small">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="title">
+                                        <h4>FRESH FRUITS</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
+                                        {% for p in fruit_products%}
                                         <div class="item">
+                                            
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-4.jpg" alt="product-img">
+                                                    <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
+
                                                     <div class="hover-option">
+                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-4" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                            
+                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}">
+                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}-4" value={{p.ID_Product}}>
+                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}-4" value="{{p.Image.url}}">
+                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}-4" value ="{{p.Name}}">
+                                                            
+                                                            <li><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-refresh"></i></a></li>
                                                         </ul>
                                                         <ul class="product-color">
-                                                            <li><a href="#" class="black-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Consequat posuere</a>
-                                                    <div class="product-rate">
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star"></i>
-                                                        <i class="ion-android-star-half"></i>
-                                                    </div>
-                                                    <p class="cart-price"><del>$ 50.00</del>$ 45.00</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="item">
-                                            <div class="product-box common-cart-box">
-                                                <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-1.jpg" alt="product-img">
-                                                    <div class="hover-option">
-                                                        <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
-                                                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                                                        </ul>
-                                                        <ul class="product-color">
-                                                            <li><a href="#" class="blue-dot"></a></li>
                                                             <li><a href="#" class="black-dot"></a></li>
                                                             <li><a href="#" class="pink-dot"></a></li>
+                                                            <li><a href="#" class="orange-dot"></a></li>
                                                         </ul>
 
                                                     </div>
                                                 </div>
                                                 <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Variable product 001</a>
+                                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
                                                     <div class="product-rate">
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star"></i>
@@ -1185,32 +669,65 @@
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
-                                                    <p class="cart-price"><del>$ 90.00</del>$ 78.00</p>
+                                                    {% if p.discount.Active %}
+                                                    <div><del>${{p.Price|floatformat:"2"}}</del></div>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-4"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
+                                                    {% else %}
+                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-4"><strong>{{p.Price|floatformat:"2"}}</strong></p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- Start New Collection Section -->
+                        <div class="products-section pt_small pb_small">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="title">
+                                        <h4>YOU MAY LIKE</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="products-slider4 products-style-2 same-nav owl-carousel owl-theme" data-margin="30" data-dots="false" data-autoplay="false" data-nav="true" data-loop="false">
+                                        {% for p in products%}
                                         <div class="item">
+                                            
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
-                                                    <img src="static/image/product-img-2.jpg" alt="product-img">
+                                                    <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
+
                                                     <div class="hover-option">
+                                                        <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-5" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
-                                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                                            
+                                                            <input type="hidden" value="1" id="product-quantity" class="product-quantity-{{p.ID_Product}}-5">
+                                                            <input  type="hidden" class="product-pid-{{p.ID_Product}}-5" value={{p.ID_Product}}>
+                                                            <input  type="hidden" class="product-image-{{p.ID_Product}}-5" value="{{p.Image.url}}">
+                                                            <input  type="hidden" class="product-name-{{p.ID_Product}}-5" value ="{{p.Name}}">
+                                                            
+                                                            <li><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
                                                             <li><a href="#"><i class="fa fa-refresh"></i></a></li>
                                                         </ul>
                                                         <ul class="product-color">
-                                                            <li><a href="#" class="white-dot"></a></li>
-                                                            <li><a href="#" class="yellow-dot"></a></li>
+                                                            <li><a href="#" class="black-dot"></a></li>
                                                             <li><a href="#" class="pink-dot"></a></li>
-                                                            <li><a href="#" class="red-dot"></a></li>
+                                                            <li><a href="#" class="orange-dot"></a></li>
                                                         </ul>
 
                                                     </div>
                                                 </div>
                                                 <div class="product-info common-cart-info">
-                                                    <a href="product-detail.html" class="cart-name">Ornare sed consequat</a>
+                                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
                                                     <div class="product-rate">
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star"></i>
@@ -1218,10 +735,16 @@
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
-                                                    <p class="cart-price"><del>$ 95.00</del>$ 81.00</p>
+                                                    {% if p.discount.Active %}
+                                                    <div><del>${{p.Price|floatformat:"2"}}</del></div>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-5"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
+                                                    {% else %}
+                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-5"><strong>{{p.Price|floatformat:"2"}}</strong></p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -1255,114 +778,31 @@
                                     </li>
                                     {% endfor %}
 
-                                    {% comment %} <li>
-                                        <a class="dropdown-toggler" href="#" data-toggle="dropdown" aria-expanded="false">shirt<i class="ion-plus-round plus-icon"></i><i class="ion-minus-round minus-icon"></i></a>
-                                        <ul class="dropdown-menu list-unstyled">
-                                            <li>
-                                                <a href="#">The Crew Neck shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">The V Nec shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">The Henley - Y neck shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Polo t shirt collar shirt</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-toggler" href="#" data-toggle="dropdown" aria-expanded="false">t-shirt<i class="ion-plus-round plus-icon"></i><i class="ion-minus-round minus-icon"></i></a>
-                                        <ul class="dropdown-menu list-unstyled">
-                                            <li>
-                                                <a href="#">The Scoop Neck style t-Shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Polo t shirt collar styles t-Shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Raglan sleeve types t-Shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Sleeveless t-Shirt</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Cap sleeves t-Shirt</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a href="#">party suit</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-toggler" href="#" data-toggle="dropdown" aria-expanded="false">women's fashion<i class="ion-plus-round plus-icon"></i><i class="ion-minus-round minus-icon"></i></a>
-                                        <ul class="dropdown-menu list-unstyled">
-                                            <li>
-                                                <a href="#">Skirts</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Dresses </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Westarn Wear</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Ethic Wear</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Sport Wear</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-toggler" href="#" data-toggle="dropdown" aria-expanded="false">man's fashion<i class="ion-plus-round plus-icon"></i><i class="ion-minus-round minus-icon"></i></a>
-                                        <ul class="dropdown-menu list-unstyled">
-                                            <li>
-                                                <a href="#">Sports Wear</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Western Wear</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Ethic Wear</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a href="#">summer cloths</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">monsoon cloths</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">winter cloths</a>
-                                    </li> {% endcomment %}
                                 </ul>
                             </nav>
                         </div>
                         <div class="carousel_slide1 shop-hover-style-2 owl-carousel owl-theme owl-loaded owl-drag  side-box">
                             <a href="#" class="offer-banner shop-hover">
-                            <img src="static/image/offer-banner-4.jpg" alt="offer-banner">
+                            <img src="static/image/food-suggest1.jpg" alt="offer-banner">
                             <div class="shop-hover-text">
                                 <div class="shop-hover-wrap">
-                                    <h5>Bold Fashion</h5>
+                                    <h5>Make It Now</h5>
                                 </div>
                             </div>
                         </a>
                             <a href="#" class="offer-banner shop-hover">
-                            <img src="static/image/offer-banner-5.jpg" alt="offer-banner">
+                            <img src="static/image/food-suggest2.jpg" alt="offer-banner">
                             <div class="shop-hover-text">
                                 <div class="shop-hover-wrap">
-                                    <h5>Man Fashion</h5>
+                                    <h5>Recipe</h5>
                                 </div>
                             </div>
                         </a>
                             <a href="#" class="offer-banner shop-hover">
-                            <img src="static/image/offer-banner-6.jpg" alt="offer-banner">
+                            <img src="static/image/food-suggest3.jpg" alt="offer-banner">
                             <div class="shop-hover-text">
                                 <div class="shop-hover-wrap">
-                                    <h5>Ladies Fashion</h5>
+                                    <h5>You Can Make It</h5>
                                 </div>
                             </div>
                         </a>
@@ -1372,32 +812,16 @@
                                 <h6>Featured Post</h6>
                             </div>
                             <div class="zoom-img">
-                                <img src="static/image/banner-ads-bc.jpg" alt="banner-ads-bc">
-                                <a href="#">There are many variations Of Passages </a>
-                            </div>
-                        </div>
-                        <div class="side-insta-post side-box">
-                            <div class="side-box-title">
-                                <h6>Instagram</h6>
-                            </div>
-                            <div class="side-insta-img link_container">
-                                <a class="image_popup" href="static/image/instra-large-img-1.png"><img src="static/image/instra-img-1.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-2.jpg"><img src="static/image/instra-img-2.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-3.jpg"><img src="static/image/instra-img-3.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-4.jpg"><img src="static/image/instra-img-4.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-5.jpg"><img src="static/image/instra-img-5.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-6.jpg"><img src="static/image/instra-img-6.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-7.jpg"><img src="static/image/instra-img-7.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-8.jpg"><img src="static/image/instra-img-8.jpg" alt="insta-post-img"></a>
-                                <a class="image_popup" href="static/image/instra-large-img-9.jpg"><img src="static/image/instra-img-9.jpg" alt="insta-post-img"></a>
+                                <img src="static/image/food-suggest4.jpg" alt="banner-ads-bc">
+                                <a href="#">Try it now</a>
                             </div>
                         </div>
                         <div class="shop-hover-style-2 side-box">
                             <a href="#" class="offer-banner shop-hover">
-                            <img src="static/image/offer-banner-13.jpg" alt="offer-banner">
+                            <img src="static/image/poster3.jpg" alt="offer-banner">
                             <div class="shop-hover-text">
                                 <div class="shop-hover-wrap">
-                                    <h5>Latest Fashion</h5>
+                                    <h5>Daily Recipe</h5>
                                 </div>
                             </div>
                         </a>
@@ -1421,9 +845,9 @@
             </div>
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="news-box">
+                    <div class="news-box" >
                         <div class="news-wrap-img">
-                            <img src="static/image/news-img-13.jpg" alt="news-img">
+                            <img src="static/image/blog.jpg" alt="news-img" >
                             <div class="news-date-box text-center text-uppercase">
                                 <h6>03 <br>Jan</h6>
                             </div>
@@ -1440,9 +864,9 @@
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="news-box">
+                    <div class="news-box" >
                         <div class="news-wrap-img">
-                            <img src="static/image/news-img-14.jpg" alt="news-img">
+                            <img src="static/image/blog3.png" alt="news-img" >
                             <div class="news-date-box text-center text-uppercase">
                                 <h6>03 <br>Jan</h6>
                             </div>
@@ -1458,10 +882,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="news-box">
+                <div class="col-lg-4 col-md-6 col-sm-6" >
+                    <div class="news-box" >
                         <div class="news-wrap-img">
-                            <img src="static/image/news-img-18.jpg" alt="news-img">
+                            <img src="static/image/blog2.jpg" alt="news-img">
                             <div class="news-date-box text-center text-uppercase">
                                 <h6>03 <br>Jan</h6>
                             </div>
@@ -1536,31 +960,17 @@
                             <h6 class="fb-title">CATEGORIES</h6>
                             <div class="fb-iner">
                                 <ul class="footer-links">
-                                    <li><a href="#">Fashion Sneakers</a></li>
-                                    <li><a href="#">Jackets</a></li>
-                                    <li><a href="#">Outdoor Shop</a></li>
-                                    <li><a href="#">Pants</a></li>
-                                    <li><a href="#">Shirts &amp; Tops</a></li>
-                                    <li><a href="#">Swim Shop</a></li>
-                                    <li><a href="#">Swimwear</a></li>
+                                    {% for c in categories%}
+                                    <li>
+                                        <a href="#">{{c.Name}}</a>
+                                    </li>
+                                    {% endfor %}
+
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-sm-3 col-6">
-                        <div class="footer_widget">
-                            <h6 class="fb-title">MY ACCOUNT</h6>
-                            <div class="fb-iner">
-                                <ul class="footer-links">
-                                    <li><a href="#">Orders</a></li>
-                                    <li><a href="#">Compare</a></li>
-                                    <li><a href="#">Wishlist</a></li>
-                                    <li><a href="#">Log In</a></li>
-                                    <li><a href="#">Register</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-lg-2 col-sm-3 col-6">
                         <div class="footer_widget">
                             <h6 class="fb-title">POLICY</h6>
@@ -1649,103 +1059,6 @@
     <!-- End Footer Section -->
 
 
-
-    {% comment %} <!-- Home Popup Section -->
-    <div class="modal fade bd-example-modal-lg main-popup" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body p-0">
-                    <div class="newsletter-pop-up d-flex">
-                        <div class="popup-img">
-                            <img src="static/image/1_popup-img.jpg" alt="popup-img">
-                        </div>
-                        <div class="popup-form text-center">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true"><i class="ion-close-round"></i></span>
-                        </button>
-                            <div class="popup-logo">
-                                <img src="static/image/logo.png" alt="logo">
-                            </div>
-                            <div class="popup-text">
-                                <p>Join us Now</p>
-                                <h6>And get hot news about the theme</h6>
-                            </div>
-                            <form class="subscribe-popup-form" method="post" action="#">
-                                <input name="email" required class="rounded-0" type="email" placeholder="Enter Your Email">
-                                <button class="btn btn-primary rounded-0 border-0" title="Subscribe" type="submit">Subscribe</button>
-                            </form>
-                            <div class="form-check">
-                                <label>Don't show this popup again!
-                                <input class="defult-check" type="checkbox" checked="checked">
-                                <span class="checkmark"></span>
-                            </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Screen Load Popup Section --> {% endcomment %}
-
-
-
-{% comment %} 
-    <!-- Start Quickview Popup Section -->
-    <div id="test-popup3" class="white-popup quickview-popup mfp-hide">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="product-image">
-                    <img class="product_img" src='static/image/product1.png' data-zoom-image="static/image/product1.png" />
-                </div>
-                <div id="product_gallery" class="product_gallery_item owl-thumbs-slider owl-carousel owl-theme">
-                    <div class="item">
-                        <a href="#" class="active" data-image="static/image/product1.png" data-zoom-image="static/image/product1.png">
-                        <img src="static/image/product_small1.png" />
-                    </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" data-image="static/image/product2.png" data-zoom-image="static/image/product2.png">
-                        <img src="static/image/product_small2.png" />
-                    </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="quickview-product-detail">
-                    <h2 class="box-title">Ornare sed consequat</h2>
-                    <h3 class="box-price"><del>$ 95.00</del>$ 81.00</h3>
-                    <p class="box-text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
-                    <p class="stock">Availability: <span>In Stock</span></p>
-                    <div class="quantity-box">
-                        <p>Quantity:</p>
-                        <div class="input-group">
-                            <input type="button" value="-" class="minus">
-                            <input class="quantity-number qty" type="text" value="1" min="1" max="10">
-                            <input type="button" value="+" class="plus">
-                        </div>
-                        <div class="quickview-cart-btn">
-                            <a href="#" class="btn btn-primary"><img src="static/image/cart-icon-1.png" alt="cart-icon-1"> Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="box-social-like d-sm-flex justify-content-between">
-                        <ul class="hover-icon box-like">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-refresh"></i></a></li>
-                        </ul>
-                        <ul class="hover-icon box-social">
-                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                            <li><a href="#"><i class="fa fa-pinterest-p"></i></a></li>
-                            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Quickview Popup Section --> {% endcomment %}
     <div style="position: relative; z-index: 9999;">
     <button class="chatbot-toggler">
         <span class="material-symbols-rounded">mode_comment</span>
