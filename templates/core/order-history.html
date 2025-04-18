@@ -1,0 +1,670 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/favicon-32x32.png' %}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    
+    <title>My Profile | ATZ Shop</title>
+    
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-light: #EFF6FF;
+            --primary-dark: #2563EB;
+            --secondary: #6B7280;
+            --secondary-light: #9CA3AF;
+            --light: #F9FAFB;
+            --dark: #111827;
+            --dark-light: #374151;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #EC4899;
+            --radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F3F4F6;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .profile-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1.5rem;
+            border: 4px solid white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .profile-info h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+        
+        .profile-info p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .profile-status i {
+            margin-right: 0.25rem;
+            font-size: 0.6rem;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-card h2 i {
+            margin-right: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-item {
+            margin-bottom: 1rem;
+        }
+        
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        .info-value {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .stat-icon.warning { background: var(--warning); }
+        .stat-icon.danger { background: var(--danger); }
+        .stat-icon.success { background: var(--success); }
+        .stat-icon.info { background: var(--info); }
+        
+        .stat-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-content p {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Navigation */
+        .profile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .profile-nav li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .profile-nav a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .profile-nav a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .profile-nav i {
+            width: 24px;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        /* Orders Table */
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .orders-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .orders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        
+        .order-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-processing {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-shipped {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .status-delivered {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .status-cancelled {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .view-order {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .view-order:hover {
+            text-decoration: underline;
+        }
+        
+        .view-order i {
+            margin-left: 0.25rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-light);
+        }
+        
+        .empty-state p {
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1.5rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header class="header-4">
+        <!-- Your existing header content -->
+    </header>
+
+    <!-- Main Profile Content -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="{% static 'image/default-avatar.jpg' %}" alt="Profile Avatar" class="profile-avatar">
+            <div class="profile-info">
+                <h1>John Doe</h1>
+                <p>john.doe@example.com</p>
+                <p>Member since February 2023</p>
+                <span class="profile-status">
+                    <i class="fas fa-circle"></i> Active Account
+                </span>
+            </div>
+        </div>
+        
+        <div class="profile-layout">
+            <!-- Sidebar Navigation -->
+            <aside>
+                <div class="profile-card">
+                    <nav class="profile-nav">
+                       <ul>
+                    <li class="active">
+                        <a href="{% url 'core:profile' %}">
+                            <i class="fas fa-user-circle mr-2"></i> My Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:address' %}">
+                            <i class="fas fa-map-marker-alt mr-2"></i> My Address
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:order_history' %}">
+                            <i class="fas fa-shopping-bag mr-2"></i> <strong> My Orders</strong>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:track_order' %}">
+                            <i class="fas fa-truck mr-2"></i> Track Order
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dash-cancellation.html">
+                            <i class="fas fa-exchange-alt mr-2"></i> Returns & Cancellations
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-heart"></i> My Wishlist
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Homepage
+                        </a>
+                    </li>
+                </ul>
+                    </nav>
+                </div>
+                
+                <div class="profile-card">
+                    <h2><i class="fas fa-trophy"></i> Your Rewards</h2>
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>1,250</h3>
+                            <p>Loyalty Points</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--secondary); margin-top: 1rem;">
+                        <i class="fas fa-info-circle" style="color: var(--primary);"></i> 
+                        Redeem your points for discounts on future purchases.
+                    </p>
+                </div>
+            </aside>
+            
+            <!-- Main Profile Content -->
+            <main>
+                <div class="profile-card">
+                    <h2><i class="fas fa-shopping-bag"></i> Recent Orders</h2>
+                    
+                    <div class="table-responsive">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#ATZ-7842</td>
+                                    <td>May 15, 2023</td>
+                                    <td>3 Items</td>
+                                    <td>$145.99</td>
+                                    <td><span class="order-status status-delivered">Delivered</span></td>
+                                    <td><a href="#" class="view-order">View <i class="fas fa-chevron-right"></i></a></td>
+                                </tr>
+                                <tr>
+                                    <td>#ATZ-6721</td>
+                                    <td>May 10, 2023</td>
+                                    <td>2 Items</td>
+                                    <td>$89.50</td>
+                                    <td><span class="order-status status-shipped">Shipped</span></td>
+                                    <td><a href="#" class="view-order">View <i class="fas fa-chevron-right"></i></a></td>
+                                </tr>
+                                <tr>
+                                    <td>#ATZ-5398</td>
+                                    <td>May 5, 2023</td>
+                                    <td>1 Item</td>
+                                    <td>$45.99</td>
+                                    <td><span class="order-status status-processing">Processing</span></td>
+                                    <td><a href="#" class="view-order">View <i class="fas fa-chevron-right"></i></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <a href="dash-my-order.html" class="btn btn-outline">
+                            <i class="fas fa-list"></i> View All Orders
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <h2><i class="fas fa-chart-line"></i> Account Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>12</h3>
+                                <p>Total Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>2</h3>
+                                <p>Cancelled Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon info">
+                                <i class="far fa-heart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>7</h3>
+                                <p>Wishlist Items</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>24</h3>
+                                <p>Reviews Written</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <h2><i class="fas fa-user-cog"></i> Account Settings</h2>
+                    <div class="action-buttons">
+                        <a href="dash-edit-profile.html" class="btn btn-outline">
+                            <i class="fas fa-user-edit"></i> Edit Profile
+                        </a>
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-lock"></i> Change Password
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-envelope"></i> Newsletter
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="m-0 p-0 footer-style-2">
+        <!-- Your existing footer content -->
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- JavaScript Libraries -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    
+    <script>
+        // Scroll to top functionality
+        $(document).ready(function(){
+            $(window).scroll(function(){
+                if ($(this).scrollTop() > 300) {
+                    $('.scroll-to-top').fadeIn();
+                } else {
+                    $('.scroll-to-top').fadeOut();
+                }
+            });
+            
+            $('.scroll-to-top').click(function(e){
+                e.preventDefault();
+                $('html, body').animate({scrollTop : 0}, 600);
+            });
+            
+            // Add active class to current nav item
+            $('.profile-nav a').click(function(){
+                $('.profile-nav a').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>   
+</body>
+</html>

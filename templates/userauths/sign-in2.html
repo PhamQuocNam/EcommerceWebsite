@@ -1,0 +1,101 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- main css -->
+    <link href="{% static 'css/login.css' %}" type="text/css" rel="stylesheet">
+    
+    <title>ATZ Shop - Online Shopping Store HTML Template</title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-106310707-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-106310707-1', {
+            'anonymize_ip': true
+        });
+    </script>
+
+    <!-- Start of StatCounter Code -->
+    <script>
+        <!--
+        var sc_project = 11921154;
+        var sc_security = "6c07f98b";
+        var scJsHost = (("https:" == document.location.protocol) ?
+            "https://secure." : "http://www.");
+        //-->
+
+        document.write("<sc" + "ript src='" + scJsHost + "statcounter.com/counter/counter.js'></" + "script>");
+    </script>
+    <!-- End of StatCounter Code -->
+
+</head>
+
+
+
+<body class="theme-4">
+    
+    <div class="container">
+        <div class="login">
+          <div class="login__content">
+            <img class="login__img" src="{% static 'image/bg-login.jpg' %}" alt="Login image" />
+  
+            <form class="login__form">
+              <div>
+                <h1 class="login__title">
+                  <span>Welcome</span> Back
+                </h1>
+  
+                <p class="login__description">
+                  Welcome! Please login to continue.
+                </p>
+              </div>
+  
+              <div>
+                <div class="login__inputs">
+                  <div>
+                    <label for="email" class="login__label">Email</label>
+                    <input class="login__input" type="email" id="email" placeholder="Enter your email address" required />
+                  </div>
+  
+                  <div>
+                    <label for="password" class="login__label">Password</label>
+                    <div class="login__box">
+                      <input class="login__input" type="password" id="password" placeholder="Enter your password" required />
+                      <i class="ri-eye-off-line login__eye" id="input-icon"></i>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="login__check">
+                  <label class="login__check-label" for="check">
+                    <input class="login__check-input" type="checkbox" id="check" />
+                    <i class="ri-check-line login__check-icon"></i>
+                    Remember me
+                  </label>
+                </div>
+              </div>
+  
+              <div>
+                <div class="login__buttons">
+                  <button class="login__button">Log In</button>
+                  <button class="login__button login__button-ghost">Sign Up</button>
+                </div>
+  
+                <a class="login__forgot" href="#">Forgot Password?</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>  
+
+    <script src="{% static 'js/login.js' %}" type="text/javascript"></script>
+</body>
+
+</html>

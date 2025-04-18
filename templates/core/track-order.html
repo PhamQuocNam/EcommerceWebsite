@@ -1,0 +1,661 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/favicon-32x32.png' %}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    
+    <title>Track Orders | ATZ Shop</title>
+    
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-light: #EFF6FF;
+            --primary-dark: #2563EB;
+            --secondary: #6B7280;
+            --secondary-light: #9CA3AF;
+            --light: #F9FAFB;
+            --dark: #111827;
+            --dark-light: #374151;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #EC4899;
+            --radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F3F4F6;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .track-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .track-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+        
+        .track-header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .track-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .track-header h1 i {
+            margin-right: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .track-header p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+        
+        .track-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .track-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .track-card h2 i {
+            margin-right: 0.75rem;
+            color: var(--primary);
+        }
+        
+        /* Tracking Form */
+        .track-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .track-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .track-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .track-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .track-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Tracking Status */
+        .tracking-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+        
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .order-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .order-info p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .status-shipped {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .status-delivered {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .status-processing {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-cancelled {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        /* Tracking Timeline */
+        .tracking-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline-progress {
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        
+        .timeline-progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 50%; /* Adjust based on current status */
+            background: var(--primary);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timeline-dot.active {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        
+        .timeline-dot.active i {
+            color: white;
+            font-size: 0.5rem;
+        }
+        
+        .timeline-content {
+            padding-left: 1rem;
+        }
+        
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-desc {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        /* Order Items */
+        .order-items {
+            margin-top: 2rem;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .item-sku {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .item-price {
+            font-weight: 600;
+        }
+        
+        /* Delivery Info */
+        .delivery-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .info-card {
+            background: var(--primary-light);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        
+        .info-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary-dark);
+        }
+        
+        .info-card p {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-light);
+        }
+        
+        .empty-state p {
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Navigation */
+        .profile-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .profile-nav li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .profile-nav a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .profile-nav a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .profile-nav i {
+            width: 24px;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .track-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .track-form {
+                flex-direction: column;
+            }
+            
+            .order-summary {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .delivery-info {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tracking-container {
+                padding: 1.5rem;
+            }
+            
+            .order-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .item-image {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header class="header-4">
+        <!-- Your existing header content -->
+    </header>
+
+    <!-- Main Track Orders Content -->
+    <div class="track-container">
+        <div class="track-header">
+            <h1><i class="fas fa-truck"></i> Track Your Order</h1>
+            <p>Check the status of your recent orders and view order details</p>
+        </div>
+        
+        <div class="track-layout">
+            <!-- Sidebar Navigation -->
+            <aside>
+                <div class="track-card">
+                    <nav class="profile-nav">
+                        <ul>
+                            <li class="active">
+                                <a href="{% url 'core:profile' %}">
+                                    <i class="fas fa-user-circle mr-2"></i>  My Profile 
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core:address' %}">
+                                    <i class="fas fa-map-marker-alt mr-2"></i> My Address </strong>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core:order_history' %}">
+                                    <i class="fas fa-shopping-bag mr-2"></i> My Orders
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core:track_order' %}">
+                                    <i class="fas fa-truck mr-2"></i> <strong> Track Order</strong>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="dash-cancellation.html">
+                                    <i class="fas fa-exchange-alt mr-2"></i> Returns & Cancellations
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fas fa-heart"></i> My Wishlist
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core:index' %}">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Homepage
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="track-card">
+                    <h2><i class="fas fa-question-circle"></i> Need Help?</h2>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem;">
+                        Having trouble with your order? Our support team is here to help.
+                    </p>
+                    <a href="#" class="btn btn-primary" style="width: 80%; display: block; text-align: center;">
+                        <i class="fas fa-headset"></i> Support
+                    </a>
+                </div>
+            </aside>
+            
+            <!-- Main Tracking Content -->
+            <main>
+                <div class="track-card">
+                    <h2><i class="fas fa-search"></i> Track an Order</h2>
+                    <form class="track-form">
+                        <input type="text" class="track-input" placeholder="Enter your order number (e.g. ATZ-1234)" required>
+                        <button type="submit" class="track-btn">Track Order</button>
+                    </form>
+                    
+                    <!-- Tracking Status Example (visible after search) -->
+                    <div class="tracking-container">
+                        <div class="order-summary">
+                            <div class="order-info">
+                                <h3>Order #ATZ-7842</h3>
+                                <p>Placed on May 15, 2023 at 10:30 AM</p>
+                                <p>Estimated delivery: May 20, 2023</p>
+                            </div>
+                            <div>
+                                <span class="order-status-badge status-shipped">Shipped</span>
+                            </div>
+                        </div>
+                            
+                            
+                        
+                        <div class="order-items">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Order Items</h3>
+                            
+                            <div class="order-item">
+                                <img src="{% static 'image/product-sample.jpg' %}" alt="Product" class="item-image">
+                                <div class="item-details">
+                                    <div class="item-name">Wireless Bluetooth Headphones</div>
+                                    <div class="item-sku">SKU: WH-2023-BK</div>
+                                    <div class="item-price">$89.99</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-item">
+                                <img src="{% static 'image/product-sample-2.jpg' %}" alt="Product" class="item-image">
+                                <div class="item-details">
+                                    <div class="item-name">Smartphone Case</div>
+                                    <div class="item-sku">SKU: SC-2023-BL</div>
+                                    <div class="item-price">$19.99</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-item">
+                                <img src="{% static 'image/product-sample-3.jpg' %}" alt="Product" class="item-image">
+                                <div class="item-details">
+                                    <div class="item-name">Screen Protector</div>
+                                    <div class="item-sku">SKU: SP-2023-01</div>
+                                    <div class="item-price">$9.99</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="delivery-info">
+                            <div class="info-card">
+                                <h4><i class="fas fa-truck"></i> Shipping Information</h4>
+                                <p><strong>Carrier:</strong> FedEx</p>
+                                <p><strong>Tracking Number:</strong> 1234567890</p>
+                                <p><strong>Service:</strong> Standard (3-5 business days)</p>
+                                <a href="#" style="color: var(--primary); font-size: 0.875rem; display: inline-block; margin-top: 0.5rem;">Track on FedEx website</a>
+                            </div>
+                            
+                            <div class="info-card">
+                                <h4><i class="fas fa-map-marker-alt"></i> Delivery Address</h4>
+                                <p><strong>John Doe</strong></p>
+                                <p>123 Main Street</p>
+                                <p>Apartment 4B</p>
+                                <p>New York, NY 10001</p>
+                                <p>United States</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State (hidden when tracking info is shown) -->
+                    <!-- <div class="empty-state">
+                        <i class="fas fa-search-location"></i>
+                        <h3>No Order Selected</h3>
+                        <p>Enter your order number above to track your package and view order details.</p>
+                    </div> -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="m-0 p-0 footer-style-2">
+        <!-- Your existing footer content -->
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- JavaScript Libraries -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    
+    <script>
+        $(document).ready(function(){
+            // Scroll to top functionality
+            $(window).scroll(function(){
+                if ($(this).scrollTop() > 300) {
+                    $('.scroll-to-top').fadeIn();
+                } else {
+                    $('.scroll-to-top').fadeOut();
+                }
+            });
+            
+            $('.scroll-to-top').click(function(e){
+                e.preventDefault();
+                $('html, body').animate({scrollTop : 0}, 600);
+            });
+            
+            // Form submission
+            $('.track-form').submit(function(e){
+                e.preventDefault();
+                // Here you would normally make an AJAX call to get tracking info
+                // For demo purposes, we'll just show the tracking info
+                $('.tracking-container').fadeIn();
+                $('.empty-state').hide();
+            });
+            
+            // Toggle active state on nav items
+            $('.profile-nav a').click(function(){
+                $('.profile-nav a').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>   
+</body>
+</html>
