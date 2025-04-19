@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 from paypal.standard.forms import PayPalPaymentsForm
 import uuid
 from taggit.models import Tag
-from .AI_model import Answer_Question, Recommendation_System_Type_1
 from userauths.models import Profile
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
@@ -26,8 +25,6 @@ from django.db import transaction
 def index(request):
     categories = Product_Category.objects.all()
     products= Product.objects.all()
-    recommended_ids= Recommendation_System_Type_1()
-    recommended_products = list(Product.objects.filter(id__in=recommended_ids))
     
     saleoff_products = Product.objects.filter(discount__Active=True)
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
@@ -37,7 +34,6 @@ def index(request):
     context ={
      "products": products,
      "categories": categories,
-     "recommended_products": recommended_products,
      "dessert_products": dessert_products,
      "fruit_products":fruit_products,
      'saleoff_products': saleoff_products,
@@ -466,3 +462,25 @@ def place_order_completed(request):
         # Log error or redirect to error page
         print("Order placement failed:", e)
         return redirect("cart")  # Optional: redirect to a dedicated error page
+    
+def change_email_view(request):
+    user = request.user
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_email = request.POST.get('new_email')
+        confirm_email = request.POST.get('confirm_email')
+
+        if new_email != confirm_email:
+            messages.error(request, 'Confirm email does not match')
+            return redirect('core:change_email')
+
+        if user.check_password(current_password):
+            user.email = new_email
+            user.save()
+            messages.success(request, 'Email changed successfully')
+            return redirect('core:profile')
+        else:
+            messages.error(request, 'Current password is incorrect')
+            return redirect('core:change_email')
+
+    return render(request, "core/change-email.html")
