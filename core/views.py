@@ -466,3 +466,31 @@ def place_order_completed(request):
         # Log error or redirect to error page
         print("Order placement failed:", e)
         return redirect("cart")  # Optional: redirect to a dedicated error page
+    
+    
+def order_management(request):
+    
+    return render(request,"core/order-management.html")
+
+def revenue_management(request):
+    return render(request,"core/revenue-management.html")
+
+def staff_management(request):
+    return render(request,"core/staff-management.html")
+
+def inventory_management(request):
+    inventories = Product_Inventory.objects.all()
+    inventories_json = [
+        {
+            "Name": inv.Name,
+            "Unit": inv.Unit,
+            "Quantity": inv.Quantity,
+            "Updated": inv.Updated.strftime('%Y-%m-%d'),  # format datetime if needed
+        }
+        for inv in inventories
+    ]
+    
+    context = {
+        "inventories_json": inventories_json
+    }
+    return render(request, "core/inventory-management.html", context)

@@ -92,8 +92,15 @@
                     <div class="col-md-6">
                         <ul class="header_list text-md-right text-center">
                             {% if request.user.is_authenticated %}
+                            {% if request.user.is_superuser%}
+                            <li><a href="{% url 'core:inventory_management' %}">Inventory</a></li>
+                            <li><a href="{% url 'core:order_management' %}">Order</a></li>
+                            <li><a href="{% url 'core:staff_management' %}">Staff</a></li>
+                            <li><a href="{% url 'core:revenue_management' %}">Revenue</a></li>
+                            {% else %}
                             <li><a href="#">Wishlist</a></li>
                             <li><a href="{% url 'core:profile' %}">My Account</a></li>
+                            {% endif %}
                             <li><a href="{% url 'userauths:sign-out' %}" class="">Log out</a></li>
                             {% else%}
                             <li><a href="{% url 'userauths:sign-in' %}" class="">Log in</a></li>
