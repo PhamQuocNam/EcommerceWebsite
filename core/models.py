@@ -4,6 +4,7 @@ from django.utils.html import mark_safe
 from userauths.models import User
 from taggit.managers import TaggableManager
 from ckeditor_uploader.fields import RichTextUploadingField
+
 # Create your models here.
 
 STATUS_CHOICE = [
@@ -113,6 +114,7 @@ class Product(models.Model):
     #Desc= models.TextField(null=True, blank=True, default ='This is the product')
     Desc= RichTextUploadingField(null=True, blank=True, default ='This is the product')
     Price = models.DecimalField(max_digits= 10, decimal_places=2, default="0")
+    Cost = models.DecimalField(max_digits= 10, decimal_places=2, default="0")
     discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
     inventory = models.ForeignKey(Product_Inventory, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(Product_Category, on_delete=models.SET_NULL, null=True, blank=True, related_name= "category")
@@ -162,7 +164,6 @@ class Order_Detail(models.Model):
     Payment_Status = models.BooleanField(default=False)
     Delivery_Status = models.CharField(choices=STATUS_CHOICE, max_length=10, default='process')
     Note = models.TextField(null=True, blank=True, default ='Nothing')
-    
     class Meta:
         verbose_name_plural= 'Order_Detail'
     

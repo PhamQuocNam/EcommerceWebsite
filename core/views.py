@@ -19,7 +19,9 @@ from userauths.models import Profile
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.db import transaction
-
+from decimal import Decimal
+from django.db.models import Prefetch
+from collections import defaultdict
 # Create your views here.
 
 
@@ -473,24 +475,128 @@ def order_management(request):
     return render(request,"core/order-management.html")
 
 def revenue_management(request):
-    return render(request,"core/revenue-management.html")
+    product_metrics = {}
+    total_revenue = Decimal('0.00')
+    total_cost = Decimal('0.00')
+    
+    order_items = Order_Item.objects.select_related('product', 'order_detail').all()
+    
+    for item in order_items:
+        if not item.product or not item.order_detail:
+            continue
+
+        product = item.product
+        quantity = item.Quantity
+
+        # Calculate effective price (considering discount)
+        price = product.get_price() or Decimal('0.00')
+        cost = product.Cost or Decimal('0.00')
+
+        revenue = price * quantity
+        cost_total = cost * quantity
+        gross_profit = revenue - cost_total
+
+        total_revenue += revenue
+        total_cost += cost_total
+
+        if product.ID_Product not in product_metrics:
+            product_metrics[product.ID_Product] = {
+                'name': product.Name,
+                'total_quantity_sold': 0,
+                'revenue': Decimal('0.00'),
+                'cost': Decimal('0.00'),
+                'gross_profit': Decimal('0.00'),
+            }
+
+        product_metrics[product.ID_Product]['total_quantity_sold'] += quantity
+        product_metrics[product.ID_Product]['revenue'] += revenue
+        product_metrics[product.ID_Product]['cost'] += cost_total
+        product_metrics[product.ID_Product]['gross_profit'] += gross_profit
+
+    daily_data = defaultdict(lambda: {
+        'revenue': Decimal('0.00'),
+        'cost': Decimal('0.00'),
+        'gross_profit': Decimal('0.00'),
+        'order_count': 0
+    })
+
+    order_details = Order_Detail.objects.prefetch_related(
+        Prefetch('order_item_set', queryset=Order_Item.objects.select_related('product'))
+    )
+    
+    
+    for order in order_details:
+        date = order.Date.date()  # Convert to just the date (not datetime)
+        daily_data[date]['order_count'] += 1
+        
+        for item in order.order_item_set.all():
+            if not item.product:
+                continue
+
+            price = item.product.get_price() or Decimal('0.00')
+            cost = item.product.Cost or Decimal('0.00')
+            quantity = item.Quantity
+
+            revenue = price * quantity
+            total_cost = cost * quantity
+            gross_profit = revenue - total_cost
+
+            daily_data[date]['revenue'] += revenue
+            daily_data[date]['cost'] += total_cost
+            daily_data[date]['gross_profit'] += gross_profit
+        
+        
+            
+    # Optional: sort by date
+    sorted_data = dict(sorted(daily_data.items()))
+    revenues = []
+    costs= []
+    profits = []
+    labels = []    
+    
+    for key,value in sorted_data.items():
+        revenues.append(float(value['revenue']))
+        costs.append(float(value['cost']))
+        profits.append(float(value['gross_profit']))
+        labels.append(key.strftime('%Y-%m-%d'))
+    
+    context= {
+        'total_revenue': total_revenue,
+        'total_cost': total_cost,
+        'total_gross_profit': total_revenue - total_cost,
+        'product_metrics': product_metrics,
+        'daily_data': sorted_data,
+        'labels': labels,
+        "revenues": revenues,
+        'costs': costs,
+        'profits':profits
+        
+    }
+        
+    
+    return render(request,"core/revenue-management.html", context)
 
 def staff_management(request):
     return render(request,"core/staff-management.html")
 
 def inventory_management(request):
-    inventories = Product_Inventory.objects.all()
+    products = Product.objects.all()
+    categories=Product_Category.objects.all()
     inventories_json = [
         {
-            "Name": inv.Name,
-            "Unit": inv.Unit,
-            "Quantity": inv.Quantity,
-            "Updated": inv.Updated.strftime('%Y-%m-%d'),  # format datetime if needed
+            "Name": p.Name,
+            "Category": p.category.Name,
+            "Price": float(p.Price),
+            "Unit": p.inventory.Unit,
+            "Quantity": p.inventory.Quantity,
+            "Updated": p.inventory.Updated.strftime('%Y-%m-%d'),  # format datetime if needed
         }
-        for inv in inventories
+        for p in products
     ]
-    
     context = {
-        "inventories_json": inventories_json
+        "inventories_json": inventories_json,
+        "categories": categories
     }
     return render(request, "core/inventory-management.html", context)
+
+

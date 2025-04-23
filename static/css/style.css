@@ -453,10 +453,7 @@ iframe {
     transform: translateX(-50%) translateY(-50%);
 }
 
-.loading_wrap img {
-    -webkit-animation: bounce 2s linear infinite;
-    animation: bounce 2s linear infinite;
-}
+
 
 /**************************************/
 

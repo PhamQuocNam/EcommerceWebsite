@@ -382,9 +382,9 @@
                         <th>ID</th>
                         <th>Product Name</th>
                         <th>Category</th>
+                        <th>Quantity</th>
                         <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Quantity</th>
+                        <th>Date of Update</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -417,14 +417,9 @@
                     <label for="product-category">Category</label>
                     <select id="product-category" required>
                         <option value="">Select Category</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Home & Garden">Home & Garden</option>
-                        <option value="Beauty">Beauty</option>
-                        <option value="Sports">Sports</option>
-                        <option value="Books">Books</option>
-                        <option value="Toys">Toys</option>
-                        <option value="Food & Beverage">Food & Beverage</option>
+                        {% for c in categories%}
+                        <option value="{{c.Name}}">{{c.Name}}</option>
+                        {% endfor%}
                     </select>
                 </div>
                 <div class="form-group">
@@ -434,14 +429,6 @@
                 <div class="form-group">
                     <label for="product-quantity">Quantity</label>
                     <input type="number" id="product-quantity" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="product-description">Description</label>
-                    <textarea id="product-description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="product-image">Image URL</label>
-                    <input type="text" id="product-image" placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" id="cancel-btn">Cancel</button>
@@ -475,15 +462,16 @@
         for (let idx = 0; idx < inventories.length; idx++) {
             let inventory = inventories[idx];
             let product = {
-                id: idx,
-                name: inventory.Name,
+                Id: idx,
+                Name: inventory.Name,
+                Category: inventory.Category,
+                Price: inventory.Price,
                 Unit: inventory.Unit,
                 Quantity: inventory.Quantity,
                 Updated: inventory.Updated
             };
             products.push(product);
         }
-
 
 
         // DOM Elements
@@ -580,8 +568,8 @@
         function renderProducts() {
             const searchTerm = searchInput.value.toLowerCase();
             let filteredProducts = products.filter(product => 
-                product.name.toLowerCase().includes(searchTerm) || 
-                product.category.toLowerCase().includes(searchTerm)
+                product.Name.toLowerCase().includes(searchTerm) || 
+                product.Category.toLowerCase().includes(searchTerm)
             );
 
             updateStats(filteredProducts);
@@ -605,10 +593,10 @@
                 
                 // Determine stock status
                 let statusClass, statusText;
-                if (product.quantity === 0) {
+                if (product.Quantity === 0) {
                     statusClass = 'status-out-of-stock';
                     statusText = 'Out of Stock';
-                } else if (product.quantity <= 5) {
+                } else if (product.Quantity <= 5) {
                     statusClass = 'status-low-stock';
                     statusText = 'Low Stock';
                 } else {
@@ -617,16 +605,17 @@
                 }
 
                 row.innerHTML = `
-                    <td>${product.id}</td>
-                    <td>${product.name}</td>
-                    <td>${product.category}</td>
-                    <td>$${product.price.toFixed(2)}</td>
-                    <td>${product.quantity}</td>
+                    <td>${product.Id}</td>
+                    <td>${product.Name}</td>
+                    <td>${product.Category}</td>
+                    <td>${product.Quantity}</td>
+                    <td>${product.Price}</td>
+                    <td>${product.Updated}</td>
                     <td><span class="status ${statusClass}">${statusText}</span></td>
                     <td>
                         <div class="action-btns">
-                            <button class="btn btn-primary edit-btn" data-id="${product.id}">Edit</button>
-                            <button class="btn btn-danger delete-btn" data-id="${product.id}">Delete</button>
+                            <button class="btn btn-primary edit-btn" data-id="${product.Id}">Edit</button>
+                            <button class="btn btn-danger delete-btn" data-id="${product.Id}">Delete</button>
                         </div>
                     </td>
                 `;
@@ -699,9 +688,9 @@
         function updateStats(filteredProducts = products) {
             totalProductsEl.textContent = filteredProducts.length;
             
-            const inStock = filteredProducts.filter(p => p.quantity > 5).length;
-            const lowStock = filteredProducts.filter(p => p.quantity > 0 && p.quantity <= 5).length;
-            const outOfStock = filteredProducts.filter(p => p.quantity === 0).length;
+            const inStock = filteredProducts.filter(p => p.Quantity > 5).length;
+            const lowStock = filteredProducts.filter(p => p.Quantity > 0 && p.Quantity <= 5).length;
+            const outOfStock = filteredProducts.filter(p => p.Quantity === 0).length;
             
             inStockEl.textContent = inStock;
             lowStockEl.textContent = lowStock;
@@ -711,18 +700,14 @@
         // Edit product
         function editProduct(id) {
             isEditMode = true;
-            const product = products.find(p => p.id === id);
+            const product = products.find(p => p.Id === id);
             
             if (product) {
                 modalTitle.textContent = 'Edit Product';
-                document.getElementById('product-id').value = product.id;
-                document.getElementById('product-name').value = product.name;
-                document.getElementById('product-category').value = product.category;
-                document.getElementById('product-price').value = product.price;
-                document.getElementById('product-quantity').value = product.quantity;
-                document.getElementById('product-description').value = product.description;
-                document.getElementById('product-image').value = product.image || '';
-                
+                document.getElementById('product-id').value = product.Id;
+                document.getElementById('product-name').value = product.Name;
+                document.getElementById('product-price').value = product.Price;
+                document.getElementById('product-quantity').value = product.Quantity;                
                 productModal.style.display = 'flex';
             }
         }
@@ -735,7 +720,7 @@
 
         // Delete product
         function deleteProduct() {
-            products = products.filter(p => p.id !== productToDelete);
+            products = products.filter(p => p.Id !== productToDelete);
             deleteModal.style.display = 'none';
             showAlert('Product deleted successfully', 'success');
             renderProducts();
@@ -749,35 +734,29 @@
             const category = document.getElementById('product-category').value;
             const price = parseFloat(document.getElementById('product-price').value);
             const quantity = parseInt(document.getElementById('product-quantity').value);
-            const description = document.getElementById('product-description').value;
-            const image = document.getElementById('product-image').value;
 
             if (isEditMode) {
                 // Update existing product
-                const index = products.findIndex(p => p.id === parseInt(id));
+                const index = products.findIndex(p => p.Id === parseInt(id));
                 if (index !== -1) {
                     products[index] = { 
                         id: parseInt(id), 
                         name, 
                         category, 
                         price, 
-                        quantity, 
-                        description, 
-                        image 
+                        quantity
                     };
                     showAlert('Product updated successfully', 'success');
                 }
             } else {
                 // Add new product
-                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.Id)) + 1 : 1;
                 products.push({ 
                     id: newId, 
                     name, 
                     category, 
                     price, 
                     quantity, 
-                    description, 
-                    image 
                 });
                 showAlert('Product added successfully', 'success');
             }
@@ -802,7 +781,7 @@
             let csv = 'ID,Name,Category,Price,Quantity,Description\n';
             
             products.forEach(product => {
-                csv += `"${product.id}","${product.name}","${product.category}",${product.price},${product.quantity},"${product.description}"\n`;
+                csv += `"${product.Id}","${product.Name}","${product.Category}",${product.Price},${product.Quantity}\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
