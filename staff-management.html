@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management System</title>
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-gray: #e9ecef;
+            --dark-gray: #343a40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light-gray);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+        
+        .filter-dropdown {
+            padding: 10px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .employees-table {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-onleave {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .btn-view {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: black;
+        }
+        
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .employee-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .form-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-cancel {
+            background-color: var(--light-gray);
+        }
+        
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .attendance-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .calendar-day {
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            text-align: center;
+            min-height: 60px;
+        }
+        
+        .calendar-day.header {
+            font-weight: bold;
+            background-color: var(--secondary-color);
+        }
+        
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .attendance-status {
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .present {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .absent {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .late {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .leave {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            
+            .action-btn {
+                padding: 3px 5px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">HR Management</div>
+            <div class="user-info">
+                <span>Welcome, Admin</span>
+            </div>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="employees">Employees</div>
+            <div class="tab" data-tab="payroll">Payroll</div>
+        </div>
+        
+        <!-- Employees Tab Content -->
+        <div class="tab-content" id="employees-content">
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="employee-search-input" placeholder="Search employees by name, ID...">
+                    <i>🔍</i>
+                </div>
+                <button class="action-btn btn-view" id="add-employee">Add Employee</button>
+            </div>
+            
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Employees</h3>
+                    <p>{{ total_employees }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active</h3>
+                    <p>{{ active_employees }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>On Leave</h3>
+                    <p>{{ on_leave_employees }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>New This Month</h3>
+                    <p>{{ new_employees_this_month }}</p>
+                </div>
+            </div>
+
+            
+            <div class="employees-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>ID Card</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Join Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employees-table-body">
+                        <!-- Employees will be populated by JavaScript -->
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                fetch(window.location.href, {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    const tbody = document.getElementById("employees-table-body");
+                                    tbody.innerHTML = "";
+
+                                    data.staffs.forEach(staff => {
+                                        const tr = document.createElement("tr");
+                                        tr.setAttribute('data-id', staff.id);  // Thêm data-id vào thẻ <tr>
+
+                                        tr.innerHTML = `
+                                            <td>${staff.id}</td>
+                                            <td>${staff.idcard}</td>
+                                            <td>${staff.name}</td>
+                                            <td>${staff.position}</td>
+                                            <td>${staff.started}</td>
+                                            <td>${staff.status}</td>
+                                            <td>
+                                                <button class="btn-update" data-id="${staff.id}">Update</button>
+                                                <button class="btn-delete" data-id="${staff.id}">Delete</button>
+                                            </td>
+                                        `;
+
+                                        // Gắn sự kiện xóa nhân viên cho mỗi nút Delete
+                                        tr.querySelector('.btn-delete').addEventListener('click', function () {
+                                            const employeeId = this.dataset.id;  // Lấy ID từ data-id của nút
+                                            deleteEmployee(employeeId);
+                                        });
+
+                                        // Gắn sự kiện cập nhật nhân viên
+                                        tr.querySelector('.btn-update').addEventListener('click', function () {
+                                            const employeeId = this.dataset.id;
+                                            window.location.href = `/update_employee/${employeeId}/`;
+                                        });
+
+
+                                        tbody.appendChild(tr);
+                                    });
+                                });
+                            });
+
+                            document.getElementById('add-employee').addEventListener('click', function() {
+                                window.location.href = '/add_employee'; 
+                            });
+
+                            function getCSRFToken() {
+                                const csrfToken = document.cookie.split(';')
+                                    .find(cookie => cookie.trim().startsWith('csrftoken='));
+                                return csrfToken ? csrfToken.split('=')[1] : null;
+                            }
+
+                            function deleteEmployee(id) {
+                                // Lấy CSRF token từ cookie
+                                const csrfToken = getCSRFToken();
+
+                                // Xác nhận người dùng muốn xóa nhân viên
+                                if (confirm("Are you sure you want to delete this employee?")) {
+                                    // Gửi yêu cầu AJAX để xóa nhân viên
+                                    fetch(`/delete_employee/${id}/`, { 
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest',  // Đảm bảo yêu cầu này được xử lý như một yêu cầu AJAX
+                                            'X-CSRFToken': csrfToken  // Gửi CSRF token trong header
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert("Employee deleted successfully!");
+                                            // Xóa row khỏi bảng sau khi xóa
+                                            const row = document.querySelector(`tr[data-id="${id}"]`);
+                                            if (row) {
+                                                row.remove();
+                                            }
+                                        } else {
+                                            alert("Failed to delete employee.");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        alert("Error deleting employee.");
+                                    });
+                                }
+                            }
+
+                            document.getElementById('employee-search-input').addEventListener('input', function () {
+                                const searchTerm = this.value.toLowerCase();
+                                const rows = document.querySelectorAll('#employees-table-body tr');
+
+                                rows.forEach(row => {
+                                    const cells = Array.from(row.children);
+                                    const matches = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
+                                    row.style.display = matches ? '' : 'none';
+                                });
+                            });
+
+
+
+
+
+                            </script>
+
+                    </tbody>
+                </table>
+            </div>
+        
+<!-- Payroll Tab Content -->
+            <div class="tab-content" id="payroll-content" style="display: none;">
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" placeholder="Search payroll..." id="payroll-search-input">
+                    <i>🔍</i>
+                </div>
+                <select class="filter-dropdown" id="payroll-department">
+                    <option value="all">All Employees</option>
+                    <option value="sales">Sales</option>
+                    <option value="customer-service">Customer Service</option>
+                    <option value="warehouse">Warehouse</option>
+                </select>
+                <input type="month" class="filter-dropdown" id="payroll-month">
+                <button class="action-btn btn-view" id="process-payroll">Process Payroll</button>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Payroll</h3>
+                    <p id="total-payroll">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Salary</h3>
+                    <p id="average-salary">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Net Pay</h3>
+                    <p id="net-pay">$0.00</p>
+                </div>
+            </div>
+
+            <div class="employees-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Basic Salary</th>
+                            <th>Allowances</th>
+                            <th>Net Pay</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payroll-table-body">
+                        <!-- Payroll will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Fetch payroll data from the backend
+                fetch('/payroll_data/')  // Fetch data from the payroll_data view
+                    .then(response => response.json())
+                    .then(data => {
+                        const tbody = document.getElementById("payroll-table-body");
+                        tbody.innerHTML = '';  // Clear existing table data
+
+                        let totalPayroll = 0;
+                        let netPay = 0;
+
+                        // Loop through payroll data and create rows
+                        data.data.forEach(payroll => {
+                            const row = `
+                                <tr>
+                                    <td>${payroll.id}</td>
+                                    <td>${payroll.name}</td>
+                                    <td>$${payroll.salary}</td>
+                                    <td>$${payroll.bonus}</td>
+                                    <td>$${payroll.net_pay}</td>
+                                    <td>${payroll.status}</td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += row;
+
+                            // Update totals
+                            totalPayroll += parseFloat(payroll.salary) + parseFloat(payroll.bonus);
+                            netPay += parseFloat(payroll.net_pay);
+                        });
+
+                        // Update stats
+                        document.getElementById('total-payroll').textContent = `$${totalPayroll.toFixed(2)}`;
+                        document.getElementById('average-salary').textContent = `$${(totalPayroll / data.data.length).toFixed(2)}`;
+                        document.getElementById('net-pay').textContent = `$${netPay.toFixed(2)}`;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching payroll data:', error);
+                    });
+
+                // Payroll search functionality
+                document.getElementById('payroll-search-input').addEventListener('input', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('#payroll-table-body tr');
+
+                    rows.forEach(row => {
+                        const cells = Array.from(row.children);
+                        const matches = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
+                        row.style.display = matches ? '' : 'none';
+                    });
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const tabs = document.querySelectorAll('.tab');
+                const tabContents = document.querySelectorAll('.tab-content');
+                let employeesData = null;
+                let payrollData = null;
+
+                // Tab switching
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+
+                        tabContents.forEach(content => content.style.display = 'none');
+                        const selectedTab = document.getElementById(`${tab.dataset.tab}-content`);
+                        selectedTab.style.display = 'block';
+
+                        if (tab.dataset.tab === 'payroll') {
+                            if (payrollData) {
+                                renderPayrollTable(payrollData);
+                            } else {
+                                fetch('/api/payroll/', {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(res => {
+                                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    payrollData = data.data;
+                                    renderPayrollTable(payrollData);
+                                })
+                                .catch(err => {
+                                    console.error("Failed to load payroll:", err);
+                                    alert("Failed to load payroll data. Check console.");
+                                });
+                            }
+                        } else if (tab.dataset.tab === 'employees') {
+                            if (employeesData) {
+                                renderEmployeesTable(employeesData);
+                            } else {
+                                fetch(window.location.href, {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    employeesData = data.staffs;
+                                    renderEmployeesTable(employeesData);
+                                });
+                            }
+                        }
+                    });
+                });
+
+                function renderPayrollTable(data) {
+                    const tbody = document.getElementById("payroll-table-body");
+                    tbody.innerHTML = '';
+                    let total = 0;
+                    let net = 0;
+
+                    data.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${p.id}</td>
+                                <td>${p.name}</td>
+                                <td>$${p.salary}</td>
+                                <td>$${p.bonus}</td>
+                                <td>$${p.net_pay}</td>
+                                <td>${p.status}</td>
+                            </tr>`;
+                        total += parseFloat(p.salary) + parseFloat(p.bonus);
+                        net += parseFloat(p.net_pay);
+                    });
+
+                    document.getElementById('total-payroll').textContent = `$${total.toFixed(2)}`;
+                    document.getElementById('average-salary').textContent = `$${(total / data.length).toFixed(2)}`;
+                    document.getElementById('net-pay').textContent = `$${net.toFixed(2)}`;
+                }
+
+                function renderEmployeesTable(data) {
+                    const tbody = document.getElementById("employees-table-body");
+                    tbody.innerHTML = '';
+
+                    data.forEach(staff => {
+                        const tr = document.createElement("tr");
+                        tr.setAttribute('data-id', staff.id);
+                        tr.innerHTML = `
+                            <td>${staff.id}</td>
+                            <td>${staff.idcard}</td>
+                            <td>${staff.name}</td>
+                            <td>${staff.position}</td>
+                            <td>${staff.started}</td>
+                            <td>${staff.status}</td>
+                            <td>
+                                <button class="btn-update" data-id="${staff.id}">Update</button>
+                                <button class="btn-delete" data-id="${staff.id}">Delete</button>
+                            </td>`;
+                        tr.querySelector('.btn-delete').addEventListener('click', () => deleteEmployee(staff.id));
+                        tr.querySelector('.btn-update').addEventListener('click', () => {
+                            window.location.href = `/update_employee/${staff.id}/`;
+                        });
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                function deleteEmployee(id) {
+                    const csrfToken = getCSRFToken();
+                    if (confirm("Delete this employee?")) {
+                        fetch(`/delete_employee/${id}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': csrfToken
+                            }
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                alert("Deleted!");
+                                document.querySelector(`tr[data-id="${id}"]`)?.remove();
+                            } else {
+                                alert("Delete failed");
+                            }
+                        });
+                    }
+                }
+
+                function getCSRFToken() {
+                    const match = document.cookie.match(/csrftoken=([^;]+)/);
+                    return match ? match[1] : null;
+                }
+
+                document.getElementById('payroll-search-input').addEventListener('input', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('#payroll-table-body tr');
+                    rows.forEach(row => {
+                        const match = [...row.children].some(cell =>
+                            cell.textContent.toLowerCase().includes(searchTerm));
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+            </script>
+
+
+    
+   
+    

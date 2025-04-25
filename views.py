@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
-ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
+ProductReview, Wishlist, ProductImages, Staff, Salary
 from .context_processor import default
 from core.forms import ProductReviewForm
 from django.db.models import Count, Avg
@@ -19,6 +19,9 @@ from userauths.models import Profile
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.db import transaction
+from django.utils import timezone
+from django.views.decorators.http import require_GET
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -198,44 +201,17 @@ def add_to_cart(request):
 
 def cart_view(request):
     cart_total_amount = 0
-    discount = 0
-    final_amount = 0
-    coupon_code = None
-
-    if request.method == "POST":
-        code = request.POST.get("code")
-        coupon = Coupon.objects.filter(code=code, active=True).first()
-
-        if coupon:
-            coupon_code = coupon.code
-            request.session['applied_coupon'] = code
-            messages.success(request, "Coupon Activated")
-        else:
-            request.session.pop('applied_coupon', None)
-            messages.error(request, "Coupon Does Not Exist")
-
+    print(request.session)
     if 'cart_data_obj' in request.session:
         for p_id, item in request.session['cart_data_obj'].items():
-            cart_total_amount += int(item['Quantity']) * float(item['Price'])
-
-        if 'applied_coupon' in request.session:
-            applied_coupon = Coupon.objects.filter(code=request.session['applied_coupon'], active=True).first()
-            if applied_coupon:
-                discount = cart_total_amount * 0.1  
-                coupon_code = applied_coupon.code
-
-        final_amount = cart_total_amount - discount
-
+            cart_total_amount += int(item['Quantity'])* float(item['Price'])
         return render(request, "core/cart.html", {
             "cart_data": request.session['cart_data_obj'],
             "totalcartitems": len(request.session['cart_data_obj']),
-            "cart_total_amount": cart_total_amount,
-            "discount": discount,
-            "final_amount": final_amount,
-            "coupon_code": coupon_code,
-        })
+            'cart_total_amount': cart_total_amount
+            })    
     else:
-        return redirect('core:index')
+        return redirect('core:index') 
     
     
     
@@ -503,7 +479,160 @@ def revenue_management(request):
     return render(request,"core/revenue-management.html")
 
 def staff_management(request):
-    return render(request,"core/staff-management.html")
+    total_employees = Staff.objects.count()
+
+    active_employees = Staff.objects.filter(status="active").count()
+
+    on_leave_employees = Staff.objects.filter(status="on_leave").count()
+
+    start_of_month = timezone.now().replace(day=1)
+    new_employees_this_month = Staff.objects.filter(Started__gte=start_of_month).count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        staffs = Staff.objects.select_related('user').all()
+        data = []
+        for staff in staffs:
+            data.append({
+                'id': staff.ID_Staff,
+                'idcard': staff.ID_card,
+                'name': staff.Name,
+                'department': "N/A", 
+                'position': staff.Position,
+                'started': staff.Started.strftime('%Y-%m-%d') if staff.Started else '',
+                'status': staff.status,
+            })
+        return JsonResponse({'staffs': data})
+
+    else:
+        context = {
+            'total_employees': total_employees,
+            'active_employees': active_employees,
+            'on_leave_employees': on_leave_employees,
+            'new_employees_this_month': new_employees_this_month,
+        }
+        return render(request, "core/staff-management.html", context)
+    
+def add_employee(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        idcard = request.POST.get('idcard')
+        name = request.POST.get('name')
+        birthday = request.POST.get('birthday')
+        position = request.POST.get('position')
+        started = request.POST.get('started')
+
+        new_staff = Staff.objects.create(
+            ID_card=idcard,
+            ID_Staff=id,
+            Name=name,
+            user=None, 
+            Position=position,
+            Started=started,
+            Birthday = birthday
+
+        )
+        
+        return redirect('core:staff_management')
+
+
+    return render(request, "core/add_employee.html")
+
+
+def update_employee(request, employee_id):
+    staff = get_object_or_404(Staff, ID_Staff=employee_id)
+
+    if request.method == 'POST':
+        staff.ID_Staff = request.POST.get('id')
+        staff.ID_card = request.POST.get('idcard')
+        staff.Name = request.POST.get('name')
+        staff.Birthday = request.POST.get('birthday')
+        staff.Position = request.POST.get('position')
+        staff.Started = request.POST.get('started')
+        staff.status = request.POST.get('status')
+        staff.save()
+
+        return redirect('core:staff_management')
+
+    return render(request, 'core/update_employee.html', {'staff': staff})
+
+def delete_employee(request, employee_id):
+    employee = get_object_or_404(Staff, ID_Staff=employee_id)
+    
+    employee.delete()
+
+    return JsonResponse({'message': 'Employee deleted successfully!'})
+
+def payroll_view(request):
+    active_staffs = Staff.objects.filter(status='active')
+    salary_records = Salary.objects.select_related('staff').order_by('-Date')
+
+    context = {
+        'staffs': active_staffs,
+        'salary_records': salary_records,
+    }
+    return render(request, 'core/payroll.html', context)
+
+@require_GET
+def payroll_data(request):
+    staffs = Staff.objects.filter(status='active')
+    payroll_data = []
+    total_payroll = 0
+    total_net_pay = 0
+
+    for staff in staffs:
+        try:
+            salary_record = Salary.objects.filter(staff=staff).latest('Date')
+            salary = salary_record.Salary
+            bonus = salary_record.Bonus
+            net_pay = salary + bonus
+
+            payroll_data.append({
+                'id': staff.ID_Staff,
+                'name': staff.Name,
+                'salary': f"{salary:.2f}",
+                'bonus': f"{bonus:.2f}",
+                'net_pay': f"{net_pay:.2f}",
+                'status': staff.status,
+            })
+
+            total_payroll += salary + bonus
+            total_net_pay += net_pay
+
+        except ObjectDoesNotExist:
+            # Nếu staff chưa có lương, vẫn add vào với 0
+            payroll_data.append({
+                'id': staff.ID_Staff,
+                'name': staff.Name,
+                'salary': "0.00",
+                'bonus': "0.00",
+                'net_pay': "0.00",
+                'status': staff.status,
+            })
+
+    return JsonResponse({
+        'data': payroll_data,
+        'total_payroll': f"{total_payroll:.2f}",
+        'total_net_pay': f"{total_net_pay:.2f}",
+    })
+
+@csrf_exempt
+def update_salary(request):
+    if request.method == 'POST':
+        salary_id = request.POST.get('salary_id')
+        new_salary = request.POST.get('salary')
+        new_bonus = request.POST.get('bonus')
+
+        try:
+            salary = Salary.objects.get(ID_Salary=salary_id)
+            salary.Salary = new_salary
+            salary.Bonus = new_bonus
+            salary.save()
+            return JsonResponse({'success': True})
+        except Salary.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Salary not found'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 
 def inventory_management(request):
     inventories = Product_Inventory.objects.all()
@@ -522,3 +651,38 @@ def inventory_management(request):
     }
     return render(request, "core/inventory-management.html", context)
 
+
+def add_to_wishlist(request):
+    product_id = request.GET.get('id')
+
+    if not product_id:
+        return JsonResponse({"error": "Missing product ID"}, status=400)
+
+    try:
+        product = Product.objects.get(ID_Product=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({"error": "Product not found"}, status=404)
+
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        product=product,
+        user=request.user
+    )
+
+    return JsonResponse({"added": created})
+
+
+
+
+def wishlist_view(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    context = {
+        'wishlist_items': wishlist_items
+    }
+    return render(request, 'core/wishlist.html', context)
+
+def remove_from_wishlist(request, pid):
+    product = get_object_or_404(Product, ID_Product=pid)
+    wishlist_item = Wishlist.objects.filter(product=product, user=request.user)
+    if wishlist_item.exists():
+        wishlist_item.delete()
+    return redirect('core:wishlist')

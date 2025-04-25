@@ -177,6 +177,16 @@ class Order_Item(models.Model):
         verbose_name_plural= 'Order_Items'
 
 
+class Staff(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    position = models.CharField(max_length=100)
+    phone = models.CharField(max_length=15)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.position}"
+
+
     def order_img(self):
         return mark_safe('<img src="/media/%s" width="50" height="50" />' % (self.Image))
 
@@ -226,22 +236,36 @@ class ProductImages(models.Model):
     product = models.ForeignKey(Product,related_name='p_images', on_delete=models.SET_NULL, null=True, blank=True)
     date= models.DateTimeField(auto_now_add=True)
     
+class Coupon(models.Model):
+    code = models.CharField(max_length=100)
+    discount = models.IntegerField(default=1)
+    active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.code
 ########################### Staff Management ##########################3
 
 
 
 class Staff(models.Model):
-    ID_Staff = ShortUUIDField(unique=True, length =10, max_length=20, prefix="STAFF", alphabet='abcdefgh12345') 
-    user= models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    
+    ID_Staff = ShortUUIDField(unique=True, length=10, max_length=20, prefix="STAFF", alphabet='abcdefgh12345')
+    Name = models.CharField(max_length=200, default='Unknown')  
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     ID_card = models.CharField(max_length=20, null=False)
     Started = models.DateTimeField(null=True, blank=True)
-    Birthday= models.DateTimeField(null=True, blank=True)
-    Position= models.CharField(max_length=20,null=True)
-    
+    Birthday = models.DateTimeField(null=True, blank=True)
+    Position = models.CharField(max_length=20, null=True)
+
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('on_leave', 'On Leave'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+
     class Meta:
-        verbose_name_plural= 'Staffs'
+        verbose_name_plural = 'Staffs'
+
     
     
 class Salary(models.Model):
@@ -255,13 +279,7 @@ class Salary(models.Model):
     class Meta:
         verbose_name_plural= 'Salaries'
 
-class Coupon(models.Model):
-    code = models.CharField(max_length=100)
-    discount = models.IntegerField(default=1)
-    active = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.code
         
         
 
