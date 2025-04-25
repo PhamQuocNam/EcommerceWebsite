@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'paypal.standard.ipn',
     # Custom apps
     'core',
-    'userauths'
+    'userauths',
 ]
 
 MIDDLEWARE = [

@@ -543,13 +543,13 @@
                                         </div>
                                         <ul class="hover-icon">
                                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                            <li><a href="#test-popup3" class="quickview-popup-link"><i class="fa fa-eye"></i></a></li>
+                                            <li><a href="#test-popup3"><i class="fa fa-info-circle"></i></a></li>
                                             <li><a href="#"><i class="fa fa-refresh"></i></a></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="product-info common-cart-info text-center">
-                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
+                                    <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name"><strong>{{p.Name}}</strong></a>
                                     
                                     {% if p.discount %}
                                     <div><del>${{p.Price}} </del><span class="cart-price ">$<span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>

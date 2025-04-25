@@ -413,9 +413,14 @@
                             </div>
                             <div class="ci-caption">
                                 <p>Enter Your Coupon Code If you have one</p>
-                                <form>
-                                    <input required="" class="form-control" type="text" placeholder="Coupon Code">
-                                    <button class="btn btn-secondary" type="submit">Apply Coupon Code</button>
+                                <form method="POST" action="{% url 'core:cart' %}">
+                                    {% csrf_token %}
+                                    {% if coupon_code %}
+                                    <input required="" class="form-control" type="text" name='coupon' value="{{coupon_code}}" placeholder="Coupon Code" readonly>
+                                    {% else %}
+                                    <input required="" class="form-control" type="text" name='coupon' placeholder="Coupon Code">
+                                    {% endif%}
+                                    <button class="btn btn-secondary" type="submit" >Apply Coupon Code</button>
                                 </form>
                             </div>
                         </div>
@@ -428,11 +433,7 @@
                             <div class="ci-caption">
                                 <ul>
                                     <li>Subtotal<span>${{totalmoney}}</span></li>
-                                    {% if coupon %}
-                                    <li>Total<span>$<span>...</span></span></li>
-                                    {% else %}
-                                    <li>Total <span>${{totalmoney}}</span></li>
-                                    {% endif%}
+                                    <li>Total<span>$<span>{{final_amount}}</span></span></li>
                                 </ul>
                             </div>
                             <div class="ci-btn">

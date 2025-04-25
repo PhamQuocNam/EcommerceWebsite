@@ -507,11 +507,15 @@
                                                                 </tr>
                                                                 <tr class="row-5">
                                                                     <td class="text-left" colspan="3">Promotional Code</td>
-                                                                    <td class="pr_subtotal">-${{ coupon_discount|floatformat:2 }}</td>
+                                                                    {% if request.session.discount_money%}
+                                                                    <td class="pr_subtotal">-${{ request.session.discount_money|floatformat:2 }}</td>
+                                                                    {% else%}
+                                                                    <td class="pr_subtotal">-$0</td>
+                                                                    {%endif%}
                                                                 </tr>
                                                                 <tr class="row-6">
                                                                     <td class="text-left" colspan="3">Order Total</td>
-                                                                    <td class="product-subtotal">${{ total_after_discount|floatformat:2 }}</td>
+                                                                    <td class="product-subtotal">${{ request.session.totalmoney|floatformat:2 }}</td>
                                                                 </tr>
                                                             </tfoot>
                                                         </table>

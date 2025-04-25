@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
-ProductReview, Wishlist, ProductImages, Staff, Salary
+ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
 from .context_processor import default
 from core.forms import ProductReviewForm
 from django.db.models import Count, Avg
@@ -22,6 +22,7 @@ from django.db import transaction
 from decimal import Decimal
 from django.db.models import Prefetch
 from collections import defaultdict
+from django.db.models import Sum
 # Create your views here.
 
 
@@ -199,18 +200,41 @@ def add_to_cart(request):
     
 
 def cart_view(request):
-    cart_total_amount = 0
-    print(request.session)
+    cart_total_amount = request.session['totalmoney']
+    final_amount = 0
+    coupon_code = None
+
+    if request.method == "POST":
+        code = request.POST.get("coupon")
+        coupon = Coupon.objects.filter(Code=code, Active=True).first()
+        if coupon:
+            coupon_code = coupon.Code
+            request.session['applied_coupon'] = code
+            messages.success(request, "Coupon Activated")
+        else:
+            request.session.pop('applied_coupon', None)
+            messages.error(request, "Coupon Does Not Exist")
+
     if 'cart_data_obj' in request.session:
-        for p_id, item in request.session['cart_data_obj'].items():
-            cart_total_amount += int(item['Quantity'])* float(item['Price'])
+        if 'applied_coupon' in request.session:
+            applied_coupon = Coupon.objects.filter(Code=request.session['applied_coupon'], Active=True).first()
+            if applied_coupon:
+                discount_money = cart_total_amount * float(applied_coupon.Discount)
+                coupon_code = applied_coupon.Code
+                request.session['discount_money']= discount_money
+            request.session['totalmoney'] = cart_total_amount - discount_money
+        else:
+            request.session['totalmoney'] = cart_total_amount
+
         return render(request, "core/cart.html", {
             "cart_data": request.session['cart_data_obj'],
             "totalcartitems": len(request.session['cart_data_obj']),
-            'cart_total_amount': cart_total_amount
-            })    
+            "cart_total_amount": cart_total_amount,
+            "final_amount": final_amount,
+            "coupon_code": coupon_code,
+        })
     else:
-        return redirect('core:index') 
+        return redirect('core:index')
     
     
     
@@ -227,17 +251,32 @@ def delete_item_from_cart(request):
     
     cart_total_amount = 0
     if 'cart_data_obj' in request.session:
-        for item in request.session['cart_data_obj'].values():
-            qty = int(item.get('qty', 0))
-            price = float(item.get('price', 0))
-            cart_total_amount += qty * price
-       
-    context= render_to_string("core/cart-list.html",
-            {"cart_data_obj": request.session['cart_data_obj'],
-             "totalcartitems": len(request.session['cart_data_obj']),
-            'cart_total_amount': cart_total_amount})
-
-    print(context)
+        for p_id, item in request.session['cart_data_obj'].items():
+            cart_total_amount += int(item['Quantity'])* float(item['Price'])
+    
+    if 'applied_coupon' in request.session:
+        applied_coupon = Coupon.objects.filter(Code=request.session['applied_coupon'], Active=True).first()
+        if applied_coupon:
+            discount_money = cart_total_amount * float(applied_coupon.Discount)
+            request.session['discount_money']= discount_money
+        request.session['totalmoney'] = cart_total_amount - discount_money
+        context = render_to_string("core/cart-list.html", {
+            "cart_data_obj": request.session['cart_data_obj'],
+            "totalcartitems": len(request.session['cart_data_obj']),   
+            "totalmoney": cart_total_amount,
+            "final_amount": request.session['totalmoney'],
+            "coupon_code": request.session['applied_coupon'],
+        })
+    else:
+        request.session['totalmoney'] = cart_total_amount
+        
+        context = render_to_string("core/cart-list.html", {
+            "cart_data_obj": request.session['cart_data_obj'],
+            "totalcartitems": len(request.session['cart_data_obj']),   
+            "totalmoney": cart_total_amount,
+            "final_amount": cart_total_amount
+        })
+    
     return JsonResponse({
         "data":context,
         "cart_data_obj": request.session['cart_data_obj'],
@@ -250,7 +289,8 @@ def update_items_cart(request):
     
     ids = request.GET.get('ids').split(',')
     quantities = [int(float(num)) for num in request.GET.get('quantities').split(',')]
-
+    
+    
     cart_total_amount=0
     for i in range(len(ids)):
         if 'cart_data_obj' in request.session:
@@ -264,14 +304,28 @@ def update_items_cart(request):
                     request.session['cart_data_obj'] = cart_data
             
             cart_total_amount += product_qty * float(cart_data[product_id]['Price'])
-    request.session['totalmoney']= cart_total_amount
-    
-    context = render_to_string("core/cart-list.html", {
-        "cart_data_obj": request.session['cart_data_obj'],
-        "totalcartitems": len(request.session['cart_data_obj']),   
-        "totalmoney": cart_total_amount,
-         
-    })
+    if 'applied_coupon' in request.session:
+        applied_coupon = Coupon.objects.filter(Code=request.session['applied_coupon'], Active=True).first()
+        if applied_coupon:
+            discount_money = cart_total_amount * float(applied_coupon.Discount)
+            request.session['discount_money']= discount_money
+        request.session['totalmoney'] = cart_total_amount - discount_money
+        context = render_to_string("core/cart-list.html", {
+            "cart_data_obj": request.session['cart_data_obj'],
+            "totalcartitems": len(request.session['cart_data_obj']),   
+            "totalmoney": cart_total_amount,
+            "final_amount": request.session['totalmoney'],
+            "coupon_code": request.session['applied_coupon'],
+        })
+    else:
+        request.session['totalmoney'] = cart_total_amount
+        
+        context = render_to_string("core/cart-list.html", {
+            "cart_data_obj": request.session['cart_data_obj'],
+            "totalcartitems": len(request.session['cart_data_obj']),   
+            "totalmoney": cart_total_amount,
+            "final_amount": cart_total_amount
+        })
     
     return JsonResponse({
         "data": context,
@@ -364,23 +418,37 @@ def address_view(request):
 
 
 def order_history_view(request):
-    order_list = Order_Detail.objects.filter(user = request.user).order_by("-ID_Order_Detail")
-    context={
-        'Order_list': order_list
+    orders = Order_Detail.objects.filter(user=request.user) \
+        .annotate(items_count=Count('order_item')) \
+        .order_by('-Date')
+    
+    order_list =[]
+    for order in orders.values():
+        order['Date']= str(order['Date'])
+        order['Total_Price'] = float(order['Total_Price'])
+        order['Payment_Status']= int(order['Payment_Status'])
+        order_list.append(order)
+        
+    context = {
+        'order_list': order_list
     }
     return render(request,'core/order-history.html', context)
 
 
 def track_order_view(request):
-    order_list = Order_Detail.objects.filter(user=request.user, Delivery_Status='process').order_by("-Date")
-    item_lists = []
+    orders = Order_Detail.objects.filter(user=request.user).order_by("-Date")
+    
+    order_data = []
 
-    for order in order_list:
-        item_list = Order_Item.objects.filter(order_detail=order)
-        item_lists.append(item_list)
-    print(item_lists)
+    for order in orders:
+        items = Order_Item.objects.filter(order_detail=order).select_related('product')
+        order_data.append({
+            'order': order,
+            'items': items
+        })
+
     context = {
-        'item_lists': item_lists
+        'order_data': order_data
     }
 
     return render(request, "core/track-order.html", context)
@@ -598,5 +666,95 @@ def inventory_management(request):
         "categories": categories
     }
     return render(request, "core/inventory-management.html", context)
+
+
+
+###load orders from database
+def customer_orders(request):
+    orders = []
+
+    for order in Order_Detail.objects.all().order_by('-Date'):
+        items = Order_Item.objects.filter(order_detail=order)
+        item_count = sum(item.Quantity for item in items)
+
+        order_items = []
+        for item in items:
+            product = item.product
+            image = ProductImages.objects.filter(product=product).first()
+            image_url = request.build_absolute_uri(image.image.url) if image and hasattr(image, 'image') else "https://via.placeholder.com/80"
+
+            order_items.append({
+                "name": product.Name,
+                "sku": product.ID_Product,
+                "quantity": item.Quantity,
+                "price": float(item.Total),
+                "image": image_url
+            })
+
+        customer = order.user
+        customer_name = customer.username if customer else "Anonymous"
+        customer_email = customer.email if customer else ""
+        customer_phone = getattr(customer, "phone", "") if customer else ""
+
+        payment = order.Payment
+        payment_method = payment.Method if payment else "N/A"
+
+        orders.append({
+            "id": order.ID_Order_Detail,
+            "customer": customer_name,
+            "date": order.Date.strftime("%Y-%m-%d"),
+            "items": item_count,
+            "total": float(order.Total_Price),
+            "status": order.Delivery_Status.lower(),
+            "customerEmail": customer_email,
+            "customerPhone": customer_phone,
+            "shippingAddress": getattr(order, "Address", ""),
+            "paymentMethod": payment_method,
+            "shippingCarrier": getattr(order, "Shipping_Carrier", ""),
+            "trackingNumber": getattr(order, "Tracking_Number", ""),
+            "estimatedDelivery": order.Date.strftime("%Y-%m-%d"),
+            "orderItems": order_items
+        })
+
+    return JsonResponse({"orders": orders})
+#update from web to database
+@csrf_exempt
+def update_order_status(request, order_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_status = data.get('status')
+
+            order = Order_Detail.objects.get(ID_Order_Detail=order_id)
+            order.Delivery_Status = new_status
+            order.save()
+
+            return JsonResponse({'message': 'Order status updated successfully'})
+        except Order_Detail.DoesNotExist:
+            return JsonResponse({'error': 'Order not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+#API for order statistics
+def order_stats(request):
+    
+    try:
+
+        total_orders = Order_Detail.objects.count()
+
+        pending_orders = Order_Detail.objects.filter(Delivery_Status='pending').count()
+        processing_orders = Order_Detail.objects.filter(Delivery_Status='process').count()
+
+        total_revenue = Order_Detail.objects.aggregate(total=Sum('Total_Price'))['total'] or 0
+        return JsonResponse({
+            'total_orders': total_orders,
+            'pending_orders': pending_orders,
+            'processing_orders': processing_orders,
+            'total_revenue': float(total_revenue)
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 

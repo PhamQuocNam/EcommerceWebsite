@@ -1,3 +1,4 @@
+
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -534,71 +535,66 @@
                         <button type="submit" class="track-btn">Track Order</button>
                     </form>
                     
-                    <!-- Tracking Status Example (visible after search) -->
+                    {% for entry in order_data %}
+                    {% with order=entry.order items=entry.items %}
+                    
                     <div class="tracking-container">
+                        
                         <div class="order-summary">
                             <div class="order-info">
-                                <h3>Order #ATZ-7842</h3>
-                                <p>Placed on May 15, 2023 at 10:30 AM</p>
-                                <p>Estimated delivery: May 20, 2023</p>
+                                <h3>Order #{{ order.ID_Order_Detail }}</h3>
+                                <p>Placed on {{ order.Date|date:"F d, Y \\a\\t h:i A" }}</p>
+                                <p>Total: ${{ order.Total_Price }}</p>
                             </div>
                             <div>
-                                <span class="order-status-badge status-shipped">Shipped</span>
+                                <span class="order-status-badge 
+                                    {% if order.Delivery_Status == 'shipped' %}status-shipped
+                                    {% elif order.Delivery_Status == 'delivered' %}status-delivered
+                                    {% elif order.Delivery_Status == 'cancelled' %}status-cancelled
+                                    {% else %}status-processing{% endif %}">
+                                    {{ order.Delivery_Status|title }}
+                                </span>
                             </div>
                         </div>
-                            
-                            
+
                         
                         <div class="order-items">
                             <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Order Items</h3>
-                            
+                            {% for item in items %}
                             <div class="order-item">
-                                <img src="{% static 'image/product-sample.jpg' %}" alt="Product" class="item-image">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" class="item-image">
                                 <div class="item-details">
-                                    <div class="item-name">Wireless Bluetooth Headphones</div>
-                                    <div class="item-sku">SKU: WH-2023-BK</div>
-                                    <div class="item-price">$89.99</div>
+                                    <div class="item-name">{{ item.product.title }}</div>
+                                    <div class="item-sku">SKU: {{ item.product.sku }}</div>
+                                    <div class="item-price">${{ item.Total }}</div>
                                 </div>
                             </div>
-                            
-                            <div class="order-item">
-                                <img src="{% static 'image/product-sample-2.jpg' %}" alt="Product" class="item-image">
-                                <div class="item-details">
-                                    <div class="item-name">Smartphone Case</div>
-                                    <div class="item-sku">SKU: SC-2023-BL</div>
-                                    <div class="item-price">$19.99</div>
-                                </div>
-                            </div>
-                            
-                            <div class="order-item">
-                                <img src="{% static 'image/product-sample-3.jpg' %}" alt="Product" class="item-image">
-                                <div class="item-details">
-                                    <div class="item-name">Screen Protector</div>
-                                    <div class="item-sku">SKU: SP-2023-01</div>
-                                    <div class="item-price">$9.99</div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
+
                         
                         <div class="delivery-info">
                             <div class="info-card">
                                 <h4><i class="fas fa-truck"></i> Shipping Information</h4>
-                                <p><strong>Carrier:</strong> FedEx</p>
-                                <p><strong>Tracking Number:</strong> 1234567890</p>
+                                <p><strong>Carrier:</strong> {{ order.Note|default:"FedEx" }}</p>
+                                <p><strong>Tracking Number:</strong> {{ order.ID_Order_Detail }}</p>
                                 <p><strong>Service:</strong> Standard (3-5 business days)</p>
-                                <a href="#" style="color: var(--primary); font-size: 0.875rem; display: inline-block; margin-top: 0.5rem;">Track on FedEx website</a>
+                                <a href="#" style="color: var(--primary); font-size: 0.875rem;">Track on FedEx website</a>
                             </div>
-                            
+
                             <div class="info-card">
                                 <h4><i class="fas fa-map-marker-alt"></i> Delivery Address</h4>
-                                <p><strong>John Doe</strong></p>
-                                <p>123 Main Street</p>
-                                <p>Apartment 4B</p>
-                                <p>New York, NY 10001</p>
-                                <p>United States</p>
+                                <p><strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong></p>
+                                <p>{{ order.user.profile.address }}</p>
+                                <p>{{ order.user.profile.city }}</p>
+                                <p>{{ order.user.profile.postal_code }}</p>
+                                <p>{{ order.user.profile.country }}</p>
                             </div>
                         </div>
                     </div>
+
+                    {% endwith %}
+                {% endfor %}
                     
                     <!-- Empty State (hidden when tracking info is shown) -->
                     <!-- <div class="empty-state">

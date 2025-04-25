@@ -7,10 +7,12 @@ import sklearn
 from sklearn.decomposition import TruncatedSVD
 import numpy as np
 
-model = OllamaLLM(model = "llama3.2")
-query = '''SELECT * FROM core_productreview'''
+model = OllamaLLM(model = "qwen2.5:0.5b")
+productreview_query = '''SELECT * FROM core_productreview'''
 conn = sqlite3.connect("db.sqlite3")
-df = pd.read_sql_query(query, conn)
+productreview = pd.read_sql_query(productreview_query, conn)
+
+
 
 def weighted_rating(x, m, C):
     v = x['count']
@@ -31,7 +33,7 @@ def Answer_Question(question):
     chain = prompt | model
     
     response = retriever.invoke(question)
-
+    
     result = chain.invoke({"response": response, "question": question})
     return result
 
@@ -40,19 +42,18 @@ def Answer_Question(question):
 
 def Recommendation_System_Type_1():    
     
-    
     # Calculate average rating per product
-    rating = df[['product_id', 'Rating']].groupby('product_id').mean()
-    products= pd.DataFrame(df['product_id'].value_counts())
+    rating = productreview[['product_id', 'Rating']].groupby('product_id').mean()
+    products= pd.DataFrame(productreview['product_id'].value_counts())
     
     # Merge rating with product dataframe
     products = products.merge(rating, how='left', on='product_id')
     
     # Compute the mean rating across all reviews
-    C = df['Rating'].mean()
+    C = productreview['Rating'].mean()
     
     # Compute the minimum number of votes required to be considered (e.g., 70th percentile)
-    m = df['product_id'].value_counts().quantile(0.7)
+    m = productreview['product_id'].value_counts().quantile(0.7)
     
     qualified = products[products['count'] >= m].copy()
 
@@ -65,7 +66,7 @@ def Recommendation_System_Type_1():
 
 def Recommendation_System_Type_2(product_ID):
     
-    ratings_utility_matrix = df.pivot_table(values='Rating', index='user_id', columns='product_id', fill_value=0)
+    ratings_utility_matrix = productreview.pivot_table(values='Rating', index='user_id', columns='product_id', fill_value=0)
     X = ratings_utility_matrix.T
     SVD = TruncatedSVD(n_components=10)
     decomposed_matrix = SVD.fit_transform(X)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, Order_Detail, \
-ProductReview, Wishlist, ProductImages, Staff, Salary
+ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
 
 # Register your models here.
 
@@ -44,6 +44,9 @@ class StaffAdmin(admin.ModelAdmin):
 
 class SalaryAdmin(admin.ModelAdmin):
     list_display=['ID_Salary','staff','Date','Desc','Salary','Bonus']
+
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['Code', 'Discount', 'Active']
     
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Product_Category, CategoryAdmin)
@@ -56,6 +59,7 @@ admin.site.register(Wishlist, WishlistAdmin)
 admin.site.register(Order_Item, OrderItemAdmin)
 admin.site.register(Staff,StaffAdmin)
 admin.site.register(Salary,SalaryAdmin)
+admin.site.register(Coupon, CouponAdmin)
 
 
 

@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/function.js' %}" defer></script>
     <title>Order Management System</title>
     <style>
         :root {
@@ -370,19 +372,19 @@
         <div class="stats-cards">
             <div class="stat-card">
                 <h3>Total Orders</h3>
-                <p>1,248</p>
+                <p id="total-orders">...</p>
             </div>
             <div class="stat-card">
                 <h3>Pending</h3>
-                <p>42</p>
+                <p id="pending-orders">...</p>
             </div>
             <div class="stat-card">
                 <h3>Processing</h3>
-                <p>18</p>
+                <p id="processing-orders">...</p>
             </div>
             <div class="stat-card">
                 <h3>Revenue</h3>
-                <p>$24,580</p>
+                <p id="total-revenue">...</p>
             </div>
         </div>
         
@@ -399,18 +401,18 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="orders-body">
                     <!-- Orders will be populated by JavaScript -->
                 </tbody>
             </table>
         </div>
         
         <div class="pagination">
-            <button>Previous</button>
-            <button class="active">1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>Next</button>
+            <button id="prevPage" onclick="changePage('prev')">Previous</button>
+            <button id="page1" onclick="changePage(1)" class="active">1</button>
+            <button id="page2" onclick="changePage(2)">2</button>
+            <button id="page3" onclick="changePage(3)">3</button>
+            <button id="nextPage" onclick="changePage('next')">Next</button>
         </div>
     </div>
     
@@ -508,157 +510,31 @@
     </div>
     
     <script>
-        // Sample order data
-        const orders = [
-            {
-                id: "1001",
-                customer: "John Doe",
-                date: "2023-05-15",
-                items: 3,
-                total: 141.41,
-                status: "processing",
-                customerEmail: "john.doe@example.com",
-                customerPhone: "+1 (555) 123-4567",
-                shippingAddress: "123 Main Street, Apt 4B, New York, NY 10001, United States",
-                paymentMethod: "Credit Card (Visa ****4242)",
-                shippingCarrier: "FedEx",
-                trackingNumber: "1234567890",
-                estimatedDelivery: "2023-05-20",
-                orderItems: [
-                    {
-                        name: "Wireless Bluetooth Headphones",
-                        sku: "HP-BT-2023",
-                        quantity: 1,
-                        price: 99.99,
-                        image: "https://via.placeholder.com/80"
-                    },
-                    {
-                        name: "Phone Charging Cable",
-                        sku: "CAB-USB-2023",
-                        quantity: 2,
-                        price: 12.99,
-                        image: "https://via.placeholder.com/80"
-                    }
-                ]
-            },
-            {
-                id: "1002",
-                customer: "Jane Smith",
-                date: "2023-05-14",
-                items: 1,
-                total: 59.99,
-                status: "pending",
-                customerEmail: "jane.smith@example.com",
-                customerPhone: "+1 (555) 987-6543",
-                shippingAddress: "456 Oak Avenue, Suite 200, Los Angeles, CA 90001, United States",
-                paymentMethod: "PayPal",
-                shippingCarrier: "",
-                trackingNumber: "",
-                estimatedDelivery: "",
-                orderItems: [
-                    {
-                        name: "Smart Watch",
-                        sku: "SW-2023",
-                        quantity: 1,
-                        price: 59.99,
-                        image: "https://via.placeholder.com/80"
-                    }
-                ]
-            },
-            {
-                id: "1003",
-                customer: "Robert Johnson",
-                date: "2023-05-13",
-                items: 2,
-                total: 34.98,
-                status: "shipped",
-                customerEmail: "robert.j@example.com",
-                customerPhone: "+1 (555) 456-7890",
-                shippingAddress: "789 Pine Road, Chicago, IL 60601, United States",
-                paymentMethod: "Credit Card (Mastercard ****5555)",
-                shippingCarrier: "USPS",
-                trackingNumber: "9876543210",
-                estimatedDelivery: "2023-05-18",
-                orderItems: [
-                    {
-                        name: "USB Flash Drive 64GB",
-                        sku: "USB-64-2023",
-                        quantity: 1,
-                        price: 14.99,
-                        image: "https://via.placeholder.com/80"
-                    },
-                    {
-                        name: "Screen Protector",
-                        sku: "SP-PH-2023",
-                        quantity: 1,
-                        price: 19.99,
-                        image: "https://via.placeholder.com/80"
-                    }
-                ]
-            },
-            {
-                id: "1004",
-                customer: "Emily Davis",
-                date: "2023-05-12",
-                items: 5,
-                total: 75.45,
-                status: "delivered",
-                customerEmail: "emily.d@example.com",
-                customerPhone: "+1 (555) 321-6547",
-                shippingAddress: "321 Elm Street, Boston, MA 02101, United States",
-                paymentMethod: "Credit Card (Amex ****1004)",
-                shippingCarrier: "UPS",
-                trackingNumber: "4567891230",
-                estimatedDelivery: "2023-05-15",
-                orderItems: [
-                    {
-                        name: "Wireless Mouse",
-                        sku: "WM-2023",
-                        quantity: 1,
-                        price: 24.99,
-                        image: "https://via.placeholder.com/80"
-                    },
-                    {
-                        name: "Keyboard",
-                        sku: "KB-2023",
-                        quantity: 1,
-                        price: 39.99,
-                        image: "https://via.placeholder.com/80"
-                    },
-                    {
-                        name: "Mouse Pad",
-                        sku: "MP-2023",
-                        quantity: 3,
-                        price: 3.49,
-                        image: "https://via.placeholder.com/80"
-                    }
-                ]
-            },
-            {
-                id: "1005",
-                customer: "Michael Brown",
-                date: "2023-05-11",
-                items: 1,
-                total: 299.99,
-                status: "cancelled",
-                customerEmail: "michael.b@example.com",
-                customerPhone: "+1 (555) 789-0123",
-                shippingAddress: "654 Maple Lane, Seattle, WA 98101, United States",
-                paymentMethod: "Credit Card (Visa ****1005)",
-                shippingCarrier: "",
-                trackingNumber: "",
-                estimatedDelivery: "",
-                orderItems: [
-                    {
-                        name: "Tablet",
-                        sku: "TAB-2023",
-                        quantity: 1,
-                        price: 299.99,
-                        image: "https://via.placeholder.com/80"
-                    }
-                ]
+        let orders = [];
+    
+        fetch('/order-stats/')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Error from API:", data.error);
+            } else {
+                document.getElementById('total-orders').textContent = data.total_orders.toLocaleString();
+                document.getElementById('pending-orders').textContent = data.pending_orders;
+                document.getElementById('processing-orders').textContent = data.processing_orders;
+                document.getElementById('total-revenue').textContent = '$' + data.total_revenue.toLocaleString();
             }
-        ];
+        })
+        .catch(err => console.error("Failed to fetch order stats:", err));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/customer_orders/')
+                .then(res => res.json())
+                .then(data => {
+                    orders = data.orders;
+                    renderOrders(filterOrders());
+                });
+        });
+
         
         // DOM elements
         const ordersTableBody = document.querySelector('.orders-table tbody');
@@ -674,6 +550,8 @@
             
             ordersToRender.forEach(order => {
                 const row = document.createElement('tr');
+                console.log(`Order #${order.id} - Status: ${order.status}`);
+
                 
                 // Format date
                 const formattedDate = new Date(order.date).toLocaleDateString('en-US', {
@@ -698,13 +576,51 @@
                     <td>
                         <button class="action-btn btn-view" data-id="${order.id}">View</button>
                         ${order.status === 'pending' ? '<button class="action-btn btn-process" data-id="' + order.id + '">Process</button>' : ''}
-                        ${order.status === 'processing' ? '<button class="action-btn btn-ship" data-id="' + order.id + '">Ship</button>' : ''}
+                        ${order.status === 'process' ? '<button class="action-btn btn-ship" data-id="' + order.id + '">Ship</button>' : ''}
                         ${order.status !== 'delivered' && order.status !== 'cancelled' ? '<button class="action-btn btn-cancel" data-id="' + order.id + '">Cancel</button>' : ''}
                     </td>
                 `;
                 
                 ordersTableBody.appendChild(row);
             });
+
+            // Update order status
+            function updateOrderStatus(orderId, newStatus) {
+                const orderIndex = orders.findIndex(o => o.id === orderId);
+                
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = newStatus;
+
+                    fetch(`/${orderId}/status/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        renderOrders(filterOrders());
+                        alert(`Order #${orderId} status updated to ${newStatus}`);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+
+            // CSRF token (in case using CSRF)
+            function getCSRFToken() {
+                let csrfToken = null;
+                const cookies = document.cookie.split(';');
+                cookies.forEach(cookie => {
+                    if (cookie.trim().startsWith('csrftoken=')) {
+                        csrfToken = cookie.trim().split('=')[1];
+                    }
+                });
+                return csrfToken;
+            }
             
             // Add event listeners to view buttons
             document.querySelectorAll('.btn-view').forEach(button => {
@@ -866,7 +782,9 @@
                 filtered = filtered.filter(order => 
                     order.id.includes(searchTerm) || 
                     order.customer.toLowerCase().includes(searchTerm)
+                ); // ← Đã thêm dấu đóng ở đây
             }
+
             
             // Apply status filter
             if (statusFilterValue !== 'all') {
@@ -900,6 +818,7 @@
             
             return filtered;
         }
+        
         
         // Event listeners
         searchInput.addEventListener('input', () => {
