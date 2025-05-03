@@ -494,13 +494,14 @@
                                         </div>
                                         <div id="review-res"></div>
 
-                                        <form class="add-review-form hide-comment-form" action="{% url 'core:ajax-add-review' product.ID_Product %}"  method="POST" id="commentForm">
+                                        <form class="add-review-form hide-comment-form" action="{% url 'core:ajax-add-review' product.ID_Product %}" id="commentForm" method="POST">
+                                        
                                             {% csrf_token %}
                                             <div>{{review_form.review}}</div>
                                             <div class="reviews-img" >{{review_form.Rating}}</div>
                                             
                                             <div class="input-btn">
-                                                <button type="submit" class="btn btn-secondary">Submit</button>
+                                                <button class="btn btn-secondary" >Submit</button>
                                             </div>
                                         </form>
                                     </div>

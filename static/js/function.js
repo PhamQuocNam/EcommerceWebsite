@@ -6,7 +6,7 @@ $("#commentForm").submit(function(e){
     $.ajax({
         data: $(this).serialize(),
 
-        method: $(this).attr("method"),
+        method: 'GET',
 
         url : $(this).attr("action"),
 
@@ -22,7 +22,7 @@ $("#commentForm").submit(function(e){
         }
         })
 
-})
+}) 
 
 $(".add-to-cart-btn").on("click", function(){
 

@@ -5,7 +5,6 @@ from userauths.models import User
 from taggit.managers import TaggableManager
 from ckeditor_uploader.fields import RichTextUploadingField
 
-# Create your models here.
 
 STATUS_CHOICE = [
         ('process', 'Processing'),
@@ -39,7 +38,15 @@ RATING = [
 def user_directory_path(instance, filename):
     return 'user_{0}/{1}'.format(instance.Name, filename)
 
+################################### Product Management ################################
+
+
 class Discount(models.Model):
+    """
+    Represents a discount campaign that can be applied to products to reduce their price.
+    Includes discount percentage, name, description, and optional image.
+    """
+    
     ID_Discount= ShortUUIDField(unique=True, length=10, max_length=20, prefix="DISCOUNT", alphabet='abcdefgh12345')
     Name = models.CharField(max_length=100)
     Desc= models.TextField(null=True, blank=True, default ='This is the discount')
@@ -65,9 +72,14 @@ class Discount(models.Model):
         return self.Name 
     
     
-    
+
     
 class Product_Inventory(models.Model):
+    """
+    Tracks inventory details for products, including quantity, unit of measure, and last update time.
+    Used to manage stock availability.
+    """
+    
     ID_Product_Inventory= ShortUUIDField(unique=True, length=10, max_length=20, prefix='INVENTORY',alphabet='abcdefgh12345' )    
     Name = models.CharField(max_length=100)
     Unit= models.CharField(max_length=100, default='Kilogram')
@@ -88,6 +100,11 @@ class Product_Inventory(models.Model):
     
 
 class Product_Category(models.Model):
+    """
+    Categorizes products into logical groups for navigation and filtering (e.g., Electronics, Clothing).
+    Includes a description and image for better UX.
+    """
+    
     ID_Product_Category= ShortUUIDField(unique=True, length=10, max_length=20, prefix='CAT',alphabet='abcdefgh12345')
     Name = models.CharField(max_length=100)
     #Desc= models.TextField(null=True, blank=True, default ='This is the discount')
@@ -106,12 +123,16 @@ class Product_Category(models.Model):
     def get_desc(self):
         return self.Desc
     
-    
+
     
 class Product(models.Model):
+    """
+    Represents a product available in the store. 
+    Includes pricing, description, image, inventory reference, category, discount, and tags.
+    """
+    
     ID_Product= ShortUUIDField(unique=True, length =10, max_length=20, prefix="P", alphabet='abcdefgh12345') 
     Name = models.CharField(max_length=100)
-    #Desc= models.TextField(null=True, blank=True, default ='This is the product')
     Desc= RichTextUploadingField(null=True, blank=True, default ='This is the product')
     Price = models.DecimalField(max_digits= 10, decimal_places=2, default="0")
     Cost = models.DecimalField(max_digits= 10, decimal_places=2, default="0")
@@ -138,9 +159,26 @@ class Product(models.Model):
                 return (1-self.discount.Discount_Percent)*self.Price
             return self.Price
 
+
+class ProductImages(models.Model):
+    """
+    Stores additional images for a product, supporting multiple product views.
+    Related to a single product.
+    """
     
+    images = models.ImageField(upload_to='product-image', default="product.jpg")
+    product = models.ForeignKey(Product,related_name='p_images', on_delete=models.SET_NULL, null=True, blank=True)
+    date= models.DateTimeField(auto_now_add=True)
+    
+
+################################### Order Management ################################
+
     
 class Payment(models.Model):
+    """
+    Stores payment details for a user's order.
+    Includes method, total amount, and description.
+    """
     user = models.ForeignKey(User, on_delete= models.SET_NULL, null=True)
     ID_Payment= ShortUUIDField(unique=True, length=10, max_length=20, prefix="PAY")
     Desc= models.TextField(null=True, blank=True, default ='This is the payment')
@@ -156,6 +194,11 @@ class Payment(models.Model):
     
     
 class Order_Detail(models.Model):
+    """
+    Represents an order placed by a user.
+    Includes payment info, total price, delivery status, and optional note.
+    """
+    
     ID_Order_Detail = ShortUUIDField(unique= True, length=10, max_length=20, prefix="ORDER", alphabet='abcdefgh12345') 
     user = models.ForeignKey(User, on_delete= models.SET_NULL, null=True)
     Payment= models.ForeignKey(Payment,on_delete= models.SET_NULL, null=True)
@@ -169,6 +212,11 @@ class Order_Detail(models.Model):
     
         
 class Order_Item(models.Model):
+    """
+    Represents individual items within an order.
+    Stores quantity, product reference, and subtotal for each item.
+    """
+    
     product =  models.ForeignKey(Product, on_delete= models.SET_NULL, null=True)
     order_detail= models.ForeignKey(Order_Detail, on_delete=models.SET_NULL, null=True)
     Quantity = models.IntegerField(default=1)
@@ -184,10 +232,28 @@ class Order_Item(models.Model):
 
 
 
-################################### Product Review, wishlists, Address #####################
+class Coupon(models.Model):
+    """
+    Represents a promo code or coupon that users can apply at checkout.
+    Includes discount amount and active status.
+    """
+    
+    Code = models.CharField(max_length=100)
+    Discount = models.DecimalField(max_digits=10, decimal_places=2, default="0.1")
+    Active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.Code
+
+
+################################### Product Review, wishlists ################################
 
 
 class ProductReview(models.Model):
+    """
+    Stores product reviews written by users.
+    Includes star rating, rich text review content, and review date.
+    """
     ID_ProductReview= ShortUUIDField(unique= True, length=10, max_length=20, prefix="REVIEW", alphabet='abcdefgh12345')
     user= models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='reviews')
@@ -206,6 +272,11 @@ class ProductReview(models.Model):
     
 
 class Wishlist(models.Model):
+    """
+    Tracks products a user has favorited or saved for later.
+    One entry per user-product combination.
+    """
+    
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     Date =models.DateTimeField(auto_now_add=True)
@@ -221,21 +292,19 @@ class Wishlist(models.Model):
     
     
 
-class ProductImages(models.Model):
-    
-    images = models.ImageField(upload_to='product-image', default="product.jpg")
-    product = models.ForeignKey(Product,related_name='p_images', on_delete=models.SET_NULL, null=True, blank=True)
-    date= models.DateTimeField(auto_now_add=True)
-    
 
-########################### Staff Management ##########################3
+########################### Staff Management ##########################
 
 
 
 class Staff(models.Model):
+    """
+    Stores information about employees/staff members.
+    Includes ID card number, birthday, job position, and start date.
+    """
+    
     ID_Staff = ShortUUIDField(unique=True, length =10, max_length=20, prefix="STAFF", alphabet='abcdefgh12345') 
     user= models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    
     ID_card = models.CharField(max_length=20, null=False)
     Started = models.DateTimeField(null=True, blank=True)
     Birthday= models.DateTimeField(null=True, blank=True)
@@ -246,6 +315,11 @@ class Staff(models.Model):
     
     
 class Salary(models.Model):
+    """
+    Stores salary payment information for a staff member.
+    Includes salary amount, bonus, and payment date.
+    """
+    
     ID_Salary = ShortUUIDField(unique=True, length =10, max_length=20, prefix="SALARY", alphabet='abcdefgh12345') 
     staff= models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     Date = models.DateTimeField(null=True, blank=True)
@@ -258,13 +332,6 @@ class Salary(models.Model):
         
 
 
-class Coupon(models.Model):
-    Code = models.CharField(max_length=100)
-    Discount = models.DecimalField(max_digits=10, decimal_places=2, default="0.1")
-    Active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.Code
         
         
 

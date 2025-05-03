@@ -1,70 +1,65 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
-ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
-from .context_processor import default
-from core.forms import ProductReviewForm
-from django.db.models import Count, Avg
-from django.http import JsonResponse
-from django.template.loader import render_to_string
-import json
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.template.loader import render_to_string
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from paypal.standard.forms import PayPalPaymentsForm
-import uuid
-from taggit.models import Tag
-from .AI_model import Answer_Question, Recommendation_System_Type_1
-from userauths.models import Profile
-from django.contrib.auth.hashers import check_password
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password
 from django.db import transaction
+from django.db.models import Count, Avg, Prefetch, Sum
 from decimal import Decimal
-from django.db.models import Prefetch
 from collections import defaultdict
-from django.db.models import Sum
-# Create your views here.
+from paypal.standard.forms import PayPalPaymentsForm
+from taggit.models import Tag
+import uuid
+import json
+
+# App-specific imports
+from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
+    ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
+from core.forms import ProductReviewForm
+from userauths.models import Profile
+
+from .RAG_system.RAG import Answer_Question
+from .Recommendation_system import Recommendation_System_Type_1
 
 
 def index(request):
+    """Homepage view showing all products and recommendations"""
     categories = Product_Category.objects.all()
-    products= Product.objects.all()
-    recommended_ids= Recommendation_System_Type_1()
+    products = Product.objects.all()
+    recommended_ids = Recommendation_System_Type_1()
     recommended_products = list(Product.objects.filter(id__in=recommended_ids))
-    
+
     saleoff_products = Product.objects.filter(discount__Active=True)
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
     fruit_products = Product.objects.filter(category__ID_Product_Category="CAT001")
-    
     campaigns = Discount.objects.filter(Active=True)
-    context ={
-     "products": products,
-     "categories": categories,
-     "recommended_products": recommended_products,
-     "dessert_products": dessert_products,
-     "fruit_products":fruit_products,
-     'saleoff_products': saleoff_products,
-     'campaigns': campaigns
-    }
-    
-    return render(request,'core/index.html',context)
 
+    context = {
+        "products": products,
+        "categories": categories,
+        "recommended_products": recommended_products,
+        "dessert_products": dessert_products,
+        "fruit_products": fruit_products,
+        'saleoff_products': saleoff_products,
+        'campaigns': campaigns
+    }
+
+    return render(request, 'core/index.html', context)
 
 
 def category_list_view(request):
+    """Lists all product categories"""
     categories = Product_Category.objects.all()
-    
-    context = {
-        "categories": categories
-    }
-    return render(request, 'core/category-list.html', context)
+    return render(request, 'core/category-list.html', {"categories": categories})
+
 
 def product_list_view(request):
+    """Lists all products"""
     products = Product.objects.all()
-    context = {
-        'products': products
-    }
-    return render(request, 'core/product-list.html', context)
+    return render(request, 'core/product-list.html', {'products': products})
 
 
 def category_product_list_view(request, cid):
@@ -77,6 +72,7 @@ def category_product_list_view(request, cid):
         'products':products
     }
     return render(request, "core/category-product-list.html", context)
+
 
 
 def product_detail_view(request, pid ):
@@ -107,6 +103,8 @@ def product_detail_view(request, pid ):
     
     return render(request, "core/product-detail.html", context)
 
+
+
 def tag_list(request, tag_slug=None):
     product= Product.objects.all().order_by("-ID_Product")
     tag =None
@@ -121,29 +119,33 @@ def tag_list(request, tag_slug=None):
 
 
 def ajax_add_review(request, pid):
-    product = Product.objects.get(ID_Product=pid)
-    user = request.user
     
-    review = ProductReview.objects.create(
-        user=user,
-        product=product,
-        Review = request.POST['review'],
-        Rating= request.POST['Rating']
-    )
-    
-    context= {
-        'user': user.username,
-        'review': request.POST['review'],
-        'rating': request.POST['Rating'],
+    if request.POST:
+        product = Product.objects.get(ID_Product=pid)
+        user = request.user
         
-    }
+        review = ProductReview.objects.create(
+            user=user,
+            product=product,
+            Review = request.POST['review'],
+            Rating= request.POST['Rating']
+        )
+        
+        context= {
+            'user': user.username,
+            'review': request.POST['review'],
+            'rating': request.POST['Rating'],
+            
+        }
+        
+        average_reviews = ProductReview.objects.filter(product=product).aggregate(Rating=Avg("Rating"))
+        
+        return JsonResponse({
+            'bool': True,
+            'context': context,
+            'avg_reviews': average_reviews
+        })
     
-    average_reviews = ProductReview.objects.filter(product=product).aggregate(Rating=Avg("Rating"))
-    return JsonResponse({
-        'bool': True,
-        'context': context,
-        'avg_reviews': average_reviews
-    })
     
     
 def search_view(request):
@@ -156,7 +158,6 @@ def search_view(request):
         "query": query,
         "categories": categories
     }
-    
     return render(request,  "core/search.html", context)
 
 
@@ -355,7 +356,8 @@ def checkout_view(request):
     if 'cart_data_obj' in request.session:
         cart_data = request.session['cart_data_obj']
         for p_id, item in cart_data.items():
-            cart_total_amount += int(float(item['Price'])) * int(item['Quantity'])
+            cart_data[p_id]['subtotal']= float(item['Price']) * int(item['Quantity'])
+            cart_total_amount += cart_data[p_id]['subtotal']
         return render(request,"core/checkout.html",{
                 "cart_data": cart_data,
                 "totalcartitem": len(cart_data),
@@ -378,8 +380,11 @@ def payment_completed_view(request):
         "cart_total_amount": cart_total_amount
     })
     
+    
+    
 def payment_failed_view(request):
     return render(request, "core/payment-failed.html")
+
 
 
 
@@ -458,6 +463,8 @@ def track_order_view(request):
 def contact_view(request):
     return render(request, "core/contact.html")
 
+
+
 def change_password_view(request):
     user = request.user
     if request.method == 'POST':
@@ -477,6 +484,8 @@ def change_password_view(request):
             messages.error(request, 'Old password is incorrect')
             return redirect('core:change_password')
     return render(request, "core/change-password.html")
+
+
 
 def place_order_completed(request):
     cart_data = request.session.get('cart_data_obj')
@@ -541,6 +550,9 @@ def place_order_completed(request):
 def order_management(request):
     
     return render(request,"core/order-management.html")
+
+
+
 
 def revenue_management(request):
     product_metrics = {}
@@ -669,7 +681,6 @@ def inventory_management(request):
 
 
 
-###load orders from database
 def customer_orders(request):
     orders = []
 
@@ -717,7 +728,8 @@ def customer_orders(request):
         })
 
     return JsonResponse({"orders": orders})
-#update from web to database
+
+
 @csrf_exempt
 def update_order_status(request, order_id):
     if request.method == 'POST':
@@ -736,7 +748,7 @@ def update_order_status(request, order_id):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-#API for order statistics
+
 def order_stats(request):
     
     try:

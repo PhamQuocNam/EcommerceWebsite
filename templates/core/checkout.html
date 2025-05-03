@@ -496,7 +496,7 @@
                                                                     <td class="product-name">{{ item.Name }}</td>
                                                                     <td class="product-price">$ {{ item.Price }}</td>
                                                                     <td class="product-quantity">{{ item.Quantity }}</td>
-                                                                    <td class="product-subtotal">$ {{ item.Price|floatformat:"2" }}</td>
+                                                                    <td class="product-subtotal">$ {{ item.subtotal|floatformat:"2" }}</td>
                                                                 </tr>
                                                                 {% endfor %}
                                                             </tbody>
