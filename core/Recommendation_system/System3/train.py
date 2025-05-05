@@ -5,19 +5,18 @@ import torch.nn as nn
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from models import RecSysModel
-from utils import get_data, dataset, get_loader, get_lr, save_checkpoint
+from utils import get_data, dataset, get_loader, get_lr, save_checkpoint, preprocessing
 from .config import DEVICE, BATCH_SIZE, WEIGHT_DECAY, LR, EPOCHS, EMBEDDING_DIM, DROPOUT_PROB,\
     CHECKPOINT_PATH
 
-import copy
+import copy 
 
 
 class Trainer:
     def __init__(self):
         data =  get_data('core_productreview')
-        self.n_users = data['user_id'].nunique()
-        self.n_products = data['product_id'].nunique()
-        self.model =  RecSysModel(self.n_users,self.n_products,EMBEDDING_DIM, DROPOUT_PROB).to(DEVICE)
+        self.user_dict, self.product_dict, data = preprocessing(data)
+        self.model =  RecSysModel(len(self.user_dict),len(self.product_dict),EMBEDDING_DIM, DROPOUT_PROB).to(DEVICE)
         train_data, val_data = train_test_split(data, test_size=0.2, shuffle=True)
         train_dataset = dataset(train_data)
         val_dataset = dataset(val_data)
@@ -49,7 +48,7 @@ class Trainer:
             score = self.val( current_lr)
             avg_train_loss = sum(train_epoch_loss)/len(train_epoch_loss)
             train_total_loss.append(avg_train_loss)
-            valid_avg_loss.append(score)
+            val_total_loss.append(score)
             
             
             print(f'Epoch {epoch+1}: \nTrain Loss: {avg_train_loss:.2f} \nValid Loss: {score:.2f}')
@@ -79,7 +78,7 @@ class Trainer:
 
             if current_lr!=get_lr(self.optimizer):
                 print("Loading best model weights")
-                self.model.load_state_dict(self.best_weights)
+                self.model.load_state_dict(self.best_weight)
             
             if self.best_loss > avg:
                 print("Update best weight")
@@ -90,12 +89,12 @@ class Trainer:
     
     
     def run(self):
-        self.best_weight= self.model.load_state_dict()
+        self.best_weight= self.model.state_dict()
         self.best_loss= np.inf   
         self._train()
         params = {
-            "n_users": self.n_users,
-            "n_products": self.n_products,
+            "n_users": len(self.user_dict),
+            "n_products": len(self.product_dict),
             "embedding_dim": EMBEDDING_DIM,
             "dropout_prob": DROPOUT_PROB 
         }

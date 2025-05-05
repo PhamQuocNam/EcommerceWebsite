@@ -60,7 +60,7 @@ class Discount(models.Model):
         return self.Desc
     
     def get_discount(self):
-        return self.Discount_Percent
+        return int(self.Discount_Percent*100)
     
     def is_active(self):
         return self.Active

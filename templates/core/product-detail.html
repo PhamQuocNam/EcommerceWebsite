@@ -465,45 +465,83 @@
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="tab-pane fade tab-3" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                                <div class="tab-title">
-                                    <h6>Customer Reviews</h6>
-                                </div>
-                                <div class="tab-caption">
-                                    <div class="costomer-reviews">
-                                        {% for r in reviews%}
-                                        <div class="costomer-reviews-box">
-                                            <div class="reviews-img">
-                                                <img src="{% static 'image/costomer-img.jpg' %}" alt="costomer-img">
-                                            </div>
-                                            <div class="reviews-text">
-                                                <p class="reviewer-name">{{r.user.First_Name}}</p>
-                                                <span class="reviews-date">{{r.Date}}</span>
-                                                <p class="reviewer-text">{{r.Review}}</p>
-                                            </div>
+                                <div class="review-section">
+                                    <div class="review-container">
+                                        <div class="review-header">
+                                            <h3 class="review-title">Share Your Experience</h3>
+                                            <p class="review-subtitle">Your feedback helps others make better decisions</p>
                                         </div>
-                                        {% endfor%}
-
-
-                                    </div>
-                                </div>
-                                <div class="tab-caption">
-                                    <div class="add-review">
-                                        <div class="tab-title">
-                                            <h6>Add a review</h6>
-                                        </div>
-                                        <div id="review-res"></div>
-
-                                        <form class="add-review-form hide-comment-form" action="{% url 'core:ajax-add-review' product.ID_Product %}" id="commentForm" method="POST">
                                         
+                                        <div id="review-res" class="review-response"></div>
+                                
+                                        <form class="review-form hide-comment-form" action="{% url 'core:ajax-add-review' product.ID_Product %}" id="commentForm" method="POST">
                                             {% csrf_token %}
-                                            <div>{{review_form.review}}</div>
-                                            <div class="reviews-img" >{{review_form.Rating}}</div>
                                             
-                                            <div class="input-btn">
-                                                <button class="btn btn-secondary" >Submit</button>
+                                            <div class="form-group">
+                                                <label for="{{ review_form.review.id_for_label }}" class="form-label">Your Review*</label>
+                                                {{ review_form.review }}
+                                                <small class="form-hint">Be specific about what you liked or didn't like</small>
+                                            </div>
+                                            
+                                            <div class="form-group rating-group">
+                                                <label class="form-label">Your Rating*</label>
+                                                <div class="star-rating">
+                                                    <div class="reviews-img" >{{review_form.Rating}}</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-submit">
+                                                <button type="submit" class="submit-btn">
+                                                    <span class="btn-text">Submit Review</span>
+                                                </button>
                                             </div>
                                         </form>
+                                    </div>
+                                </div>
+                                <span></span>
+                                <div class="reviews-container">
+                                    <div class="reviews-header">
+                                        <h3 class="reviews-title">Customer Reviews</h3>
+                                        <p class="reviews-count">{{ reviews|length }} reviews</p>
+                                    </div>
+                                
+                                    <div class="reviews-list">
+                                        {% for r in reviews %}
+                                        <div class="review-card">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-avatar">
+                                                    {% if r.user.profile_picture %}
+                                                        <img src="{{ r.user.profile_picture.url }}" alt="{{ r.user.first_name }}'s profile picture">
+                                                    {% else %}
+                                                        <div class="avatar-initials">{{ r.user.First_Name|first }}{{ r.user.last_name|first }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="reviewer-meta">
+                                                    <h4 class="reviewer-name">{{ r.user.first_name }} {{ r.user.last_name }}</h4>
+                                                    <div class="review-meta">
+                                                        <span class="review-date">{{ r.Date|date:"F j, Y" }}</span>
+                                                        <div class="review-rating">
+                                                            {% with ''|center:r.Rating as range %}
+                                                                {% for _ in range %}
+                                                                    <i class="fa fa-star filled"></i>
+                                                                {% endfor %}
+                                                            {% endwith %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="review-content">
+                                                <p>{{ r.Review }}</p>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="no-reviews">
+                                            <i class="far fa-comment-dots"></i>
+                                            <p>No reviews yet. Be the first to review!</p>
+                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -514,6 +552,7 @@
         </div>
     </section>
     <!-- End Product Tabs Section -->
+   
 
     <!-- Start Related Product Section -->
     <section class="related-product pb_large">

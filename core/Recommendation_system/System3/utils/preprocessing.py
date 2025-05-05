@@ -21,3 +21,13 @@ def get_loader(dataset,batch_size=32, shuffle=False ):
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
+def preprocessing(df):
+    user_unique= df['user_id'].unique()
+    user_dict = { old: new for new,old in enumerate(user_unique)}
+    df['user_id']= df['user_id'].apply(lambda x: user_dict[x])
+
+    isbn_unique = df['product_id'].unique()
+    product_dict = { old: new for new, old in enumerate(isbn_unique)}
+    df['product_id']= df['product_id'].apply(lambda x: product_dict[x])
+
+    return user_dict, product_dict, df

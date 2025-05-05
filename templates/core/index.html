@@ -359,7 +359,7 @@
                             <div class="carousel-item slider-area background_bg {% if forloop.first %}active{% endif %}" data-img-src="{{ campaign.Image.url }}">
                                 <div class="banner_slide_content">
                                     <div class="slider-caption text-right">
-                                        <h1 class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">{{ campaign.Name }}</h1>
+                                        <h1 style="color:#FD1D1D" class="animation" data-animation="fadeInDown" data-animation-delay="0.2s">{{ campaign.Name }}</h1>
                                         <p class="animation" data-animation="fadeInUp" data-animation-delay="0.6s">{{ campaign.Desc }}</p>
                                         <a href="#" class="btn btn-primary rounded-0 animation" data-animation="fadeInUp" data-animation-delay="1s">Shop Now</a>
                                     </div>
@@ -367,7 +367,6 @@
                             </div>
                             {% endfor %}
                         </div>
-                
                         <ol class="carousel-indicators carousel-style-2">
                             {% for campaign in campaigns %}
                             <li data-target="#carouselExampleControls" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
@@ -451,6 +450,11 @@
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
+                                                    {% if p.discount.Active %}
+                                                    <div class=" position-absolute top-0 end-0 bg-danger text-white d-flex align-items-center justify-content-center shadow-sm">
+                                                        <span class="fw-bold">{{ p.discount.get_discount }}% OFF</span>
+                                                    </div>
+                                                    {% endif%}
                                                     <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
                                                     <div class="hover-option">
@@ -487,7 +491,7 @@
                                                     <div><del>${{p.Price|floatformat:"2"}}</del></div>
                                                     <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-1"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-1"><strong>{{p.get_price|floatformat:"2"}}</strong></p>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-1"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -518,9 +522,14 @@
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
+                                                    {% if p.discount.Active %}
+                                                    <div class=" position-absolute top-0 end-0 bg-danger text-white d-flex align-items-center justify-content-center shadow-sm">
+                                                        <span class="fw-bold">{{ p.discount.get_discount }}% OFF</span>
+                                                    </div>
+                                                    {% endif%}
                                                     <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
-
                                                     <div class="hover-option">
+                                                        
                                                         <button class="btn btn-primary add-to-cart-btn" data-index="{{p.ID_Product}}-2" id="add-to-cart-btn" type='submit'>Add 1 Item</button>
                                                         <ul class="hover-icon">
                                                             
@@ -538,10 +547,11 @@
                                                             <li><a href="#" class="pink-dot"></a></li>
                                                             <li><a href="#" class="orange-dot"></a></li>
                                                         </ul>
-
+                                                        
                                                     </div>
                                                 </div>
                                                 <div class="product-info common-cart-info">
+                                                    
                                                     <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name">{{p.Name}}</a>
                                                     <div class="product-rate">
                                                         <i class="ion-android-star"></i>
@@ -550,11 +560,11 @@
                                                         <i class="ion-android-star"></i>
                                                         <i class="ion-android-star-half"></i>
                                                     </div>
-                                                    {% if p.discount.Active %}
+                                                    {% if p.discount.Active %}                                             
                                                     <div><del>${{p.Price|floatformat:"2"}}</del></div>
                                                     <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-2"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-2"><strong>{{p.get_price|floatformat:"2"}}</strong></p>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-2"><strong>{{p.Price|floatformat:"2"}}</strong></span></span>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -581,6 +591,11 @@
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
+                                                    {% if p.discount.Active %}
+                                                    <div class=" position-absolute top-0 end-0 bg-danger text-white d-flex align-items-center justify-content-center shadow-sm">
+                                                        <span class="fw-bold">{{ p.discount.get_discount }}% OFF</span>
+                                                    </div>
+                                                    {% endif%}
                                                     <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
                                                     <div class="hover-option">
@@ -617,7 +632,7 @@
                                                     <div><del>${{p.Price|floatformat:"2"}}</del></div>
                                                     <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-3"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-3"><strong>{{p.Price|floatformat:"2"}}</strong></p>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-3"><strong>{{p.Price|floatformat:"2"}}</strong></span></span>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -644,6 +659,11 @@
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
+                                                    {% if p.discount.Active %}
+                                                    <div class=" position-absolute top-0 end-0 bg-danger text-white d-flex align-items-center justify-content-center shadow-sm">
+                                                        <span class="fw-bold">{{ p.discount.get_discount }}% OFF</span>
+                                                    </div>
+                                                    {% endif%}
                                                     <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
                                                     <div class="hover-option">
@@ -680,7 +700,7 @@
                                                     <div><del>${{p.Price|floatformat:"2"}}</del></div>
                                                     <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-4"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-4"><strong>{{p.Price|floatformat:"2"}}</strong></p>
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-4"><strong>{{p.Price|floatformat:"2"}}</strong></span></span>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -710,6 +730,11 @@
                                             
                                             <div class="product-box common-cart-box">
                                                 <div class="product-img common-cart-img">
+                                                    {% if p.discount.Active %}
+                                                    <div class=" position-absolute top-0 end-0 bg-danger text-white d-flex align-items-center justify-content-center shadow-sm">
+                                                        <span class="fw-bold">{{ p.discount.get_discount }}% OFF</span>
+                                                    </div>
+                                                    {% endif%}
                                                     <img src="{{ p.Image.url}}" alt="product-img" width="250px" height="200px">
 
                                                     <div class="hover-option">
@@ -746,8 +771,8 @@
                                                     <div><del>${{p.Price|floatformat:"2"}}</del></div>
                                                     <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-5"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span>
                                                     {% else %}
-                                                    <p class="cart-price current-product-price-{{p.ID_Product}}-5"><strong>{{p.Price|floatformat:"2"}}</strong></p>
-                                                    {% endif %}
+                                                    <span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}-5"><strong>{{p.Price|floatformat:"2"}}</strong></span></span>
+ s an                                                  {% endif %}
                                                 </div>
                                             </div>
                                         </div>
@@ -1082,8 +1107,7 @@
           </li>
         </ul>
         <div class="chat-input" method="POST">
-        
-          <textarea placeholder="Enter a message..." spellcheck="false" required ></textarea>
+          <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
           <span id="send-btn" class="material-symbols-rounded">send</span>
         </div>
       </div>

@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import torch
 
 
-class Dataset(Dataset):
+class dataset(Dataset):
     def __init__(self,data):
         self.X1 = data['user_id'].values
         self.X2 = data['product_id'].values

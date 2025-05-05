@@ -14,7 +14,7 @@ def save_checkpoint(model_name, best_weight, params, epoch, checkpoint_dir):
         "params": params
     }
     
-    torch.save(checkpoint, checkpoint_dir / f"{model_name}_model_epoch{epoch}.pth")
+    torch.save(checkpoint, checkpoint_dir + '/' + f"{model_name}_model_epoch{epoch}.pth")
 
 def load_checkpoint(model, optimizer, checkpoint_path):
     checkpoint = torch.load(checkpoint_path)

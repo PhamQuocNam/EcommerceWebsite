@@ -30,6 +30,7 @@ def index(request):
     categories = Product_Category.objects.all()
     products = Product.objects.all()
     recommended_ids = Recommendation_System_Type_1()
+    
     recommended_products = list(Product.objects.filter(id__in=recommended_ids))
 
     saleoff_products = Product.objects.filter(discount__Active=True)

@@ -133,7 +133,7 @@ header h2 {
   border-top: 1px solid #ddd;
 }
 .chat-input textarea {
-  height: 55px;
+  height: 30px;
   width: 100%;
   border: none;
   outline: none;
@@ -141,12 +141,13 @@ header h2 {
   max-height: 180px;
   padding: 15px 15px 15px 0;
   font-size: 0.95rem;
+  min-height:60px;
 }
 .chat-input span {
   align-self: flex-end;
   color: #724ae8;
   cursor: pointer;
-  height: 55px;
+  height: 30px;
   display: flex;
   align-items: center;
   visibility: hidden;

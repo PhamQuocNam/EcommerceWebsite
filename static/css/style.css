@@ -1242,68 +1242,136 @@ header {
 /**************************************/
 
 /*09. Review Section Css*/
-
-.review-slider {
-    padding: 40px 100px;
+.review-section {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.client-img img {
-    border-radius: 100%;
+.review-container {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.client-img {
-    float: left;
-    max-width: 164px;
-    width: 100%;
+.review-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
-.quote-icon img {
-    max-width: 27px;
+.review-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
 }
 
-.quote-icon {
-    display: inline-block;
+.review-subtitle {
+    color: #7f8c8d;
+    font-size: 0.9rem;
 }
 
-.client-text p {
-    color: #fff;
-    line-height: 26px;
-    padding: 10px 0 20px 0px;
-    font-weight: normal;
+.form-group {
+    margin-bottom: 1.5rem;
 }
 
-.client-text a {
-    color: #000000;
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
     font-weight: 500;
-    font-style: italic;
-    font-size: 18px;
+    color: #34495e;
 }
 
-.client-text a:hover {
-    color: #303030;
+.form-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: #95a5a6;
+    margin-top: 0.3rem;
 }
 
-.client-text {
-    padding-left: 30px;
-    font-weight: normal;
-    overflow: hidden;
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-height: 120px;
+    resize: vertical;
+    transition: border 0.3s ease;
 }
 
-.review-slider.owl-theme .owl-dots .owl-dot span,
-.testimonial-slider .owl-dots .owl-dot span {
-    width: 13px;
-    height: 13px;
-    background: none;
-    border: 2px solid #fff;
-    margin: 0 5px;
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
 }
 
-.review-slider.owl-theme .owl-dots .owl-dot.active span {
-    background-color: #fff;
+.rating-group {
+    margin: 1.5rem 0;
 }
 
-.review-slider.owl-theme .owl-nav.disabled+.owl-dots {
-    margin-top: 20px;
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+}
+
+.star-option input[type="radio"] {
+    display: none;
+}
+
+.star-option label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-option input[type="radio"]:checked ~ label,
+.star-option input[type="radio"]:hover ~ label {
+    color: #f39c12;
+}
+
+.form-submit {
+    text-align: center;
+}
+
+.submit-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.review-response {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* For error/success messages */
+.review-response.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.review-response.error {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 /**************************************/
@@ -2541,6 +2609,168 @@ header {
     margin-bottom: 20px;
     height: auto;
     font-size: 14px;
+}
+
+.reviews-container {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 2rem;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.reviews-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.reviews-count {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-card {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.reviewer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-initials {
+    font-size: 1.2rem;
+}
+
+.reviewer-meta {
+    flex: 1;
+}
+
+.reviewer-name {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.review-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.3rem;
+}
+
+.review-date {
+    font-size: 0.85rem;
+    color: #95a5a6;
+}
+
+.review-rating {
+    display: flex;
+    gap: 2px;
+}
+
+.review-rating .fa-star {
+    color: #ddd;
+    font-size: 0.9rem;
+}
+
+.review-rating .filled {
+    color: #f39c12;
+}
+
+.review-content {
+    padding-left: 62px; /* Match avatar width + gap */
+}
+
+.review-content p {
+    margin: 0;
+    color: #34495e;
+    line-height: 1.6;
+}
+
+.review-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-left: 62px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+}
+
+.action-btn:hover {
+    color: #3498db;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 2rem;
+    color: #95a5a6;
+}
+
+.no-reviews i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.no-reviews p {
+    margin: 0;
 }
 
 /**************************************/

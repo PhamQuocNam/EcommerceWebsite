@@ -6,12 +6,12 @@ from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from .models import RecSysModel
-from .config import CHECKPOINT_PATH, DEVICE
+from .config import CHECKPOINT_FILE, DEVICE
 from .utils import get_data
 
 class Predictor:
     def __init__(self):
-        checkpoint = torch.load(CHECKPOINT_PATH)
+        checkpoint = torch.load(CHECKPOINT_FILE)
         params= checkpoint['params']
         weights = checkpoint['model_state']
         self.model = RecSysModel(**params)
