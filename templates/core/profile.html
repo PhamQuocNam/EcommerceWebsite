@@ -217,10 +217,10 @@
     <!-- Main Profile Content -->
     <div class="profile-container">
         <div class="profile-header">
-            <img src="{% static 'image/default-avatar.jpg' %}" alt="Profile Avatar" class="profile-avatar">
+            <img src="{{ profile.image.url }}" alt="Profile Avatar" class="profile-avatar">
             <div class="profile-info">
-                <h1>John Doe</h1>
-                <p>Member since February 2023</p>
+                <h1>{{profile.full_name|default:user.username }}</h1>
+                <p>Member since: {{ profile.date_joined}}</p>
             </div>
         </div>
         

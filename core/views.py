@@ -21,17 +21,12 @@ from core.models import Product, Product_Category, Order_Item, Order_Detail, Dis
 from core.forms import ProductReviewForm
 from userauths.models import Profile
 
-from .RAG_system.RAG import Answer_Question
-from .Recommendation_system import Recommendation_System_Type_1
 
 
 def index(request):
     """Homepage view showing all products and recommendations"""
     categories = Product_Category.objects.all()
     products = Product.objects.all()
-    recommended_ids = Recommendation_System_Type_1()
-    
-    recommended_products = list(Product.objects.filter(id__in=recommended_ids))
 
     saleoff_products = Product.objects.filter(discount__Active=True)
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
@@ -41,7 +36,6 @@ def index(request):
     context = {
         "products": products,
         "categories": categories,
-        "recommended_products": recommended_products,
         "dessert_products": dessert_products,
         "fruit_products": fruit_products,
         'saleoff_products': saleoff_products,
@@ -407,9 +401,19 @@ def response(request):
 def profile_view(request):
     
     profile, created = Profile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        profile.full_name = request.POST.get('full_name')
+        profile.phone = request.POST.get('phone')
+        profile.date_joined = request.POST.get('date_joined')
+        profile.image = request.FILES.get('image', profile.image)
+        profile.save()
+        messages.success(request, 'Profile updated successfully')
+        return redirect('core:profile')
     if created:
         profile.full_name = f"{request.user.last_name}{request.user.first_name}"
         profile.phone = request.user.Phone  # Ensure the attribute name is lowercase if your User model has `phone`
+        profile.date_joined = request.user.date_joined
+        profile.image = 'image/default.jpg'
         profile.save()
 
     context = {
