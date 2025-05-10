@@ -515,7 +515,19 @@
                     </nav>
                 </div>
                 
+<<<<<<< HEAD
                 
+=======
+                <div class="track-card">
+                    <h2><i class="fas fa-question-circle"></i> Need Help?</h2>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem;">
+                        Having trouble with your order? Our support team is here to help.
+                    </p>
+                    <a href="#" class="btn btn-primary" style="width: 80%; display: block; text-align: center;">
+                        <i class="fas fa-headset"></i> Support
+                    </a>
+                </div>
+>>>>>>> a42e583ee227cc006fe4edadb8013b8ba79271f6
             </aside>
             
             <!-- Main Tracking Content -->
@@ -554,10 +566,17 @@
                             <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Order Items</h3>
                             {% for item in items %}
                             <div class="order-item">
+<<<<<<< HEAD
                                 <img src="{{ item.product.Image.url }}" alt="{{ item.product.Title }}" height="150px" width="200px">
                                 <div class="item-details">
                                     <div class="item-name">{{ item.product.Name }}</div>
                                     <div class="item-sku">SKU: {{ item.Quantity }}</div>
+=======
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" class="item-image">
+                                <div class="item-details">
+                                    <div class="item-name">{{ item.product.title }}</div>
+                                    <div class="item-sku">SKU: {{ item.product.sku }}</div>
+>>>>>>> a42e583ee227cc006fe4edadb8013b8ba79271f6
                                     <div class="item-price">${{ item.Total }}</div>
                                 </div>
                             </div>
