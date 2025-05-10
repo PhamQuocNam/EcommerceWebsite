@@ -30,11 +30,6 @@ class Profile(models.Model):
     bio = models.CharField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=200, null=True, blank=True)
     verified = models.BooleanField(default=False)
-<<<<<<< HEAD
-=======
-    date_joined = models.DateTimeField(null=True, blank=True)
-
->>>>>>> a42e583ee227cc006fe4edadb8013b8ba79271f6
     
     def __str__(self):
         return self.full_name if self.full_name else "Unnamed Profile"
