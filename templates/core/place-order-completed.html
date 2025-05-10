@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+       
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .success-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .checkmark {
+            color: #4CAF50;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .order-details {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .order-details h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .order-details p {
+            margin: 5px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #45a049;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-bar {
+            height: 4px;
+            background-color: #e0e0e0;
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0;
+            background-color: #4CAF50;
+            transition: width 3s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="checkmark">✓</div>
+        <h1>Order Placed Successfully!</h1>
+        <p>Thank you for your purchase. Your order has been received and is being processed.</p>
+        
+        <div class="order-details">
+            <h3>Order Information</h3>
+            <p><strong>Order Number:</strong> <span id="order-number">Loading...</span></p>
+            <p><strong>Date:</strong> <span id="order-date">Loading...</span></p>
+            <p><strong>Total:</strong> <span id="order-total">Loading...</span></p>
+            <p><strong>Payment Method:</strong> <span id="payment-method">Loading...</span></p>
+        </div>
+        
+        <p>A confirmation email has been sent to your registered email address.</p>
+        
+        <div class="loading-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        
+        <p>You will be redirected to the home page shortly...</p>
+        
+        <button class="btn" id="continue-btn">Continue Shopping</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Values from Django template context
+            const orderNumber = {{ num_items|safe }};
+            const orderTotal = "$" + {{ totalmoney|safe }};
+            const paymentMethod = "{{ method }}";
+    
+            const now = new Date();
+            const orderDate = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+    
+            // Update DOM
+            document.getElementById('order-number').textContent = orderNumber;
+            document.getElementById('order-date').textContent = orderDate;
+            document.getElementById('order-total').textContent = orderTotal;
+            document.getElementById('payment-method').textContent = paymentMethod;
+    
+            // Animate progress bar
+            document.getElementById('progress-bar').style.width = '100%';
+    
+            // Redirect after 8 seconds
+            setTimeout(() => {
+                window.location.href = "{% url 'core:index' %}";
+            }, 8000);
+    
+            // Continue Shopping Button
+            document.getElementById('continue-btn').addEventListener('click', function () {
+                window.location.href = "{% url 'core:index' %}";
+            });
+        });
+    </script>
+    
+</body>
+</html>
