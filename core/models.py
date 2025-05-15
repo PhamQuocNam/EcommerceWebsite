@@ -298,23 +298,27 @@ class Wishlist(models.Model):
 
 
 class Staff(models.Model):
-    ID_Staff = ShortUUIDField(unique=True, length=10, max_length=20, prefix="STAFF", alphabet='abcdefgh12345')
-    Name = models.CharField(max_length=200, default='Unknown')  
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    """
+    Stores information about employees/staff members.
+    Includes ID card number, birthday, job position, and start date.
+    """
+    
+    ID_Staff = ShortUUIDField(unique=True, length =10, max_length=20, prefix="STAFF", alphabet='abcdefgh12345') 
+    user= models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     ID_card = models.CharField(max_length=20, null=False)
     Started = models.DateTimeField(null=True, blank=True)
-    Birthday = models.DateTimeField(null=True, blank=True)
-    Position = models.CharField(max_length=20, null=True)
-
+    Birthday= models.DateTimeField(null=True, blank=True)
+    Position= models.CharField(max_length=20,null=True)
+    
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),
         ('on_leave', 'On Leave'),
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-
+    
     class Meta:
-        verbose_name_plural = 'Staffs'
+        verbose_name_plural= 'Staffs'
     
     
 class Salary(models.Model):

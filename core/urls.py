@@ -8,7 +8,10 @@ from core.views import (
     order_history_view, track_order_view, contact_view, change_password_view,
     place_order_completed, order_management, revenue_management,
     staff_management, inventory_management, customer_orders,
-    update_order_status, order_stats
+    update_order_status, order_stats, add_employee, update_employee,
+    delete_employee, update_payroll_for_staff,add_to_wishlist,
+    wishlist_view,remove_from_wishlist
+    
 )
 
 app_name = 'core'
@@ -61,5 +64,15 @@ urlpatterns = [
     path("inventory_management/", inventory_management, name="inventory_management"),  # Admin: inventory dashboard
     path("customer_orders/", customer_orders, name="customer_orders"),  # Admin: view customer orders
     path("<str:order_id>/status/", update_order_status, name="update_order_status"),  # Admin: update order status
-    path("order-stats/", order_stats, name="order_stats")  # Admin: visualize order data
+    path("order-stats/", order_stats, name="order_stats"),  # Admin: visualize order data
+    path('add_employee/', add_employee, name='add-employee'),
+    path('update_employee/<str:employee_id>/', update_employee, name='update_employee'),
+    path('delete_employee/<str:employee_id>/', delete_employee, name='delete_employee'),
+    path('staff/<str:staff_id>/payroll/', update_payroll_for_staff, name='update_payroll_for_staff'),
+    
+    
+    # ------------------ Wishlist ------------------ #
+    path("add-to-wishlist/", add_to_wishlist, name="add-to-wishlist"),
+    path('wishlist/', wishlist_view, name='wishlist'),
+    path("wishlist/remove/<pid>/", remove_from_wishlist, name="remove-from-wishlist"),
 ]

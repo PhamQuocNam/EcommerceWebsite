@@ -29,7 +29,7 @@ def Recommendation_System_Type_1():
     C = productreview['Rating'].mean()
     
     # Compute the minimum number of votes required to be considered (e.g., 70th percentile)
-    m = productreview['product_id'].value_counts().quantile(0.7)
+    m = productreview['product_id'].value_counts().quantile(0.5)
     
     qualified = products[products['count'] >= m].copy()
 

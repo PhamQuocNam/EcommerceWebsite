@@ -389,795 +389,428 @@
             </div>
         </header>
         
-        <div class="tabs">
-            <div class="tab active" data-tab="employees">Employees</div>
-            <div class="tab" data-tab="attendance">Attendance</div>
-            <div class="tab" data-tab="leaves">Leaves</div>
-            <div class="tab" data-tab="payroll">Payroll</div>
-        </div>
         
         <!-- Employees Tab Content -->
         <div class="tab-content" id="employees-content">
             <div class="search-filter">
                 <div class="search-box">
-                    <input type="text" placeholder="Search employees by name, ID...">
+                    <input type="text" id="employee-search-input" placeholder="Search employees by name, ID...">
                     <i>🔍</i>
                 </div>
-                <select class="filter-dropdown">
-                    <option value="all">All Departments</option>
-                    <option value="sales">Sales</option>
-                    <option value="customer-service">Customer Service</option>
-                    <option value="warehouse">Warehouse</option>
-                    <option value="marketing">Marketing</option>
-                    <option value="management">Management</option>
-                </select>
-                <select class="filter-dropdown">
-                    <option value="all">All Statuses</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="onleave">On Leave</option>
-                </select>
                 <button class="action-btn btn-view" id="add-employee">Add Employee</button>
             </div>
             
             <div class="stats-cards">
                 <div class="stat-card">
                     <h3>Total Employees</h3>
-                    <p>48</p>
+                    <p>{{ total_employees }}</p>
                 </div>
                 <div class="stat-card">
                     <h3>Active</h3>
-                    <p>42</p>
+                    <p>{{ active_employees }}</p>
                 </div>
                 <div class="stat-card">
                     <h3>On Leave</h3>
-                    <p>4</p>
+                    <p>{{ on_leave_employees }}</p>
                 </div>
                 <div class="stat-card">
                     <h3>New This Month</h3>
-                    <p>3</p>
+                    <p>{{ new_employees_this_month }}</p>
                 </div>
             </div>
+
             
             <div class="employees-table">
                 <table>
                     <thead>
                         <tr>
                             <th>Employee ID</th>
+                            <th>ID Card</th>
                             <th>Name</th>
-                            <th>Department</th>
                             <th>Position</th>
                             <th>Join Date</th>
-                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="employees-table-body">
                         <!-- Employees will be populated by JavaScript -->
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                fetch(window.location.href, {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    const tbody = document.getElementById("employees-table-body");
+                                    tbody.innerHTML = "";
+
+                                    data.staffs.forEach(staff => {
+                                        const tr = document.createElement("tr");
+                                        tr.setAttribute('data-id', staff.id);  // Thêm data-id vào thẻ <tr>
+
+                                        tr.innerHTML = `
+                                            <td>${staff.id}</td>
+                                            <td>${staff.idcard}</td>
+                                            <td>${staff.name}</td>
+                                            <td>${staff.position}</td>
+                                            <td>${staff.started}</td>
+                                            <td>${staff.status}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-update" style="background-color: blue; color:white" data-id="${staff.id}" aria-label="Update staff member">Update</button>
+                                                <button type="button" class="btn btn-delete" style="background-color: red;" data-id="${staff.id}" aria-label="Delete staff member">Delete</button>
+                                                <button type="button" class="btn btn-salary" style="background-color: green; color:white" data-id="${staff.id}" aria-label="View salary">Salary</button>
+                                            </td>
+                                        `;
+
+                                        // Gắn sự kiện xóa nhân viên cho mỗi nút Delete
+                                        tr.querySelector('.btn-delete').addEventListener('click', function () {
+                                            const employeeId = this.dataset.id;  // Lấy ID từ data-id của nút
+                                            deleteEmployee(employeeId);
+                                        });
+
+                                        // Gắn sự kiện cập nhật nhân viên
+                                        tr.querySelector('.btn-update').addEventListener('click', function () {
+                                            const employeeId = this.dataset.id;
+                                            window.location.href = `/update_employee/${employeeId}/`;
+                                        });
+
+                                        tr.querySelector('.btn-salary').addEventListener('click', function () {
+                                            const employeeId = this.dataset.id;
+                                            window.location.href = `/staff/${employeeId}/payroll/`;
+                                        });
+
+
+                                        tbody.appendChild(tr);
+                                    });
+                                });
+                            });
+
+                            document.getElementById('add-employee').addEventListener('click', function() {
+                                window.location.href = '/add_employee'; 
+                            });
+
+                            function getCSRFToken() {
+                                const csrfToken = document.cookie.split(';')
+                                    .find(cookie => cookie.trim().startsWith('csrftoken='));
+                                return csrfToken ? csrfToken.split('=')[1] : null;
+                            }
+
+                            function deleteEmployee(id) {
+                                // Lấy CSRF token từ cookie
+                                const csrfToken = getCSRFToken();
+
+                                // Xác nhận người dùng muốn xóa nhân viên
+                                if (confirm("Are you sure you want to delete this employee?")) {
+                                    // Gửi yêu cầu AJAX để xóa nhân viên
+                                    fetch(`/delete_employee/${id}/`, { 
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest',  // Đảm bảo yêu cầu này được xử lý như một yêu cầu AJAX
+                                            'X-CSRFToken': csrfToken  // Gửi CSRF token trong header
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert("Employee deleted successfully!");
+                                            // Xóa row khỏi bảng sau khi xóa
+                                            const row = document.querySelector(`tr[data-id="${id}"]`);
+                                            if (row) {
+                                                row.remove();
+                                            }
+                                        } else {
+                                            alert("Failed to delete employee.");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        alert("Error deleting employee.");
+                                    });
+                                }
+                            }
+
+                            document.getElementById('employee-search-input').addEventListener('input', function () {
+                                const searchTerm = this.value.toLowerCase();
+                                const rows = document.querySelectorAll('#employees-table-body tr');
+
+                                rows.forEach(row => {
+                                    const cells = Array.from(row.children);
+                                    const matches = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
+                                    row.style.display = matches ? '' : 'none';
+                                });
+                            });
+
+
+
+
+
+                            </script>
+
                     </tbody>
                 </table>
             </div>
-            
-            <div class="pagination">
-                <button>Previous</button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>Next</button>
-            </div>
-        </div>
         
-        <!-- Attendance Tab Content -->
-        <div class="tab-content" id="attendance-content" style="display: none;">
-            <div class="search-filter">
-                <div class="search-box">
-                    <input type="text" placeholder="Search employees...">
-                    <i>🔍</i>
-                </div>
-                <select class="filter-dropdown">
-                    <option value="all">All Statuses</option>
-                    <option value="present">Present</option>
-                    <option value="absent">Absent</option>
-                    <option value="late">Late</option>
-                    <option value="leave">On Leave</option>
-                </select>
-                <input type="month" class="filter-dropdown" id="attendance-month">
-            </div>
-            
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <h3>Present Today</h3>
-                    <p>38</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Absent Today</h3>
-                    <p>4</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Late This Month</h3>
-                    <p>12</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Attendance Rate</h3>
-                    <p>92.5%</p>
-                </div>
-            </div>
-            
-            <div class="employees-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Today's Status</th>
-                            <th>Check-in</th>
-                            <th>Check-out</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendance-table-body">
-                        <!-- Attendance will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <h2 style="margin: 30px 0 15px;">Attendance Calendar</h2>
-            <div class="attendance-calendar" id="attendance-calendar">
-                <!-- Calendar will be populated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Leaves Tab Content -->
-        <div class="tab-content" id="leaves-content" style="display: none;">
-            <div class="search-filter">
-                <div class="search-box">
-                    <input type="text" placeholder="Search leaves...">
-                    <i>🔍</i>
-                </div>
-                <select class="filter-dropdown">
-                    <option value="all">All Types</option>
-                    <option value="sick">Sick Leave</option>
-                    <option value="vacation">Vacation</option>
-                    <option value="personal">Personal</option>
-                    <option value="other">Other</option>
-                </select>
-                <select class="filter-dropdown">
-                    <option value="all">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-                <button class="action-btn btn-view" id="add-leave">Add Leave</button>
-            </div>
-            
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <h3>Pending Leaves</h3>
-                    <p>5</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Approved This Month</h3>
-                    <p>12</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Rejected This Month</h3>
-                    <p>2</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Available Days</h3>
-                    <p>18</p>
-                </div>
-            </div>
-            
-            <div class="employees-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Leave ID</th>
-                            <th>Employee</th>
-                            <th>Type</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>Days</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaves-table-body">
-                        <!-- Leaves will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="pagination">
-                <button>Previous</button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>Next</button>
-            </div>
-        </div>
-        
-        <!-- Payroll Tab Content -->
-        <div class="tab-content" id="payroll-content" style="display: none;">
-            <div class="search-filter">
-                <div class="search-box">
-                    <input type="text" placeholder="Search payroll...">
-                    <i>🔍</i>
-                </div>
-                <select class="filter-dropdown">
-                    <option value="all">All Employees</option>
-                    <option value="sales">Sales</option>
-                    <option value="customer-service">Customer Service</option>
-                    <option value="warehouse">Warehouse</option>
-                </select>
-                <input type="month" class="filter-dropdown" id="payroll-month">
-                <button class="action-btn btn-view" id="process-payroll">Process Payroll</button>
-            </div>
-            
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <h3>Total Payroll</h3>
-                    <p>$45,820</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Average Salary</h3>
-                    <p>$3,820</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Taxes</h3>
-                    <p>$9,164</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Net Pay</h3>
-                    <p>$36,656</p>
-                </div>
-            </div>
-            
-            <div class="employees-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Basic Salary</th>
-                            <th>Allowances</th>
-                            <th>Deductions</th>
-                            <th>Tax</th>
-                            <th>Net Pay</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="payroll-table-body">
-                        <!-- Payroll will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="pagination">
-                <button>Previous</button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>Next</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Employee Modal -->
-    <div class="employee-modal" id="employee-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Add New Employee</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            
-            <form id="employee-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="first-name">First Name</label>
-                        <input type="text" id="first-name" required>
+            <!-- Payroll Tab Content -->
+            <div class="tab-content" id="payroll-content" style="display: none;">
+                <div class="search-filter">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search payroll..." id="payroll-search-input">
+                        <i>🔍</i>
                     </div>
-                    <div class="form-group">
-                        <label for="last-name">Last Name</label>
-                        <input type="text" id="last-name" required>
+                    <select class="filter-dropdown" id="payroll-department">
+                        <option value="all">All Employees</option>
+                        <option value="sales">Sales</option>
+                        <option value="customer-service">Customer Service</option>
+                        <option value="warehouse">Warehouse</option>
+                    </select>
+                    <input type="month" class="filter-dropdown" id="payroll-month">
+                    <button class="action-btn btn-view" id="process-payroll">Process Payroll</button>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3>Total Payroll</h3>
+                        <p id="total-payroll">$0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Salary</h3>
+                        <p id="average-salary">$0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Net Pay</h3>
+                        <p id="net-pay">$0.00</p>
                     </div>
                 </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="tel" id="phone" required>
-                    </div>
+
+                <div class="employees-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Basic Salary</th>
+                                <th>Allowances</th>
+                                <th>Net Pay</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payroll-table-body">
+                            <!-- Payroll will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="department">Department</label>
-                        <select id="department" required>
-                            <option value="">Select Department</option>
-                            <option value="sales">Sales</option>
-                            <option value="customer-service">Customer Service</option>
-                            <option value="warehouse">Warehouse</option>
-                            <option value="marketing">Marketing</option>
-                            <option value="management">Management</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="position">Position</label>
-                        <input type="text" id="position" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="join-date">Join Date</label>
-                        <input type="date" id="join-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="salary">Salary</label>
-                        <input type="number" id="salary" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <textarea id="address" rows="3"></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <select id="status">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="onleave">On Leave</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="photo">Photo</label>
-                        <input type="file" id="photo">
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-save">Save Employee</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <script>
-        // Sample data
-        const employees = [
-            {
-                id: "EMP1001",
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@example.com",
-                phone: "+1 (555) 123-4567",
-                department: "sales",
-                position: "Sales Associate",
-                joinDate: "2022-03-15",
-                salary: 3500,
-                address: "123 Main St, New York, NY",
-                status: "active"
-            },
-            {
-                id: "EMP1002",
-                firstName: "Sarah",
-                lastName: "Johnson",
-                email: "sarah.j@example.com",
-                phone: "+1 (555) 987-6543",
-                department: "customer-service",
-                position: "Customer Support",
-                joinDate: "2022-05-20",
-                salary: 3200,
-                address: "456 Oak Ave, Los Angeles, CA",
-                status: "active"
-            },
-            {
-                id: "EMP1003",
-                firstName: "Michael",
-                lastName: "Brown",
-                email: "michael.b@example.com",
-                phone: "+1 (555) 456-7890",
-                department: "warehouse",
-                position: "Warehouse Manager",
-                joinDate: "2021-11-10",
-                salary: 4200,
-                address: "789 Pine Rd, Chicago, IL",
-                status: "active"
-            },
-            {
-                id: "EMP1004",
-                firstName: "Emily",
-                lastName: "Davis",
-                email: "emily.d@example.com",
-                phone: "+1 (555) 321-6547",
-                department: "marketing",
-                position: "Marketing Specialist",
-                joinDate: "2023-01-05",
-                salary: 3800,
-                address: "321 Elm St, Boston, MA",
-                status: "active"
-            },
-            {
-                id: "EMP1005",
-                firstName: "Robert",
-                lastName: "Wilson",
-                email: "robert.w@example.com",
-                phone: "+1 (555) 789-0123",
-                department: "management",
-                position: "Operations Manager",
-                joinDate: "2020-09-12",
-                salary: 5500,
-                address: "654 Maple Ln, Seattle, WA",
-                status: "active"
-            },
-            {
-                id: "EMP1006",
-                firstName: "Jennifer",
-                lastName: "Lee",
-                email: "jennifer.l@example.com",
-                phone: "+1 (555) 234-5678",
-                department: "sales",
-                position: "Sales Manager",
-                joinDate: "2021-07-22",
-                salary: 4800,
-                address: "987 Cedar Dr, Miami, FL",
-                status: "onleave"
-            },
-            {
-                id: "EMP1007",
-                firstName: "David",
-                lastName: "Miller",
-                email: "david.m@example.com",
-                phone: "+1 (555) 876-5432",
-                department: "customer-service",
-                position: "Support Lead",
-                joinDate: "2022-02-18",
-                salary: 4000,
-                address: "159 Birch Blvd, Dallas, TX",
-                status: "active"
-            },
-            {
-                id: "EMP1008",
-                firstName: "Jessica",
-                lastName: "Taylor",
-                email: "jessica.t@example.com",
-                phone: "+1 (555) 345-6789",
-                department: "warehouse",
-                position: "Inventory Specialist",
-                joinDate: "2023-03-01",
-                salary: 3400,
-                address: "753 Willow Way, Phoenix, AZ",
-                status: "active"
-            }
-        ];
-        
-        const attendance = [
-            { 
-                employeeId: "EMP1001", 
-                date: "2023-05-15", 
-                status: "present", 
-                checkIn: "08:45", 
-                checkOut: "17:15" 
-            },
-            { 
-                employeeId: "EMP1002", 
-                date: "2023-05-15", 
-                status: "present", 
-                checkIn: "09:00", 
-                checkOut: "17:30" 
-            },
-            { 
-                employeeId: "EMP1003", 
-                date: "2023-05-15", 
-                status: "late", 
-                checkIn: "09:45", 
-                checkOut: "18:00" 
-            },
-            { 
-                employeeId: "EMP1004", 
-                date: "2023-05-15", 
-                status: "present", 
-                checkIn: "08:55", 
-                checkOut: "17:20" 
-            },
-            { 
-                employeeId: "EMP1005", 
-                date: "2023-05-15", 
-                status: "present", 
-                checkIn: "08:30", 
-                checkOut: "17:00" 
-            },
-            { 
-                employeeId: "EMP1006", 
-                date: "2023-05-15", 
-                status: "leave", 
-                checkIn: "", 
-                checkOut: "" 
-            },
-            { 
-                employeeId: "EMP1007", 
-                date: "2023-05-15", 
-                status: "present", 
-                checkIn: "09:05", 
-                checkOut: "17:35" 
-            },
-            { 
-                employeeId: "EMP1008", 
-                date: "2023-05-15", 
-                status: "absent", 
-                checkIn: "", 
-                checkOut: "" 
-            }
-        ];
-        
-        const leaves = [
-            {
-                id: "LEV1001",
-                employeeId: "EMP1006",
-                type: "vacation",
-                startDate: "2023-05-10",
-                endDate: "2023-05-20",
-                status: "approved",
-                reason: "Annual vacation"
-            },
-            {
-                id: "LEV1002",
-                employeeId: "EMP1008",
-                type: "sick",
-                startDate: "2023-05-15",
-                endDate: "2023-05-16",
-                status: "approved",
-                reason: "Flu"
-            },
-            {
-                id: "LEV1003",
-                employeeId: "EMP1002",
-                type: "personal",
-                startDate: "2023-05-25",
-                endDate: "2023-05-26",
-                status: "pending",
-                reason: "Family event"
-            },
-            {
-                id: "LEV1004",
-                employeeId: "EMP1004",
-                type: "other",
-                startDate: "2023-06-01",
-                endDate: "2023-06-05",
-                status: "pending",
-                reason: "Moving to new house"
-            }
-        ];
-        
-        const payroll = [
-            {
-                employeeId: "EMP1001",
-                month: "2023-05",
-                basicSalary: 3500,
-                allowances: 450,
-                deductions: 120,
-                tax: 790,
-                status: "processed"
-            },
-            {
-                employeeId: "EMP1002",
-                month: "2023-05",
-                basicSalary: 3200,
-                allowances: 300,
-                deductions: 80,
-                tax: 700,
-                status: "processed"
-            },
-            {
-                employeeId: "EMP1003",
-                month: "2023-05",
-                basicSalary: 4200,
-                allowances: 500,
-                deductions: 150,
-                tax: 940,
-                status: "processed"
-            },
-            {
-                employeeId: "EMP1004",
-                month: "2023-05",
-                basicSalary: 3800,
-                allowances: 400,
-                deductions: 100,
-                tax: 840,
-                status: "pending"
-            },
-            {
-                employeeId: "EMP1005",
-                month: "2023-05",
-                basicSalary: 5500,
-                allowances: 600,
-                deductions: 200,
-                tax: 1220,
-                status: "processed"
-            },
-            {
-                employeeId: "EMP1006",
-                month: "2023-05",
-                basicSalary: 4800,
-                allowances: 550,
-                deductions: 180,
-                tax: 1070,
-                status: "pending"
-            },
-            {
-                employeeId: "EMP1007",
-                month: "2023-05",
-                basicSalary: 4000,
-                allowances: 450,
-                deductions: 130,
-                tax: 890,
-                status: "processed"
-            },
-            {
-                employeeId: "EMP1008",
-                month: "2023-05",
-                basicSalary: 3400,
-                allowances: 350,
-                deductions: 90,
-                tax: 750,
-                status: "pending"
-            }
-        ];
-        
-        // DOM elements
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const employeeModal = document.getElementById('employee-modal');
-        const closeModal = document.querySelector('.close-modal');
-        const cancelBtn = document.querySelector('.btn-cancel');
-        const employeeForm = document.getElementById('employee-form');
-        const addEmployeeBtn = document.getElementById('add-employee');
-        const employeesTableBody = document.getElementById('employees-table-body');
-        const attendanceTableBody = document.getElementById('attendance-table-body');
-        const leavesTableBody = document.getElementById('leaves-table-body');
-        const payrollTableBody = document.getElementById('payroll-table-body');
-        const attendanceCalendar = document.getElementById('attendance-calendar');
-        
-        // Tab switching
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                
-                // Hide all tab contents
-                tabContents.forEach(content => content.style.display = 'none');
-                // Show the selected tab content
-                document.getElementById(`${tab.dataset.tab}-content`).style.display = 'block';
-                
-                // Load appropriate data
-                switch(tab.dataset.tab) {
-                    case 'employees':
-                        renderEmployeesTable();
-                        break;
-                    case 'attendance':
-                        renderAttendanceTable();
-                        renderAttendanceCalendar();
-                        break;
-                    case 'leaves':
-                        renderLeavesTable();
-                        break;
-                    case 'payroll':
-                        renderPayrollTable();
-                        break;
-                }
-            });
-        });
-        
-        // Employee modal
-        addEmployeeBtn.addEventListener('click', () => {
-            document.getElementById('modal-title').textContent = 'Add New Employee';
-            employeeForm.reset();
-            employeeModal.style.display = 'flex';
-        });
-        
-        closeModal.addEventListener('click', () => {
-            employeeModal.style.display = 'none';
-        });
-        
-        cancelBtn.addEventListener('click', () => {
-            employeeModal.style.display = 'none';
-        });
-        
-        window.addEventListener('click', (e) => {
-            if (e.target === employeeModal) {
-                employeeModal.style.display = 'none';
-            }
-        });
-        
-        employeeForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // In a real app, this would save the employee data
-            alert('Employee saved successfully!');
-            employeeModal.style.display = 'none';
-        });
-        
-        // Render employees table
-        function renderEmployeesTable() {
-            employeesTableBody.innerHTML = '';
-            
-            employees.forEach(employee => {
-                const row = document.createElement('tr');
-                
-                // Format join date
-                const joinDate = new Date(employee.joinDate).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Fetch payroll data from the backend
+                    fetch('/payroll_data/')  // Fetch data from the payroll_data view
+                        .then(response => response.json())
+                        .then(data => {
+                            const tbody = document.getElementById("payroll-table-body");
+                            tbody.innerHTML = '';  // Clear existing table data
+
+                            let totalPayroll = 0;
+                            let netPay = 0;
+
+                            // Loop through payroll data and create rows
+                            data.data.forEach(payroll => {
+                                const row = `
+                                    <tr>
+                                        <td>${payroll.id}</td>
+                                        <td>${payroll.name}</td>
+                                        <td>$${payroll.salary}</td>
+                                        <td>$${payroll.bonus}</td>
+                                        <td>$${payroll.net_pay}</td>
+                                        <td>${payroll.status}</td>
+                                    </tr>
+                                `;
+                                tbody.innerHTML += row;
+
+                                // Update totals
+                                totalPayroll += parseFloat(payroll.salary) + parseFloat(payroll.bonus);
+                                netPay += parseFloat(payroll.net_pay);
+                            });
+
+                            // Update stats
+                            document.getElementById('total-payroll').textContent = `$${totalPayroll.toFixed(2)}`;
+                            document.getElementById('average-salary').textContent = `$${(totalPayroll / data.data.length).toFixed(2)}`;
+                            document.getElementById('net-pay').textContent = `$${netPay.toFixed(2)}`;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching payroll data:', error);
+                        });
+
+                    // Payroll search functionality
+                    document.getElementById('payroll-search-input').addEventListener('input', function () {
+                        const searchTerm = this.value.toLowerCase();
+                        const rows = document.querySelectorAll('#payroll-table-body tr');
+
+                        rows.forEach(row => {
+                            const cells = Array.from(row.children);
+                            const matches = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
+                            row.style.display = matches ? '' : 'none';
+                        });
+                    });
                 });
-                
-                // Status class
-                const statusClass = `status-${employee.status}`;
-                
-                row.innerHTML = `
-                    <td>${employee.id}</td>
-                    <td>${employee.firstName} ${employee.lastName}</td>
-                    <td>${employee.department}</td>
-                    <td>${employee.position}</td>
-                    <td>${joinDate}</td>
-                    <td><span class="status ${statusClass}">${employee.status === 'onleave' ? 'On Leave' : employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}</span></td>
-                    <td>
-                        <button class="action-btn btn-view" data-id="${employee.id}">View</button>
-                        <button class="action-btn btn-edit" data-id="${employee.id}">Edit</button>
-                        <button class="action-btn btn-delete" data-id="${employee.id}">Delete</button>
-                    </td>
-                `;
-                
-                employeesTableBody.appendChild(row);
-            });
-        }
-        
-        // Render attendance table
-        function renderAttendanceTable() {
-            attendanceTableBody.innerHTML = '';
-            
-            attendance.forEach(record => {
-                const employee = employees.find(e => e.id === record.employeeId);
-                if (!employee) return;
-                
-                // Status class
-                let statusClass = '';
-                let statusText = '';
-                switch(record.status) {
-                    case 'present':
-                        statusClass = 'present';
-                        statusText = 'Present';
-                        break;
-                    case 'absent':
-                        statusClass = 'absent';
-                        statusText = 'Absent';
-                        break;
-                    case 'late':
-                        statusClass = 'late';
-                        statusText = 'Late';
-                        break;
-                    case 'leave':
-                        statusClass = 'leave';
-                        statusText = 'On Leave';
-                        break;
+            </script>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const tabs = document.querySelectorAll('.tab');
+                const tabContents = document.querySelectorAll('.tab-content');
+                let employeesData = null;
+                let payrollData = null;
+
+                // Tab switching
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+
+                        tabContents.forEach(content => content.style.display = 'none');
+                        const selectedTab = document.getElementById(`${tab.dataset.tab}-content`);
+                        selectedTab.style.display = 'block';
+
+                        if (tab.dataset.tab === 'payroll') {
+                            if (payrollData) {
+                                renderPayrollTable(payrollData);
+                            } else {
+                                fetch('/api/payroll/', {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(res => {
+                                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    payrollData = data.data;
+                                    renderPayrollTable(payrollData);
+                                })
+                                .catch(err => {
+                                    console.error("Failed to load payroll:", err);
+                                    alert("Failed to load payroll data. Check console.");
+                                });
+                            }
+                        } else if (tab.dataset.tab === 'employees') {
+                            if (employeesData) {
+                                renderEmployeesTable(employeesData);
+                            } else {
+                                fetch(window.location.href, {
+                                    headers: {
+                                        'x-requested-with': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    employeesData = data.staffs;
+                                    renderEmployeesTable(employeesData);
+                                });
+                            }
+                        }
+                    });
+                });
+
+                function renderPayrollTable(data) {
+                    const tbody = document.getElementById("payroll-table-body");
+                    tbody.innerHTML = '';
+                    let total = 0;
+                    let net = 0;
+
+                    data.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${p.id}</td>
+                                <td>${p.name}</td>
+                                <td>$${p.salary}</td>
+                                <td>$${p.bonus}</td>
+                                <td>$${p.net_pay}</td>
+                                <td>${p.status}</td>
+                            </tr>`;
+                        total += parseFloat(p.salary) + parseFloat(p.bonus);
+                        net += parseFloat(p.net_pay);
+                    });
+
+                    document.getElementById('total-payroll').textContent = `$${total.toFixed(2)}`;
+                    document.getElementById('average-salary').textContent = `$${(total / data.length).toFixed(2)}`;
+                    document.getElementById('net-pay').textContent = `$${net.toFixed(2)}`;
                 }
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${employee.id}</td>
-                    <td>${employee.firstName} ${employee.lastName}</td>
-                    <td>${employee.department}</td>
-                    <td><span class="attendance-status ${statusClass}">${statusText}</span></td>
+
+                function renderEmployeesTable(data) {
+                    const tbody = document.getElementById("employees-table-body");
+                    tbody.innerHTML = '';
+
+                    data.forEach(staff => {
+                        const tr = document.createElement("tr");
+                        tr.setAttribute('data-id', staff.id);
+
+                        tr.innerHTML = `
+                            <td>${staff.id}</td>
+                            <td>${staff.idcard}</td>
+                            <td>${staff.name}</td>
+                            <td>${staff.position}</td>
+                            <td>${staff.started}</td>
+                            <td>${staff.status}</td>
+                            <td>
+                                <button type="button" class="btn btn-update" style="background-color: blue; color:white" data-id="${staff.id}" aria-label="Update staff member">Update</button>
+                                <button type="button" class="btn btn-delete" style="background-color: red;" data-id="${staff.id}" aria-label="Delete staff member">Delete</button>
+                                <button type="button" class="btn btn-salary" style="background-color: green; color:white" data-id="${staff.id}" aria-label="View salary">Salary</button>
+                            </td>`;
+
+                        tr.querySelector('.btn-delete').addEventListener('click', () => deleteEmployee(staff.id));
+                        tr.querySelector('.btn-update').addEventListener('click', () => {
+                            window.location.href = `/update_employee/${staff.id}/`;
+                        });
+                        tr.querySelector('.btn-salary').addEventListener('click', () => {
+                            window.location.href = `/staff/${staff.id}/payroll/`;
+                        });
+                        tbody.appendChild(tr);
+                    });
+                }
+
+
+                function deleteEmployee(id) {
+                    const csrfToken = getCSRFToken();
+                    if (confirm("Delete this employee?")) {
+                        fetch(`/delete_employee/${id}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': csrfToken
+                            }
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                alert("Deleted!");
+                                document.querySelector(`tr[data-id="${id}"]`)?.remove();
+                            } else {
+                                alert("Delete failed");
+                            }
+                        });
+                    }
+                }
+
+                function getCSRFToken() {
+                    const match = document.cookie.match(/csrftoken=([^;]+)/);
+                    return match ? match[1] : null;
+                }
+
+                document.getElementById('payroll-search-input').addEventListener('input', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('#payroll-table-body tr');
+                    rows.forEach(row => {
+                        const match = [...row.children].some(cell =>
+                            cell.textContent.toLowerCase().includes(searchTerm));
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+            </script>
+
+
+    
+   
+    

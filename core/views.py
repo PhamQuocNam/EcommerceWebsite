@@ -14,6 +14,7 @@ from paypal.standard.forms import PayPalPaymentsForm
 from taggit.models import Tag
 import uuid
 import json
+from django.utils import timezone
 
 # App-specific imports
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
@@ -662,7 +663,113 @@ def revenue_management(request):
     return render(request,"core/revenue-management.html", context)
 
 def staff_management(request):
-    return render(request,"core/staff-management.html")
+    total_employees = Staff.objects.count()
+
+    active_employees = Staff.objects.filter(status="active").count()
+
+    on_leave_employees = Staff.objects.filter(status="on_leave").count()
+
+    start_of_month = timezone.now().replace(day=1)
+    new_employees_this_month = Staff.objects.filter(Started__gte=start_of_month).count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        staffs = Staff.objects.select_related('user').all()
+        data = []
+        for staff in staffs:
+            data.append({
+                'id': staff.ID_Staff,
+                'idcard': staff.ID_card,
+                'name': staff.user.first_name,
+                'position': staff.Position,
+                'started': staff.Started.strftime('%Y-%m-%d') if staff.Started else '',
+                'status': staff.status,
+            })
+        return JsonResponse({'staffs': data})
+
+    else:
+        context = {
+            'total_employees': total_employees,
+            'active_employees': active_employees,
+            'on_leave_employees': on_leave_employees,
+            'new_employees_this_month': new_employees_this_month,
+        }
+        return render(request, "core/staff-management.html", context)
+    
+    
+def add_employee(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        idcard = request.POST.get('idcard')
+        name = request.POST.get('name')
+        birthday = request.POST.get('birthday')
+        position = request.POST.get('position')
+        started = request.POST.get('started')
+
+        # Tạo nhân viên
+        new_staff = Staff.objects.create(
+            ID_card=idcard,
+            ID_Staff=id,
+            Name=name,
+            user=None, 
+            Position=position,
+            Started=started,
+            Birthday=birthday
+        )
+
+        Salary.objects.create(
+            staff=new_staff,
+            Date=timezone.now(),
+            Desc="Initial salary record",
+            Salary=0.00,
+            Bonus=0.00
+        )
+
+        return redirect('core:staff_management')
+
+    return render(request, "core/add_employee.html")
+
+
+def update_employee(request, employee_id):
+    staff = get_object_or_404(Staff, ID_Staff=employee_id)
+
+    if request.method == 'POST':
+        staff.ID_Staff = request.POST.get('id')
+        staff.ID_card = request.POST.get('idcard')
+        staff.Name = request.POST.get('name')
+        staff.Birthday = request.POST.get('birthday')
+        staff.Position = request.POST.get('position')
+        staff.Started = request.POST.get('started')
+        staff.status = request.POST.get('status')
+        staff.save()
+
+        return redirect('core:staff_management')
+
+    return render(request, 'core/update_employee.html', {'staff': staff})
+
+def delete_employee(request, employee_id):
+    employee = get_object_or_404(Staff, ID_Staff=employee_id)
+    
+    employee.delete()
+
+    return JsonResponse({'message': 'Employee deleted successfully!'})
+
+
+def update_payroll_for_staff(request, staff_id):
+    staff = get_object_or_404(Staff, ID_Staff=staff_id)
+
+    # Lấy bản ghi lương đầu tiên (đã tạo khi thêm nhân viên)
+    salary = get_object_or_404(Salary, staff=staff)
+
+    if request.method == 'POST':
+        salary.Date = timezone.now() 
+        salary.Desc = request.POST.get('desc')
+        salary.Salary = request.POST.get('salary')
+        salary.Bonus = request.POST.get('bonus')
+        salary.save()
+        return redirect('core:staff_management')
+
+    return render(request, 'core/update_payroll.html', {'salary': salary, 'staff': staff})    
+
 
 def inventory_management(request):
     products = Product.objects.all()
@@ -775,3 +882,37 @@ def order_stats(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+def add_to_wishlist(request):
+    product_id = request.GET.get('id')
+
+    if not product_id:
+        return JsonResponse({"error": "Missing product ID"}, status=400)
+
+    try:
+        product = Product.objects.get(ID_Product=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({"error": "Product not found"}, status=404)
+
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        product=product,
+        user=request.user
+    )
+
+    return JsonResponse({"added": created})
+
+
+
+
+def wishlist_view(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    context = {
+        'wishlist_items': wishlist_items
+    }
+    return render(request, 'core/wishlist.html', context)
+
+def remove_from_wishlist(request, pid):
+    product = get_object_or_404(Product, ID_Product=pid)
+    wishlist_item = Wishlist.objects.filter(product=product, user=request.user)
+    if wishlist_item.exists():
+        wishlist_item.delete()
+    return redirect('core:wishlist')
