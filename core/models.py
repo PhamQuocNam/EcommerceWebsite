@@ -7,7 +7,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 
 
 STATUS_CHOICE = [
-        ('process', 'Processing'),
+        ('processing', 'Processing'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('canceled', 'Canceled'),
@@ -84,7 +84,7 @@ class Product_Inventory(models.Model):
     Name = models.CharField(max_length=100)
     Unit= models.CharField(max_length=100, default='Kilogram')
     Quantity = models.IntegerField()
-    Updated =  models.DateTimeField(null=True, blank=True)
+    Updated =  models.DateTimeField(null=True, blank=True,auto_now=True)
     
     class Meta:
          verbose_name_plural = "Product_Inventories"
@@ -205,7 +205,7 @@ class Order_Detail(models.Model):
     Date = models.DateTimeField(auto_now_add= True)
     Total_Price = models.DecimalField(max_digits= 10, decimal_places=2, default="0")
     Payment_Status = models.BooleanField(default=False)
-    Delivery_Status = models.CharField(choices=STATUS_CHOICE, max_length=10, default='process')
+    Delivery_Status = models.CharField(choices=STATUS_CHOICE, max_length=10, default='processing')
     Note = models.TextField(null=True, blank=True, default ='Nothing')
     class Meta:
         verbose_name_plural= 'Order_Detail'

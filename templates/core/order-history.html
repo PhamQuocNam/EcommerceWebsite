@@ -527,7 +527,7 @@
     <!-- Main Profile Content -->
     <div class="profile-container">
         <div class="profile-header">
-            <img src="{% static '/image/default.jpg' %}" alt="Profile Avatar" class="profile-avatar">
+            <img src="{{ profile.image.url }}" alt="Profile Avatar" class="profile-avatar">
             <div class="profile-info">
                 <h1>{{user.username}}</h1>
                 <p>{{user.email}}</p>
@@ -569,17 +569,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="dash-cancellation.html">
-                            <i class="fas fa-exchange-alt mr-2"></i> Returns & Cancellations
+                        <a href="{% url 'core:cancel' %}">
+                            <i class="fas fa-exchange-alt mr-2"></i> Cancellations
                         </a>
                     </li>
                     <li>
-                        <a href="#">
-                            <i class="fas fa-heart"></i> My Wishlist
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
+                        <a href="{% url 'core:index' %}">
                             <i class="fas fa-sign-out-alt mr-2"></i> Homepage
                         </a>
                     </li>

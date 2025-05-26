@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancellations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --gray-100: #f3f4f6;
+            --gray-800: #1f2937;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            color: var(--gray-800);
+            margin: 0;
+            background-color: #f9fafb;
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 16px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+        
+        nav a {
+            color: var(--gray-800);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        nav a i {
+            font-size: 0.9em;
+        }
+        
+        .active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .account-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-menu li {
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: var(--gray-800);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-menu a:hover {
+            background: #f3f4f6;
+            color: var(--primary);
+        }
+        
+        .sidebar-menu .active {
+            background: #eff6ff;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            margin: 0 0 8px 0;
+        }
+        
+        /* Card Styles */
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        /* Order Lookup */
+        .order-lookup {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .order-lookup input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .account-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-lookup {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container account-layout">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'core:profile' %}"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="{% url 'core:address' %}"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
+                <li><a href="{% url 'core:order_history' %}"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
+                <li><a href="{% url 'core:track_order' %}"><i class="fas fa-truck"></i> Track Order</a></li>
+                <li><a href="" class="active"><i class="fas fa-undo-alt"></i> Cancellations</a></li>
+                <a href="{% url 'core:index' %}"><i class="fas fa-home"></i> Homepage</a>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div>
+            <div class="page-header">
+                <h1>Cancellations</h1>
+                <p>Manage your cancel pending orders</p>
+            </div>
+            
+            <!-- Cancellation Section -->
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-times-circle"></i> Cancel an Order</h2>
+                <p>Cancel orders that haven't shipped yet for immediate refund</p>
+                
+                <div class="order-lookup">
+                    <input type="text" placeholder="Order # (e.g. ORD-123456)" id="order-number">
+                    <button class="btn btn-primary" id="find-order">Find Order</button>
+                </div>
+                
+                <div id="cancellation-flow" style="display: none;">
+                    <h3>Order #ORD-789456 - Placed on June 15, 2023</h3>
+                    <p>2 items • Total: $89.95</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <label><strong>Select items to cancel:</strong></label>
+                        <div style="margin-top: 10px;">
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" checked> Wireless Earbuds ($59.99)
+                            </label>
+                            <label style="display: block;">
+                                <input type="checkbox" checked> Phone Case ($29.96)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <label><strong>Reason for cancellation:</strong></label>
+                        <select style="width: 100%; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                            <option>Select a reason</option>
+                            <option>Found better price elsewhere</option>
+                            <option>No longer needed</option>
+                            <option>Shipping takes too long</option>
+                            <option>Other reason</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-danger" id="confirm-cancel">Request Cancellation</button>
+                        <button class="btn btn-outline" id="cancel-request">Back</button>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <!-- Policy Section -->
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-file-alt"></i> Return Policy</h2>
+                
+                <h3>30-Day Return Window</h3>
+                <p>Most items can be returned within 30 days of delivery. Some exclusions apply:</p>
+                <ul>
+                    <li>Personalized/customized products</li>
+                    <li>Perishable goods</li>
+                    <li>Digital products</li>
+                </ul>
+                
+                <h3>Refund Methods</h3>
+                <p>Refunds are issued to the original payment method. Processing times:</p>
+                <ul>
+                    <li>Credit/Debit Cards: 3-5 business days</li>
+                    <li>PayPal: 24-48 hours</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentOrderId = null; // Use this to store the fetched order ID
+
+        document.getElementById('find-order').addEventListener('click', async function () {
+            const orderId = document.getElementById('order-number').value;
+
+            try {
+                const response = await fetch('/find_order/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: orderId })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch order');
+                }
+
+                const data = await response.json();
+                const order = data.order;
+                currentOrderId = order.id; // Save the order ID for cancellation
+
+                // Construct item list
+                let itemHtml = '';
+                for (let i = 0; i < order.items.length; i++) {
+                    const item = order.items[i];
+                    itemHtml += `<li>${item.product} (x${item.quantity})</li>`;
+                }
+
+                let paymentDeliveryHtml = '';
+                if (order.payment_status) {
+                    paymentDeliveryHtml = `<p><strong>Payment status:</strong> Paid || <strong>Delivery status:</strong> ${order.delivery_status}</p>`;
+                } else {
+                    paymentDeliveryHtml = `<p><strong>Payment status:</strong> Not paid yet || <strong>Delivery status:</strong> ${order.delivery_status}</p>`;
+                }
+
+                // Inject HTML
+                const flowDiv = document.getElementById('cancellation-flow');
+                flowDiv.innerHTML = `
+                    <h3>Order #${order.id} - Placed on ${order.date}</h3>
+                    <p>${order.items.length} items • Total: $${order.total_price}</p>
+                    ${paymentDeliveryHtml}
+                    <div style="margin: 20px 0;">
+                        <label><strong>Items in this order:</strong></label>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            ${itemHtml}
+                        </ul>
+                    </div>
+
+                    <div style="margin: 20px 0;">
+                        <label><strong>Reason for cancellation:</strong></label>
+                        <select id="cancel-reason" style="width: 100%; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                            <option>Select a reason</option>
+                            <option>Found better price elsewhere</option>
+                            <option>No longer needed</option>
+                            <option>Shipping takes too long</option>
+                            <option>Other reason</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-danger" id="confirm-cancel">Request Cancellation</button>
+                        <button class="btn btn-outline" id="cancel-request">Back</button>
+                    </div>
+                `;
+                flowDiv.style.display = 'block';
+
+                // Add event listeners *after* injecting HTML
+                document.getElementById('cancel-request').addEventListener('click', function () {
+                    document.getElementById('cancellation-flow').style.display = 'none';
+                });
+
+                document.getElementById('confirm-cancel').addEventListener('click', async function () {
+                    if (confirm('Are you sure you want to cancel this order?')) {
+                        try {
+                            const response = await fetch('/order_cancellation/', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: currentOrderId })
+                            });
+
+                            if (!response.ok) throw new Error('Cancellation failed');
+
+                            alert('Cancellation request submitted. You will receive email confirmation shortly.');
+                            document.getElementById('cancellation-flow').style.display = 'none';
+                            document.getElementById('order-number').value = '';
+                        } catch (err) {
+                            console.error('Cancellation error:', err);
+                            alert('Failed to submit cancellation request.');
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching order:', error);
+                alert('Could not retrieve order. Please check the Order ID and try again.');
+            }
+        });
+    </script>
+
+</body>
+</html>

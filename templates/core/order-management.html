@@ -342,9 +342,6 @@
     <div class="container">
         <header>
             <div class="logo">Order Management</div>
-            <div class="user-info">
-                <span>Welcome, Seller</span>
-            </div>
         </header>
         
         <div class="search-filter">
@@ -575,8 +572,8 @@
                     <td><span class="status ${statusClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
                     <td>
                         <button class="action-btn btn-view" data-id="${order.id}">View</button>
-                        ${order.status === 'pending' ? '<button class="action-btn btn-process" data-id="' + order.id + '">Process</button>' : ''}
-                        ${order.status === 'process' ? '<button class="action-btn btn-ship" data-id="' + order.id + '">Ship</button>' : ''}
+                        ${order.status === 'pending' ? '<button class="action-btn btn-process" data-id="' + order.id + '">Processing</button>' : ''}
+                        ${order.status === 'processing' ? '<button class="action-btn btn-ship" data-id="' + order.id + '">Ship</button>' : ''}
                         ${order.status !== 'delivered' && order.status !== 'cancelled' ? '<button class="action-btn btn-cancel" data-id="' + order.id + '">Cancel</button>' : ''}
                     </td>
                 `;

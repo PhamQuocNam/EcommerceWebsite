@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Management System</title>
+    <title>Staff Management System</title>
     <style>
         :root {
             --primary-color: #4a6bff;
@@ -378,15 +378,55 @@
                 font-size: 12px;
             }
         }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .btn-action {
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            filter: brightness(90%);
+            transform: translateY(-1px);
+        }
+
+        .btn-update {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-salary {
+            background-color: #16a34a;
+            color: white;
+        }
+
+        .btn-icon {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">HR Management</div>
-            <div class="user-info">
-                <span>Welcome, Admin</span>
-            </div>
+            <div class="logo">Staff Management</div>
         </header>
         
         
@@ -429,6 +469,7 @@
                             <th>Name</th>
                             <th>Position</th>
                             <th>Join Date</th>
+                            <th>Status </th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -457,10 +498,10 @@
                                             <td>${staff.position}</td>
                                             <td>${staff.started}</td>
                                             <td>${staff.status}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-update" style="background-color: blue; color:white" data-id="${staff.id}" aria-label="Update staff member">Update</button>
-                                                <button type="button" class="btn btn-delete" style="background-color: red;" data-id="${staff.id}" aria-label="Delete staff member">Delete</button>
-                                                <button type="button" class="btn btn-salary" style="background-color: green; color:white" data-id="${staff.id}" aria-label="View salary">Salary</button>
+                                            <td class="action-buttons">
+                                                <button type="button" class="btn btn-action btn-update" data-id="${staff.id}" aria-label="Update staff member">Update</button>
+                                                <button type="button" class="btn btn-action btn-delete" data-id="${staff.id}" aria-label="Delete staff member"> Delete</button>
+                                                <button type="button" class="btn btn-action btn-salary" data-id="${staff.id}" aria-label="View salary details">Salary</button>
                                             </td>
                                         `;
 
@@ -754,11 +795,17 @@
                             <td>${staff.position}</td>
                             <td>${staff.started}</td>
                             <td>${staff.status}</td>
-                            <td>
-                                <button type="button" class="btn btn-update" style="background-color: blue; color:white" data-id="${staff.id}" aria-label="Update staff member">Update</button>
-                                <button type="button" class="btn btn-delete" style="background-color: red;" data-id="${staff.id}" aria-label="Delete staff member">Delete</button>
-                                <button type="button" class="btn btn-salary" style="background-color: green; color:white" data-id="${staff.id}" aria-label="View salary">Salary</button>
-                            </td>`;
+                            <<td class="action-buttons">
+                            <button type="button" class="btn btn-action btn-update" data-id="${staff.id}" aria-label="Update staff member">
+                                <span class="btn-icon">✏️</span> Update
+                            </button>
+                            <button type="button" class="btn btn-action btn-delete" data-id="${staff.id}" aria-label="Delete staff member">
+                                <span class="btn-icon">🗑️</span> Delete
+                            </button>
+                            <button type="button" class="btn btn-action btn-salary" data-id="${staff.id}" aria-label="View salary details">
+                                <span class="btn-icon">💰</span> Salary
+                            </button>
+                        </td>;
 
                         tr.querySelector('.btn-delete').addEventListener('click', () => deleteEmployee(staff.id));
                         tr.querySelector('.btn-update').addEventListener('click', () => {

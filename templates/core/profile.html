@@ -250,13 +250,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="dash-cancellation.html">
-                                <i class="fas fa-exchange-alt mr-2"></i> Returns & Cancellations
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-heart"></i> My Wishlist
+                            <a href="{% url 'core:cancel'%}">
+                                <i class="fas fa-exchange-alt mr-2"></i> Cancellations
                             </a>
                         </li>
                         <li>
@@ -281,12 +276,10 @@
                         <div class="info-item">
                             <span class="info-label">Email Address</span>
                             <p class="info-value">{{profile.user}}</p>
-                            <a href="#" class="text-primary text-sm">Change Email</a>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Phone Number</span>
                             <p class="info-value text-red-500">{{profile.phone}}</p>
-                            <a href="#" class="text-primary text-sm">Add Phone</a>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Date of Birth</span>

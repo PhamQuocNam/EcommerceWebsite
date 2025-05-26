@@ -137,18 +137,17 @@
                     <input type="text" id="position" name="position" required>
                 </div>
 
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn-save">Save</button>
+                <div class="employee-modal" style="display: block;">
+                    <div style="text-align: right;">
+                        <a href="{% url 'core:staff_management' %}" class="btn-cancel">Cancel</a>
+                        <button type="submit" class="btn-save">Save</button>
+                    </div>
                 </div>
-            </form>
-        </div>
 
-        <script>
-            function closeModal() {
-                document.querySelector('.employee-modal').style.display = 'none';
-            }
-        </script>
-    </div>
+            <script>
+                function closeModal() {
+                    document.querySelector('.employee-modal').style.display = 'none';
+                }
+            </script>
 </body>
 </html>

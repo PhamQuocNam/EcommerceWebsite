@@ -10,7 +10,8 @@ from core.views import (
     staff_management, inventory_management, customer_orders,
     update_order_status, order_stats, add_employee, update_employee,
     delete_employee, update_payroll_for_staff,add_to_wishlist,
-    wishlist_view,remove_from_wishlist
+    wishlist_view,remove_from_wishlist, create_product, update_product,
+    remove_product, cancel, find_order, order_cancellation
     
 )
 
@@ -55,7 +56,9 @@ urlpatterns = [
     path("order_history/", order_history_view, name='order_history'),  # User's order history
     path("track_order/", track_order_view, name='track_order'),  # Track order by ID or reference
     path("change_password/", change_password_view, name='change_password'),  # Change user password
-    
+    path("cancel/", cancel ,name = 'cancel'),  # return & cancellation
+    path("find_order/", find_order, name= 'find_order'),
+    path("order_cancellation/",order_cancellation, name='order_cancellation'),
 
     # ------------------ Admin & Management Views ------------------ #
     path("order_management/", order_management, name="order_management"),  # Admin: manage orders
@@ -69,7 +72,9 @@ urlpatterns = [
     path('update_employee/<str:employee_id>/', update_employee, name='update_employee'),
     path('delete_employee/<str:employee_id>/', delete_employee, name='delete_employee'),
     path('staff/<str:staff_id>/payroll/', update_payroll_for_staff, name='update_payroll_for_staff'),
-    
+    path('create_product/',create_product, name='create_product'),
+    path('update_product/<product_id>/', update_product, name='update_product'),
+    path('remove_product/<pid>/',remove_product, name='remove_product'),
     
     # ------------------ Wishlist ------------------ #
     path("add-to-wishlist/", add_to_wishlist, name="add-to-wishlist"),

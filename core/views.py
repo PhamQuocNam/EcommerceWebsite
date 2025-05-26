@@ -21,7 +21,8 @@ from core.models import Product, Product_Category, Order_Item, Order_Detail, Dis
     ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
 from core.forms import ProductReviewForm
 from userauths.models import Profile
-
+from django.views.decorators.http import require_http_methods, require_POST
+from django.core.exceptions import ObjectDoesNotExist
 from .RAG_system.RAG import Answer_Question
 from .Recommendation_system import Recommendation_System_Type_1
 
@@ -313,6 +314,7 @@ def update_items_cart(request):
             discount_money = cart_total_amount * float(applied_coupon.Discount)
             request.session['discount_money']= discount_money
         request.session['totalmoney'] = cart_total_amount - discount_money
+        
         context = render_to_string("core/cart-list.html", {
             "cart_data_obj": request.session['cart_data_obj'],
             "totalcartitems": len(request.session['cart_data_obj']),   
@@ -328,7 +330,7 @@ def update_items_cart(request):
             "totalcartitems": len(request.session['cart_data_obj']),   
             "totalmoney": cart_total_amount,
             "final_amount": cart_total_amount
-        })
+        }, request= request)
     
     return JsonResponse({
         "data": context,
@@ -432,17 +434,19 @@ def order_history_view(request):
     orders = Order_Detail.objects.filter(user=request.user) \
         .annotate(items_count=Count('order_item')) \
         .order_by('-Date')
-    
+    profile =  Profile.objects.get(user=request.user)
     order_list =[]
     for order in orders.values():
         order['Date']= str(order['Date'])
         order['Total_Price'] = float(order['Total_Price'])
         order['Payment_Status']= int(order['Payment_Status'])
         order_list.append(order)
-        
+    
     context = {
-        'order_list': order_list
+        'order_list': order_list,
+        'profile': profile
     }
+    
     return render(request,'core/order-history.html', context)
 
 
@@ -868,7 +872,7 @@ def order_stats(request):
         total_orders = Order_Detail.objects.count()
 
         pending_orders = Order_Detail.objects.filter(Delivery_Status='pending').count()
-        processing_orders = Order_Detail.objects.filter(Delivery_Status='process').count()
+        processing_orders = Order_Detail.objects.filter(Delivery_Status='processing').count()
 
         total_revenue = Order_Detail.objects.aggregate(total=Sum('Total_Price'))['total'] or 0
         return JsonResponse({
@@ -916,3 +920,163 @@ def remove_from_wishlist(request, pid):
     if wishlist_item.exists():
         wishlist_item.delete()
     return redirect('core:wishlist')
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_product(request):
+    try:
+        data = json.loads(request.body)
+
+        # Get category instance
+        category = Product_Category.objects.get(Name=data['Category'])
+
+        # Create inventory instance
+        inventory = Product_Inventory.objects.create(
+            Name=data['Name'],
+            Quantity=data['Quantity']
+        )
+
+
+        product = Product.objects.create(
+            Name=data['Name'],
+            category=category,
+            inventory=inventory,
+            Price=data['Price']
+        )
+
+        return JsonResponse({
+            'new_product': {
+                'id': product.id,
+                'name': product.Name,
+                'price': product.Price,
+                'category': product.category.Name,
+                'inventory_id': product.inventory.id
+            },
+            'ok': True
+        })
+    except Product_Category.DoesNotExist:
+        return JsonResponse({'error': 'Category not found'}, status=404)
+    except KeyError as e:
+        return JsonResponse({'error': f'Missing field: {str(e)}'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+        
+        
+
+@csrf_exempt
+@require_http_methods(["PUT", "PATCH"])
+def update_product(request, pid):
+    try:
+        product = Product.objects.get(id=pid)
+        data = json.loads(request.body)
+
+        # Update fields only if provided
+        if 'Name' in data:
+            product.Name = data['Name']
+
+        if 'category' in data:
+            category = Product_Category.objects.get(Name=data['Category'])
+            product.category = category
+
+        if 'Price' in data:
+            product.Price = data['Price']
+
+        if 'Quantity' in data:
+            product.inventory.Quantity = data['Quantity']
+            product.inventory.save()
+
+        product.save()
+
+        return JsonResponse({
+            "update_product": {
+                "id": product.id,
+                "name": product.Name,
+                "price": product.Price,
+                "category": product.category.Name,
+                "quantity": product.inventory.Quantity
+            }
+        })
+
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)
+    except Product_Category.DoesNotExist:
+        return JsonResponse({'error': 'Category not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
+    
+    
+    
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def remove_product(request, pid):
+    try:
+        product = Product.objects.get(id=pid)
+        inventory = product.inventory  # No need to fetch it again
+
+        product.delete()
+        inventory.delete()  # Only if you want to delete the inventory too
+
+        return JsonResponse({'message': 'Product and inventory deleted successfully'})
+
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
+    
+    
+
+def cancel(request):    
+    return render(request,'core/cancel.html')
+
+
+@require_POST
+@csrf_exempt
+def find_order(request):
+    data = json.loads(request.body)
+    order_id = data.get('id')
+
+    try:
+        order = Order_Detail.objects.get(ID_Order_Detail=order_id, user=request.user)
+
+        order_items = Order_Item.objects.filter(order_detail=order)
+
+        items = [
+            {"product": item.product.Name, "quantity": item.Quantity}
+            for item in order_items
+        ]
+
+        order_data = {
+            "id": order.ID_Order_Detail,
+            "items": items,
+            "total_price": order.Total_Price,
+            "payment_status": order.Payment_Status,
+            "delivery_status": order.Delivery_Status,
+            "date": order.Date
+        }
+
+        return JsonResponse({"order": order_data}, status=200)
+    
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Order not found"}, status=404)
+    
+
+@require_POST
+def order_cancellation(request):
+    try:
+        data = json.loads(request.body)
+        order_id = data.get('id')
+
+        order = Order_Detail.objects.get(ID_Order_Detail=order_id, user=request.user)
+        products = Order_Item.objects.filter(order_detail=order)
+
+        products.delete()
+
+        order.delete()
+
+        return JsonResponse({"status": True})
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Order not found or you do not have permission."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    

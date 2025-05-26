@@ -438,7 +438,7 @@
                                 <a class="nav-link" id="ai-tab" data-toggle="tab" href="#ai" role="tab" aria-controls="ai" aria-selected="false">ADDITIONAL INFORMATION</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">REVIEWS (2)</a>
+                                <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">REVIEWS</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
@@ -592,9 +592,9 @@
                                     <a href="{% url 'core:product-detail' p.ID_Product %}" class="cart-name"><strong>{{p.Name}}</strong></a>
                                     
                                     {% if p.discount %}
-                                    <div><del>${{p.Price}} </del><span class="cart-price ">$<span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
+                                    <div><del>${{p.Price}} </del><span class="cart-price "><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
                                     {% else%}
-                                    <div><span class="cart-price">$<span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
+                                    <div><span class="cart-price"><strong>$</strong><span class="cart-price current-product-price-{{p.ID_Product}}"><strong>{{p.get_price|floatformat:"2"}}</strong></span></span></div>
                                     {% endif%}
                                 </div>
                             </div>
