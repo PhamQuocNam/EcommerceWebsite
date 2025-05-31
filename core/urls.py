@@ -11,7 +11,8 @@ from core.views import (
     update_order_status, order_stats, add_employee, update_employee,
     delete_employee, update_payroll_for_staff,add_to_wishlist,
     wishlist_view,remove_from_wishlist, create_product, update_product,
-    remove_product, cancel, find_order, order_cancellation
+    remove_product, cancel, find_order, order_cancellation,
+    edit_profile_view
     
 )
 
@@ -59,6 +60,8 @@ urlpatterns = [
     path("cancel/", cancel ,name = 'cancel'),  # return & cancellation
     path("find_order/", find_order, name= 'find_order'),
     path("order_cancellation/",order_cancellation, name='order_cancellation'),
+    path('address/dash-edit-profile/', edit_profile_view, name='dash-edit-profile'),
+
 
     # ------------------ Admin & Management Views ------------------ #
     path("order_management/", order_management, name="order_management"),  # Admin: manage orders

@@ -15,7 +15,7 @@ from taggit.models import Tag
 import uuid
 import json
 from django.utils import timezone
-
+from django.utils.dateparse import parse_date
 # App-specific imports
 from core.models import Product, Product_Category, Order_Item, Order_Detail, Discount, Product_Inventory, Payment, \
     ProductReview, Wishlist, ProductImages, Staff, Salary, Coupon
@@ -1079,4 +1079,65 @@ def order_cancellation(request):
         return JsonResponse({"error": "Order not found or you do not have permission."}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+def edit_profile_view(request):
+    user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    gender_choices = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ]
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        bio = request.POST.get('bio', '').strip()
+        birthday_str = request.POST.get('birthday', '').strip()
+        gender = request.POST.get('gender', '').strip()
+        image = request.FILES.get('image')
+
+        # Update user fields
+        if username:
+            user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+
+        if birthday_str:
+            birthday = parse_date(birthday_str)
+            if birthday:
+                user.Birthday = birthday
+
+        if gender in dict(gender_choices).keys():
+            user.Gender = gender
+
+        user.save()
+
+        # Update profile fields only if data is provided (do not overwrite with empty)
+        if full_name:
+            profile.full_name = full_name
+        if phone:
+            profile.phone = phone
+        if bio:
+            profile.bio = bio
+        if image:
+            profile.image = image
+
+        profile.save()
+
+        messages.success(request, "Cập nhật thông tin thành công!")
+        return redirect('core:profile')
+
+    context = {
+        'user': user,
+        'profile': profile,
+        'gender_choices': gender_choices,
+    }
+    return render(request, 'core/dash-edit-profile.html', context)
+
     

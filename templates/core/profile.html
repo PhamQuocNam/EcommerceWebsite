@@ -345,7 +345,7 @@
                 <div class="profile-card">
                     <h2>Account Actions</h2>
                     <div class="action-buttons">
-                        <a href="dash-edit-profile.html" class="btn btn-outline">
+                        <a href="{% url 'core:dash-edit-profile' %}" class="btn btn-outline">
                             <i class="fas fa-user-edit mr-2"></i> Edit Profile
                         </a>
                         <a href="{% url 'core:change_password' %}" class="btn btn-primary">

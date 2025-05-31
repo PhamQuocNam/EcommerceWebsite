@@ -54,7 +54,7 @@
                     <div class="col-md-6">
                         <ul class="header_list text-md-left text-center">
                             <li><a href="tel:+ 00 123 456 789"><i class="fa fa-phone"></i>+ 00 123 456 789</a></li>
-                            <li><a href="mailto:desphixs@gmail.com"><i class="fa fa-envelope-o"></i>desphixs@gmail.com</a></li>
+                            <li><a href="mailto:desphixs@gmail.com"><i class="fa fa-envelope-o"></i>greenbakestore@gmail.com</a></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -91,7 +91,7 @@
                     <div class="col-md-12">
                         <div class="hm-inner d-sm-flex align-items-center justify-content-between">
                             <div class="header-logo">
-                                <a href="index.html"><img src="static/image/logo.png" alt="logo"></a>
+                                <a href="index.html"><img src="{% static 'image/logo.png' %}" alt="logo"></a>
                             </div>
                             <form class="header-form" action="{% url 'core:search' %}" method="GET">
                                 <input class="search-box" placeholder="Search Product..." name="q" type="search">
@@ -460,10 +460,7 @@
                     <div class="col-lg-4 col-md-12">
                         <div class="footer_widget">
                             <div class="footer-logo fb-title">
-                                <a href="index-3.html"><img src="static/image/logo.png" alt="logo"></a>
-                            </div>
-                            <div class="fb-iner mb-4">
-                                <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                <a href="index-3.html"><img src="{% static 'image/logo.png' %}" alt="logo"></a>
                             </div>
                             <div class="footer-social social_dark">
                                 <h6 class="fb-title">Follow Us</h6>
@@ -535,7 +532,7 @@
                                 <i class="fa fa-map-marker"></i>
                             </div>
                             <div class="contact-wrap">
-                                <p>c/o Giunti International Division Via G.B. Pirelli</p>
+                                <p>Ho Chi Minh city</p>
                             </div>
                         </div>
                     </div>
@@ -545,7 +542,7 @@
                                 <i class="fa fa-phone"></i>
                             </div>
                             <div class="contact-wrap">
-                                <p>+025 2155 3255</p>
+                                <p>+84 123456789</p>
                             </div>
                         </div>
                     </div>
@@ -555,7 +552,7 @@
                                 <i class="fa fa-envelope"></i>
                             </div>
                             <div class="contact-wrap">
-                                <a href="#">info@gmail.com</a>
+                                <a href="#">greenbakestore@gmail.com</a>
                             </div>
                         </div>
                     </div>
@@ -572,13 +569,13 @@
                     </div>
                     <div class="col-sm-5 text-sm-right">
                         <div class="payment-img">
-                            <img src="static/image/payment.png" alt="payment-img">
+                            <img src="{% static 'image/payment.png' %}" alt="payment-img">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </footer>   
     <!-- End Footer Section -->
 
 

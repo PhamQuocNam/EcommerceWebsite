@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .modal-header h2 {
+            text-align: center;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-save, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .btn-save {
+            background-color: #27ae60;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-save:hover {
+            background-color: #219150;
+        }
+        .btn-cancel:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">Account Settings</div>
+    </header>
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Profile</h2>
+        </div>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    value="{{ user.username }}" 
+                    required 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input 
+                    type="text" 
+                    id="full_name" 
+                    name="full_name" 
+                    value="{{ profile.full_name }}" 
+                    required 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input 
+                    type="text" 
+                    id="first_name" 
+                    name="first_name" 
+                    value="{{ user.first_name }}" 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input 
+                    type="text" 
+                    id="last_name" 
+                    name="last_name" 
+                    value="{{ user.last_name }}" 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input 
+                    type="text" 
+                    id="phone" 
+                    name="phone" 
+                    value="{{ profile.phone|default_if_none:'' }}" 
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="3">{{ profile.bio|default_if_none:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday">Birthday</label>
+                <input 
+                    type="date" 
+                    id="birthday" 
+                    name="birthday" 
+                    value="{{ user.Birthday|date:'Y-m-d' }}"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                    {% for key, label in gender_choices %}
+                        <option value="{{ key }}" {% if user.Gender == key %}selected{% endif %}>{{ label }}</option>
+                    {% empty %}
+                        <option disabled>No gender options available</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="image">Profile Image</label>
+                <input 
+                    type="file" 
+                    id="image" 
+                    name="image" 
+                    accept="image/*"
+                />
+                {% if profile.image %}
+                <img src="{{ profile.image.url }}" alt="Profile Image" style="max-width: 150px; margin-top: 10px;" />
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address (readonly)</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value="{{ user.email }}" 
+                    readonly 
+                    style="background:#eee; cursor: not-allowed;"
+                />
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn-save">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

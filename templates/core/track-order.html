@@ -498,7 +498,7 @@
                             </li>
                             <li>
                                 <a href="{% url 'core:cancel' %}">
-                                    <i class="fas fa-exchange-alt mr-2"></i> Cancellations
+                                    <i class="fas fa-exchange-alt mr-2"></i> Returns & Cancellations
                                 </a>
                             </li>
                             <li>
@@ -517,19 +517,19 @@
             <main>
                 <div class="track-card">
                     <h2><i class="fas fa-search"></i> Track an Order</h2>
-                    <form class="track-form">
-                        <input type="text" class="track-input" placeholder="Enter your order number (e.g. ATZ-1234)" required>
+                    <form class="track-form" id="track-form">
+                        <input type="text"  class="track-input" id="track-input" placeholder="Enter your order number (e.g. ATZ-1234)" required>
                         <button type="submit" class="track-btn">Track Order</button>
                     </form>
                     
                     {% for entry in order_data %}
                     {% with order=entry.order items=entry.items %}
                     
-                    <div class="tracking-container">
+                    <div class="tracking-container" data-id="{{order.ID_Order_Detail}}">
                         
                         <div class="order-summary">
                             <div class="order-info">
-                                <h3>Order #{{ order.ID_Order_Detail }}</h3>
+                                <h3>{{ order.ID_Order_Detail }}</h3>
                                 <p>Placed on {{ order.Date|date:"F d, Y \\a\\t h:i A" }}</p>
                                 <p>Total: ${{ order.Total_Price }}</p>
                             </div>
@@ -625,13 +625,13 @@
             });
             
             // Form submission
-            $('.track-form').submit(function(e){
-                e.preventDefault();
-                // Here you would normally make an AJAX call to get tracking info
-                // For demo purposes, we'll just show the tracking info
-                $('.tracking-container').fadeIn();
-                $('.empty-state').hide();
-            });
+            // $('.track-form').submit(function(e){
+            //     e.preventDefault();
+            //     // Here you would normally make an AJAX call to get tracking info
+            //     // For demo purposes, we'll just show the tracking info
+            //     $('.tracking-container').fadeIn();
+            //     $('.empty-state').hide();
+            // });
             
             // Toggle active state on nav items
             $('.profile-nav a').click(function(){
@@ -639,6 +639,35 @@
                 $(this).addClass('active');
             });
         });
-    </script>   
+    </script> 
+    <script>
+        document.getElementById('track-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Không reload trang
+        
+            const query = document.getElementById('track-input').value.trim().toLowerCase();
+            const orders = document.querySelectorAll('.tracking-container');
+        
+            orders.forEach(order => {
+                const orderId = order.getAttribute('data-id').toLowerCase();
+        
+                if (query === "") {
+                    order.style.display = 'block';
+                } else if (orderId.includes(query)) {
+                    order.style.display = 'block'; 
+                } else {
+                    order.style.display = 'none';
+                }
+            });
+        });
+        document.getElementById('track-input').addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            const orders = document.querySelectorAll('.tracking-container');
+
+            if (query === "") {
+                orders.forEach(order => order.style.display = 'block'); // Hiện lại tất cả
+            }
+        });
+        </script>
+        
 </body>
 </html>
