@@ -35,7 +35,7 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
-    <title>ATZ Shop - Online Shopping Store HTML Template</title>
+    <title>Green&Bake</title>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-106310707-1"></script>
@@ -92,11 +92,13 @@
                     <div class="col-md-6">
                         <ul class="header_list text-md-right text-center">
                             {% if request.user.is_authenticated %}
-                            {% if request.user.is_superuser%}
+                            {% if request.user.is_superuser or is_staff%}
                             <li><a href="{% url 'core:inventory_management' %}">Inventory</a></li>
                             <li><a href="{% url 'core:order_management' %}">Order</a></li>
+                            {% if not is_staff %}
                             <li><a href="{% url 'core:staff_management' %}">Staff</a></li>
                             <li><a href="{% url 'core:revenue_management' %}">Revenue</a></li>
+                            {%endif%}
                             {% else %}
                             <li><a href="{% url 'core:wishlist' %}">Wishlist</a></li>
                             <li><a href="{% url 'core:profile' %}">My Account</a></li>

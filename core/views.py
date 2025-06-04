@@ -39,7 +39,10 @@ def index(request):
     dessert_products = Product.objects.filter(category__ID_Product_Category="CAT004")
     fruit_products = Product.objects.filter(category__ID_Product_Category="CAT001")
     campaigns = Discount.objects.filter(Active=True)
-
+    if request.user.is_authenticated:
+        is_staff = Staff.objects.filter(user = request.user).exists()
+    else:
+        is_staff= False
     context = {
         "products": products,
         "categories": categories,
@@ -47,8 +50,9 @@ def index(request):
         "dessert_products": dessert_products,
         "fruit_products": fruit_products,
         'saleoff_products': saleoff_products,
-        'campaigns': campaigns
-    }
+        'campaigns': campaigns,
+        'is_staff': is_staff
+        }
 
     return render(request, 'core/index.html', context)
 
