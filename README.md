@@ -133,9 +133,9 @@ Hệ thống đề xuất sử dụng công thức **Weighted Rating** để đ�
 
 #### 📌 Công thức:
 
-\[
-WR = \left( \frac{v}{v + m} \right) \cdot R + \left( \frac{m}{v + m} \right) \cdot C
-\]
+$$
+WR = \left(\frac{v}{v + m}\right) \times R + \left(\frac{m}{v + m}\right) \times C
+$$
 
 Trong đó:
 
